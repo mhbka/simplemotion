@@ -107,7 +107,7 @@ impl Layer {
     }
 }
 
-/// A timed layer instruction.
+/// A keyframe for a layer.
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct KeyFrame {
@@ -143,7 +143,7 @@ pub struct KeyFrameContent {
     pub sy: Option<f32>,
     /// Opacity.
     pub opa: Option<f32>,
-    /// Mask flags needed by a renderer that supports masks.
+    /// Mask/stencil flags (dunno how to use this yet).
     pub mask: Option<u32>,
 }
 
