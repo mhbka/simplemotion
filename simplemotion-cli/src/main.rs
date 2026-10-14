@@ -43,12 +43,12 @@ fn traverse_layer(
     frame_level: usize,
 ) {
     let arrow = get_arrow(layer_level, frame_level);
-    let frame_contents = layer
+    let frame_kinds = layer
         .frame_list
         .iter()
         .map(|l| match &l.content {
-            Some(content) => format!("{:?}", content.src),
-            None => "EmptyFrame".to_string(),
+            Some(content) => format!("({:?}) {:?}", l.kind, content.src),
+            None => format!("({:?}) EmptyFrame", l.kind),
         })
         .collect::<Vec<_>>()
         .join(", ");
@@ -58,7 +58,7 @@ fn traverse_layer(
         layer.children.len(),
         layer.layer_type,
         layer.frame_list.len(),
-        frame_contents
+        frame_kinds
     );
     for frame in &layer.frame_list {
         if let Some(frame_content) = &frame.content {

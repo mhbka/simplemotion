@@ -1,6 +1,6 @@
 use serde::{Deserialize, Deserializer};
 
-/// Just a macro to implement Deserialize for u8 -> enum variants.
+/// Implement Deserialize for u8 -> enum variants.
 macro_rules! numeric_type_enum {
     ($name:ident { $($number:literal => $variant:ident),+ $(,)? }) => {
         impl<'de> Deserialize<'de> for $name {
@@ -117,10 +117,12 @@ pub struct ScreenSize {
     pub origin_y: f32,
 }
 
-/// The numeric type assigned to an object in a Motion JSON document.
+/// The type assigned to an object in a Motion JSON document.
+///
+/// TODO: meanings still not known.
 #[derive(Debug, PartialEq, Eq)]
 pub enum ObjectType {
-    /// Type `0`.
+    /// `0` in the document.
     Zero,
     /// A type not yet supported/known.
     Other(u8),
@@ -128,10 +130,12 @@ pub enum ObjectType {
 
 numeric_type_enum!(ObjectType { 0 => Zero });
 
-/// The numeric type assigned to a motion in a Motion JSON document.
+/// The type assigned to a motion in a Motion JSON document.
+///
+/// TODO: meanings still not known.
 #[derive(Debug, PartialEq, Eq)]
 pub enum MotionType {
-    /// Type `0`.
+    /// `0` in the document.
     Zero,
     /// A type not yet supported/known.
     Other(u8),
@@ -140,6 +144,8 @@ pub enum MotionType {
 numeric_type_enum!(MotionType { 0 => Zero });
 
 /// The numeric type assigned to a layer in a Motion JSON document.
+///
+/// TODO: any new variants.
 #[derive(Debug, PartialEq, Eq)]
 pub enum LayerType {
     /// Draws icon resources from its frames.
@@ -164,18 +170,24 @@ numeric_type_enum!(LayerType {
 /// The numeric type assigned to a layer frame in a Motion JSON document.
 #[derive(Debug, PartialEq, Eq)]
 pub enum FrameType {
-    /// Type `0`.
-    Zero,
-    /// Type `2`.
-    Two,
-    /// Type `3`.
-    Three,
+    /// Has no content and clears the layer's current resource.
+    Empty,
+    /// Shows a resource in one fixed spot in this layer.
+    ///
+    /// This layer sets the child motion's parent-side state at this frame and keeps it there
+    /// until another frame changes it. The child motion and its descendants still animate.
+    ParentTransformsStatically,
+    /// Moves/interpolates the whole child motion in this layer over time.
+    ///
+    /// This layer animates the child motion's parent-side state, such as its placement or angle.
+    /// The child motion and its descendants also animate.
+    ParentTransformsDynamically,
     /// A type not yet supported/known.
     Other(u8),
 }
 
 numeric_type_enum!(FrameType {
-    0 => Zero,
-    2 => Two,
-    3 => Three,
+    0 => Empty,
+    2 => ParentTransformsStatically,
+    3 => ParentTransformsDynamically,
 });

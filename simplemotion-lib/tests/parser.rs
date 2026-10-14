@@ -34,7 +34,7 @@ fn parses_the_example_motion() {
         .find(|layer| layer.label == "bg")
         .unwrap();
     let frame = bg.frame_list.first().unwrap();
-    assert_eq!(frame.kind, FrameType::Two);
+    assert_eq!(frame.kind, FrameType::ParentTransformsStatically);
     assert_eq!(
         &frame.content.as_ref().unwrap().src,
         &ResourceReference::Icon(resources.icon_key("src/SD002/bg").unwrap())
@@ -49,16 +49,29 @@ fn resolves_nested_motion_references() {
     let motion = resources.motion(key).unwrap();
     let mut layers = Vec::new();
     collect_layers(&motion.layer, &mut layers);
-    let nested = layers
+    let nested_frame = layers
         .into_iter()
         .flat_map(|layer| &layer.frame_list)
-        .filter_map(|frame| frame.content.as_ref().map(|content| &content.src))
-        .find(|reference| matches!(reference, ResourceReference::Motion(_)))
+        .find(|frame| {
+            matches!(
+                frame.content.as_ref().map(|content| &content.src),
+                Some(ResourceReference::Motion(_))
+            )
+        })
         .unwrap();
 
+    assert_eq!(nested_frame.kind, FrameType::ParentTransformsStatically);
     assert_eq!(
-        nested,
+        &nested_frame.content.as_ref().unwrap().src,
         &ResourceReference::Motion(resources.motion_key("swing1suma").unwrap())
+    );
+
+    let animated = resources
+        .motion(resources.motion_key("swing1suma").unwrap())
+        .unwrap();
+    assert_eq!(
+        animated.layer[0].frame_list[0].kind,
+        FrameType::ParentTransformsDynamically
     );
 }
 
