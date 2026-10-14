@@ -1,4 +1,17 @@
-## How to install
+## Native library and CLI
+
+The reusable parser and motion model live in `simplemotion-lib`. Test or inspect
+motion files without building WebAssembly:
+
+```sh
+cargo test -p simplemotion-lib
+cargo run -p simplemotion-cli -- examples/sd002.json
+```
+
+The root package remains the WebAssembly wrapper and depends on `simplemotion-lib`,
+so browser bindings can be added later without moving the core code again.
+
+## Web project: install
 
 ```sh
 npm install
@@ -21,7 +34,7 @@ npm run build
 ## How to run unit tests
 
 ```sh
-# Runs tests in Firefox
+# Runs all native library and CLI tests, then browser tests in Firefox.
 npm test -- --firefox
 
 # Runs tests in Chrome
@@ -41,8 +54,12 @@ npm test -- --safari
 
 * The `js` folder contains your JavaScript code (`index.js` is used to hook everything into Webpack, you don't need to change it).
 
-* The `src` folder contains your Rust code.
+* `simplemotion-lib` contains the reusable native Rust parser and motion model.
+
+* `simplemotion-cli` contains the native command-line inspector.
+
+* The `src` folder contains the WebAssembly wrapper, which can expose the native library to JavaScript.
 
 * The `static` folder contains any files that you want copied as-is into the final build. It contains an `index.html` file which loads the `index.js` file.
 
-* The `tests` folder contains your Rust unit tests.
+* Each native project keeps its tests in its own `tests` folder.

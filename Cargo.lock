@@ -150,8 +150,7 @@ dependencies = [
  "console_error_panic_hook",
  "futures",
  "js-sys",
- "serde",
- "serde_json",
+ "simplemotion-lib",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "wasm-bindgen-test",
@@ -215,10 +214,35 @@ dependencies = [
 ]
 
 [[package]]
+name = "simplemotion-cli"
+version = "0.1.0"
+dependencies = [
+ "simplemotion-lib",
+]
+
+[[package]]
+name = "simplemotion-lib"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "serde_json",
+ "slotmap",
+]
+
+[[package]]
 name = "slab"
 version = "0.4.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0c790de23124f9ab44544d7ac05d60440adc586479ce501c1d6d7da3cd8c9cf5"
+
+[[package]]
+name = "slotmap"
+version = "1.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bdd58c3c93c3d278ca835519292445cb4b0d4dc59ccfdf7ceadaab3f8aeb4038"
+dependencies = [
+ "version_check",
+]
 
 [[package]]
 name = "syn"
@@ -242,6 +266,12 @@ name = "unicode-xid"
 version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fc72304796d0818e357ead4e000d19c9c174ab23dc11093ac919054d20a6a7fc"
+
+[[package]]
+name = "version_check"
+version = "0.9.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0b928f33d975fc6ad9f86c8f283853ad26bdd5b10b7f1542aa2fa15e2289105a"
 
 [[package]]
 name = "wasm-bindgen"

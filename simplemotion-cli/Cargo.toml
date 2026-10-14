@@ -1,0 +1,8 @@
+[package]
+name = "simplemotion-cli"
+description = "Command-line inspector for simple motion documents."
+version = "0.1.0"
+edition = "2018"
+
+[dependencies]
+simplemotion-lib = { path = "../simplemotion-lib" }

@@ -1,6 +1,6 @@
 use serde::{Deserialize, Deserializer};
-use std::collections::BTreeMap;
 
+/// Just a macro to implement Deserialize for u8 -> enum variants.
 macro_rules! numeric_type_enum {
     ($name:ident { $($number:literal => $variant:ident),+ $(,)? }) => {
         impl<'de> Deserialize<'de> for $name {
@@ -19,71 +19,27 @@ macro_rules! numeric_type_enum {
     };
 }
 
-/// The top-level Motion JSON document.
-#[derive(Debug, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct MotionDocument {
-    /// Document name.
-    pub label: Option<String>,
-    /// The logical canvas used for the motion.
-    pub screen_size: Option<ScreenSize>,
-    /// The motion's objects indexed by their name.
-    pub object: BTreeMap<String, MotionObject>,
-}
-
-impl MotionDocument {
-    /// Looks up a motion by its object and motion names.
-    pub fn motion(&self, object_name: &str, motion_name: &str) -> Option<&Motion> {
-        self.object.get(object_name)?.motion.get(motion_name)
-    }
-}
-
-/// The dimensions and origin of the motion's canvas.
-#[derive(Debug, Deserialize, PartialEq)]
-#[serde(rename_all = "camelCase")]
-pub struct ScreenSize {
-    pub width: f32,
-    pub height: f32,
-    pub origin_x: f32,
-    pub origin_y: f32,
-}
-
-/// A named object containing one or more motions.
-#[derive(Debug, Deserialize)]
-pub struct MotionObject {
-    #[serde(rename = "type")]
-    pub object_type: ObjectType,
-    pub motion: BTreeMap<String, Motion>,
-}
-
 /// A playable motion with its root layer nodes.
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct Motion {
+#[serde(bound(deserialize = "S: Deserialize<'de>"))]
+pub struct Motion<S> {
     /// The type of motion.
     #[serde(rename = "type")]
     pub motion_type: MotionType,
     /// The final timeline time.
     pub last_time: f32,
     /// Root nodes in the layer tree.
-    pub layer: Vec<Layer>,
+    pub layer: Vec<Layer<S>>,
 }
 
-impl Motion {
-    /// Visits this motion's layers in draw-tree order, parents before children.
-    pub fn layers_depth_first(&self) -> Vec<&Layer> {
-        let mut layers = Vec::new();
-        for layer in &self.layer {
-            layer.collect_depth_first(&mut layers);
-        }
-        layers
-    }
-}
+impl<S> Motion<S> {}
 
 /// A layer node and its child layers.
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct Layer {
+#[serde(bound(deserialize = "S: Deserialize<'de>"))]
+pub struct Layer<S> {
     /// The layer type assigned by the exporter.
     #[serde(rename = "type")]
     pub layer_type: LayerType,
@@ -91,40 +47,34 @@ pub struct Layer {
     pub label: String,
     /// Timed changes applied to this layer.
     #[serde(rename = "frameList")]
-    pub frame_list: Vec<KeyFrame>,
+    pub frame_list: Vec<KeyFrame<S>>,
     /// Nested layers that inherit this layer's transform.
     #[serde(default)]
-    pub children: Vec<Layer>,
+    pub children: Vec<Layer<S>>,
 }
 
-impl Layer {
-    /// Appends this layer and every descendant in depth-first order.
-    fn collect_depth_first<'a>(&'a self, layers: &mut Vec<&'a Layer>) {
-        layers.push(self);
-        for child in &self.children {
-            child.collect_depth_first(layers);
-        }
-    }
-}
+impl<S> Layer<S> {}
 
 /// A keyframe for a layer.
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct KeyFrame {
+#[serde(bound(deserialize = "S: Deserialize<'de>"))]
+pub struct KeyFrame<S> {
     /// The time on the motion timeline.
     pub time: f32,
     /// The type of frame.
     #[serde(rename = "type")]
     pub kind: FrameType,
     /// The simple image and transform properties carried by this frame.
-    pub content: Option<KeyFrameContent>,
+    pub content: Option<KeyFrameContent<S>>,
 }
 
-/// The supported, non-deforming properties of a frame.
+/// The properties of a keyframe.
 #[derive(Debug, Deserialize)]
-pub struct KeyFrameContent {
+#[serde(bound(deserialize = "S: Deserialize<'de>"))]
+pub struct KeyFrameContent<S> {
     /// The image or nested-motion reference.
-    pub src: Option<String>,
+    pub src: S,
     /// Horizontal source offset.
     pub ox: Option<f32>,
     /// Vertical source offset.
@@ -143,8 +93,28 @@ pub struct KeyFrameContent {
     pub sy: Option<f32>,
     /// Opacity.
     pub opa: Option<f32>,
-    /// Mask/stencil flags (dunno how to use this yet).
+    /// Mask/stencil flags.
     pub mask: Option<u32>,
+}
+
+/// One named image resource.
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Icon {
+    pub origin_x: Option<f32>,
+    pub origin_y: Option<f32>,
+    pub width: Option<f32>,
+    pub height: Option<f32>,
+}
+
+/// The dimensions and origin of the motion's canvas.
+#[derive(Debug, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct ScreenSize {
+    pub width: f32,
+    pub height: f32,
+    pub origin_x: f32,
+    pub origin_y: f32,
 }
 
 /// The numeric type assigned to an object in a Motion JSON document.
@@ -152,7 +122,7 @@ pub struct KeyFrameContent {
 pub enum ObjectType {
     /// Type `0`.
     Zero,
-    /// An exporter type not yet modelled by this parser.
+    /// A type not yet supported/known by this parser.
     Other(u8),
 }
 
@@ -163,7 +133,7 @@ numeric_type_enum!(ObjectType { 0 => Zero });
 pub enum MotionType {
     /// Type `0`.
     Zero,
-    /// An exporter type not yet modelled by this parser.
+    /// A type not yet supported/known by this parser.
     Other(u8),
 }
 
@@ -180,7 +150,7 @@ pub enum LayerType {
     Three,
     /// Type `12`.
     Twelve,
-    /// An exporter type not yet modelled by this parser.
+    /// A type not yet supported/known by this parser.
     Other(u8),
 }
 
@@ -200,7 +170,7 @@ pub enum FrameType {
     Two,
     /// Type `3`.
     Three,
-    /// An exporter type not yet modelled by this parser.
+    /// A type not yet supported/known by this parser.
     Other(u8),
 }
 
@@ -209,4 +179,3 @@ numeric_type_enum!(FrameType {
     2 => Two,
     3 => Three,
 });
-
