@@ -122,7 +122,7 @@ pub struct ScreenSize {
 pub enum ObjectType {
     /// Type `0`.
     Zero,
-    /// A type not yet supported/known by this parser.
+    /// A type not yet supported/known.
     Other(u8),
 }
 
@@ -133,7 +133,7 @@ numeric_type_enum!(ObjectType { 0 => Zero });
 pub enum MotionType {
     /// Type `0`.
     Zero,
-    /// A type not yet supported/known by this parser.
+    /// A type not yet supported/known.
     Other(u8),
 }
 
@@ -142,23 +142,23 @@ numeric_type_enum!(MotionType { 0 => Zero });
 /// The numeric type assigned to a layer in a Motion JSON document.
 #[derive(Debug, PartialEq, Eq)]
 pub enum LayerType {
-    /// Type `0`.
-    Zero,
-    /// Type `2`.
-    Two,
-    /// Type `3`.
-    Three,
-    /// Type `12`.
-    Twelve,
-    /// A type not yet supported/known by this parser.
+    /// Draws icon resources from its frames.
+    Icon,
+    /// Represents the built-in layout source.
+    Layout,
+    /// Evaluates nested motions from its frames.
+    Motion,
+    /// Defines a mask using icon resources from its frames.
+    Mask,
+    /// A type not yet supported/known.
     Other(u8),
 }
 
 numeric_type_enum!(LayerType {
-    0 => Zero,
-    2 => Two,
-    3 => Three,
-    12 => Twelve,
+    0 => Icon,
+    2 => Layout,
+    3 => Motion,
+    12 => Mask,
 });
 
 /// The numeric type assigned to a layer frame in a Motion JSON document.
@@ -170,7 +170,7 @@ pub enum FrameType {
     Two,
     /// Type `3`.
     Three,
-    /// A type not yet supported/known by this parser.
+    /// A type not yet supported/known.
     Other(u8),
 }
 

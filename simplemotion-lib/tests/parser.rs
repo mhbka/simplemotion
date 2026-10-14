@@ -74,6 +74,27 @@ fn identifies_motion_graph_roots() {
     assert_eq!(resources.roots, expected);
 }
 
+/// Maps the sample's layer types to their observed frame-resource roles.
+#[test]
+fn identifies_layer_resource_roles() {
+    let resources = parse_motion_resources(include_str!("../../examples/sd002.json")).unwrap();
+    let root = resources
+        .motion(resources.motion_key("SD002AA").unwrap())
+        .unwrap();
+    let mut layers = Vec::new();
+
+    collect_layers(&root.layer, &mut layers);
+
+    assert_eq!(layers[0].layer_type, LayerType::Mask);
+    assert_eq!(layers[1].layer_type, LayerType::Icon);
+    assert_eq!(layers[2].layer_type, LayerType::Motion);
+
+    let gaku = resources
+        .motion(resources.motion_key("gaku").unwrap())
+        .unwrap();
+    assert_eq!(gaku.layer[0].layer_type, LayerType::Layout);
+}
+
 /// Resolves declared icons while preserving special and unknown paths.
 #[test]
 fn resolves_icon_references() {

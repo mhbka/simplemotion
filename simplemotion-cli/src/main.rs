@@ -1,5 +1,6 @@
 use simplemotion_lib::parser::parse_motion_resources;
 use simplemotion_lib::parser::IconKey;
+use simplemotion_lib::parser::KeyFrame;
 use simplemotion_lib::parser::Layer;
 use simplemotion_lib::parser::MotionKey;
 use simplemotion_lib::parser::MotionResources;
@@ -42,11 +43,22 @@ fn traverse_layer(
     frame_level: usize,
 ) {
     let arrow = get_arrow(layer_level, frame_level);
+    let frame_contents = layer
+        .frame_list
+        .iter()
+        .map(|l| match &l.content {
+            Some(content) => format!("{:?}", content.src),
+            None => "EmptyFrame".to_string(),
+        })
+        .collect::<Vec<_>>()
+        .join(", ");
     println!(
-        "{arrow} layer: {} ({} frames, {} children)",
+        "{arrow} layer: {} (children: {}, layer type: {:?}, keyframes: {} [{}])",
         layer.label,
+        layer.children.len(),
+        layer.layer_type,
         layer.frame_list.len(),
-        layer.children.len()
+        frame_contents
     );
     for frame in &layer.frame_list {
         if let Some(frame_content) = &frame.content {
@@ -62,11 +74,26 @@ fn traverse_layer(
                     print_unresolved(&content, layer_level, frame_level + 1)
                 }
             }
+        } else {
+            print_empty_frame(resources, frame, layer_level, frame_level + 1);
         }
     }
     for child in &layer.children {
         traverse_layer(resources, child, layer_level + 1, frame_level);
     }
+}
+
+fn print_empty_frame(
+    _resources: &MotionResources,
+    frame: &KeyFrame<ResourceReference>,
+    layer_level: usize,
+    frame_level: usize,
+) {
+    let arrow = get_arrow(layer_level, frame_level);
+    println!(
+        "{arrow} empty (frame type: {:?}, frame time: {})",
+        frame.kind, frame.time
+    );
 }
 
 /// Prints an image-resource reference in the traversed layer tree.
