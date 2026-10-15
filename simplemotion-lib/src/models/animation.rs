@@ -3,8 +3,8 @@ use crate::{IconKey, KeyFrameContent};
 
 /// A command to animate an icon/image with the given transform.
 pub struct AnimationCommand {
-    icon: IconKey,
-    transform: Affine2
+    pub icon: IconKey,
+    pub transform: Affine2
 }
 
 /// The supported transforms.

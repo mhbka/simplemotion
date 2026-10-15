@@ -17,7 +17,7 @@ new_key_type! {
 /// A resolved motion whose frame sources use typed resource handles.
 pub type ResolvedMotion = Motion<ResourceReference>;
 
-/// A typed target of a resolved frame source.
+/// A frame's source.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum ResourceReference {
     /// Draws an image resource.
@@ -26,7 +26,7 @@ pub enum ResourceReference {
     Motion(MotionKey),
     /// Uses the built-in layout source.
     Layout,
-    /// Preserves a source path with no corresponding exported resource.
+    /// Unknown; preserves the source path.
     Unresolved(String),
 }
 

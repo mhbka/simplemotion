@@ -1,11 +1,12 @@
-use glam::Affine2;
+use glam::{Affine2, Vec2};
 
 use crate::{
-    animation::AnimationCommand, FrameType, KeyFrame, LayerType, MotionKey, MotionResources,
-    ResourceReference,
+    FrameType, KeyFrame, Layer, LayerType, MotionKey, MotionResources, ResourceReference, animation::AnimationCommand,
 };
 
 /// Animates `motion` at the given `time`, outputting animation commands into `buffer`.
+/// 
+/// This is the animation entrypoint, where `motion` is typically one of the root motions.
 pub fn animation_commands(
     buffer: &mut Vec<AnimationCommand>,
     resources: &MotionResources,
@@ -13,22 +14,165 @@ pub fn animation_commands(
     time: u32,
 ) {
     buffer.clear();
+    get_motion_commands_inner(
+        buffer,
+        motion, 
+        resources, 
+        Affine2::IDENTITY, 
+        time
+    );
+}   
 
+/// Get the commands for a layer, then its children.
+fn get_layer_commands(
+    layer: &Layer<ResourceReference>, 
+    resources: &MotionResources, 
+    buffer: &mut Vec<AnimationCommand>, 
+    mut layer_transform: Affine2,
+    motion_time: u32,
+    time: u32
+) {
+    match layer.layer_type {
+        LayerType::Icon => get_icon_command(
+            buffer, 
+            layer, 
+            layer_transform, 
+            motion_time
+        ),
+        LayerType::Layout => layer_transform *= get_layout_transform(layer),
+        LayerType::Motion => get_motion_commands(
+            buffer, 
+            resources, 
+            layer, 
+            layer_transform, 
+            time
+        ),
+        LayerType::Mask => println!("SKIPPING MASK FOR NOW"),
+        LayerType::Other(other) => println!("UNKNOWN LAYER TYPE: {other}"),
+    }
+    for child_layer in &layer.children {
+        get_layer_commands(
+            child_layer, 
+            resources, 
+            buffer, 
+            layer_transform, 
+            motion_time,
+            time
+        );
+    }
+}
+
+/// Get the animation command for an icon.
+fn get_icon_command(
+    buffer: &mut Vec<AnimationCommand>,
+    layer: &Layer<ResourceReference>,
+    layer_transform: Affine2,
+    motion_time: u32,
+) {
+    for keyframe in &layer.frame_list {
+        if let Some(content) = &keyframe.content {
+            let ResourceReference::Icon(icon) = content.src else { 
+                panic!("Icon layer contains frame with non-icon source: {keyframe:?}"); 
+            };
+            let local_transform = get_local_linear_interpolated_transform(motion_time, &layer.frame_list);
+            let final_transform = layer_transform * local_transform;
+            let command = AnimationCommand {
+                icon,
+                transform: final_transform
+            };
+            buffer.push(command);
+        }
+    }
+}
+
+/// Get the animation commands for a motion.
+/// 
+/// A motion loops on its own local time, not related to any parent motion.
+/// 
+/// However, it is offset by the time it starts at in its frame.
+fn get_motion_commands(
+    buffer: &mut Vec<AnimationCommand>,
+    resources: &MotionResources,
+    layer: &Layer<ResourceReference>,
+    parent_transform: Affine2,
+    time: u32
+) {
+    for keyframe in &layer.frame_list {
+        if let Some(content) = &keyframe.content {
+            let ResourceReference::Motion(motion) = content.src else {
+                panic!("Motion layer has non-motion keyframe: {keyframe:?}");
+            };
+
+            // TODO: FOR SURE motion needs more from its frame's content than just the src reference
+            get_motion_commands_inner(
+                buffer, 
+                motion, 
+                resources, 
+                parent_transform, 
+                time
+            );
+        }
+    }
+}
+
+/// Gets the animation commands for a motion.
+fn get_motion_commands_inner(
+    buffer: &mut Vec<AnimationCommand>, 
+    motion: MotionKey,
+    resources: &MotionResources, 
+    parent_transform: Affine2,
+    time: u32
+) {
     let motion = resources.motion(motion).expect("motion should exist");
+
+    // a motion gets its own motion-local time, not related to any parent motions
     let motion_time = get_local_time(time, motion.loop_time, motion.last_time);
 
     for layer in &motion.layer {
-        let _local_transform =
-            get_local_linear_interpolated_transform(motion_time, &layer.frame_list);
-
-        match layer.layer_type {
-            LayerType::Icon => todo!(),
-            LayerType::Layout => todo!(),
-            LayerType::Motion => todo!(),
-            LayerType::Mask => println!("SKIPPING MASK FOR NOW"),
-            LayerType::Other(other) => println!("UNKNOWN LAYER TYPE: {other}"),
-        }
+        let local_transform = get_local_linear_interpolated_transform(motion_time, &layer.frame_list);
+        let layer_transform = parent_transform * local_transform;
+        get_layer_commands(
+            layer, 
+            resources, 
+            buffer, 
+            layer_transform, 
+            motion_time,
+            time
+        );
     }
+}
+
+/// Obtain an additional transform for the layer.
+/// 
+/// ## NOTE
+/// Currently I also impose these invariants and panic otherwise (just for sanity):
+/// - There's exactly 1 layout frame (the 1st one), which has non-empty `content`
+/// - This content's only transformation is `coord` and `mask` (idk what `mask` does)
+/// - There can be a 2nd empty frame, or none at all (currently there's always an empty frame but idc)
+/// - There are no more frames
+fn get_layout_transform(layer: &Layer<ResourceReference>) -> Affine2 {
+    if layer.frame_list.len() > 2 {
+        panic!("more than 2 frames found in layout layer: {:?}", layer.frame_list);
+    }
+    let layout_frame = &layer.frame_list[0];
+    let Some(content) = layout_frame.content.as_ref() else {
+        panic!("layout frame contains no content (layer: {})", layer.label);
+    };
+
+    if content.ox.is_some() || content.oy.is_some()
+    || content.angle.is_some() || content.zx.is_some()
+    || content.zy.is_some() || content.sx.is_some()
+    || content.sy.is_some() || content.opa.is_some() {
+        panic!("layout frame content contains non-coord stuff: {:?} (layer: {})", content, layer.label);
+    }
+    let Some(coord) = content.coord else {
+        panic!("layout frame contains no coord (layer: {})", layer.label);
+    };
+    
+    let coord = Vec2::new(coord[0], coord[1]);
+    let mut transform = Affine2::IDENTITY;
+    transform.translation = coord;
+    transform
 }
 
 /// Obtains the time relative to the motion.
@@ -60,7 +204,7 @@ fn get_local_linear_interpolated_transform(
     local_time: u32,
     keyframes: &[KeyFrame<ResourceReference>],
 ) -> Affine2 {
-    // try get the "left" keyframe
+    // try get the keyframe before the local time
     let Some(current_index) = keyframes
         .iter()
         .rposition(|frame| frame.time <= local_time) 
