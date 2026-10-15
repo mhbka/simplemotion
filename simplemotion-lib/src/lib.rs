@@ -1,6 +1,10 @@
 //! Native types and parsing helpers for simple motion documents.
 
-/// Motion document data structures.
-pub mod models;
-/// Motion JSON parsing helpers.
-pub mod parser;
+mod models;
+mod parser;
+mod animator;
+
+pub use models::*;
+pub use parser::*;
+pub use animator::*;
+

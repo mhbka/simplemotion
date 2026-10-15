@@ -1,4 +1,4 @@
-use simplemotion_lib::parser::{
+use simplemotion_lib::{
     parse_motion_resources, FrameType, Layer, LayerType, ObjectType, ParseMotionError,
     ResourceReference,
 };
@@ -24,7 +24,8 @@ fn parses_the_example_motion() {
 
     assert_eq!(resources.label.as_deref(), Some("SD002"));
     assert_eq!(resources.object_type, ObjectType::Zero);
-    assert_eq!(motion.last_time, 1.0);
+    assert_eq!(motion.last_time, 1);
+    assert_eq!(motion.loop_time, -1);
     let mut layers = Vec::new();
     collect_layers(&motion.layer, &mut layers);
     assert_eq!(layers.len(), 3);
@@ -114,7 +115,7 @@ fn resolves_icon_references() {
     let json = r#"
         {
           "object": { "unit": { "type": 0, "motion": {
-            "idle": { "type": 0, "lastTime": 1, "layer": [
+            "idle": { "type": 0, "lastTime": 1, "loopTime": -1, "layer": [
               { "type": 0, "label": "sprite", "frameList": [
                 { "time": 0, "type": 0, "content": { "src": "src/unit/hero" } }
               ] }
@@ -151,6 +152,48 @@ fn rejects_invalid_json() {
     assert!(parse_motion_resources("not json").is_err());
 }
 
+/// Rejects timeline values that do not land on a whole animation frame.
+#[test]
+fn rejects_fractional_timeline_frames() {
+    let json = r#"
+    {
+      "object": { "unit": { "type": 0, "motion": {
+        "idle": { "type": 0, "lastTime": 1.5, "loopTime": -1, "layer": [] }
+      } } }
+    }
+    "#;
+
+    assert!(parse_motion_resources(json).is_err());
+}
+
+/// Rejects negative absolute timeline positions while preserving negative loop sentinels.
+#[test]
+fn rejects_negative_timeline_frames() {
+    let json = r#"
+    {
+      "object": { "unit": { "type": 0, "motion": {
+        "idle": { "type": 0, "lastTime": -1, "loopTime": -1, "layer": [] }
+      } } }
+    }
+    "#;
+
+    assert!(parse_motion_resources(json).is_err());
+}
+
+/// Requires loop timing to be present on every exported motion.
+#[test]
+fn rejects_missing_loop_time() {
+    let json = r#"
+    {
+      "object": { "unit": { "type": 0, "motion": {
+        "idle": { "type": 0, "lastTime": 1, "layer": [] }
+      } } }
+    }
+    "#;
+
+    assert!(parse_motion_resources(json).is_err());
+}
+
 /// Rejects documents that cannot be flattened into one resource graph.
 #[test]
 fn rejects_multiple_objects() {
@@ -159,7 +202,7 @@ fn rejects_multiple_objects() {
     assert!(matches!(
         parse_motion_resources(json),
         Err(ParseMotionError::Resolution(
-            simplemotion_lib::parser::ResolutionError::MultipleObjects
+            simplemotion_lib::ResolutionError::MultipleObjects
         ))
     ));
 }

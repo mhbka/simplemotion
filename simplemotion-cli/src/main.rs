@@ -1,10 +1,10 @@
-use simplemotion_lib::parser::parse_motion_resources;
-use simplemotion_lib::parser::IconKey;
-use simplemotion_lib::parser::KeyFrame;
-use simplemotion_lib::parser::Layer;
-use simplemotion_lib::parser::MotionKey;
-use simplemotion_lib::parser::MotionResources;
-use simplemotion_lib::parser::ResourceReference;
+use simplemotion_lib::parse_motion_resources;
+use simplemotion_lib::IconKey;
+use simplemotion_lib::KeyFrame;
+use simplemotion_lib::Layer;
+use simplemotion_lib::MotionKey;
+use simplemotion_lib::MotionResources;
+use simplemotion_lib::ResourceReference;
 use std::env;
 use std::fs;
 use std::process;

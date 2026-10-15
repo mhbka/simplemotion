@@ -1,23 +1,8 @@
+use crate::{animation::TransformState, numeric_type_enum};
+use glam::{Affine2, Mat2, Vec2};
 use serde::{Deserialize, Deserializer};
 
-/// Implement Deserialize for u8 -> enum variants.
-macro_rules! numeric_type_enum {
-    ($name:ident { $($number:literal => $variant:ident),+ $(,)? }) => {
-        impl<'de> Deserialize<'de> for $name {
-            fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-            where
-                D: Deserializer<'de>,
-            {
-                let value = u8::deserialize(deserializer)?;
-
-                Ok(match value {
-                    $($number => Self::$variant,)+
-                    other => Self::Other(other),
-                })
-            }
-        }
-    };
-}
+use super::utils::{deserialize_loop_time, deserialize_timeline_frame};
 
 /// A playable motion with its root layer nodes.
 #[derive(Debug, Deserialize)]
@@ -28,7 +13,11 @@ pub struct Motion<S> {
     #[serde(rename = "type")]
     pub motion_type: MotionType,
     /// The final timeline time.
-    pub last_time: f32,
+    #[serde(deserialize_with = "deserialize_timeline_frame")]
+    pub last_time: u32,
+    /// The loop period in timeline frames; negative values disable looping.
+    #[serde(deserialize_with = "deserialize_loop_time")]
+    pub loop_time: i32,
     /// Root nodes in the layer tree.
     pub layer: Vec<Layer<S>>,
 }
@@ -61,7 +50,8 @@ impl<S> Layer<S> {}
 #[serde(bound(deserialize = "S: Deserialize<'de>"))]
 pub struct KeyFrame<S> {
     /// The time on the motion timeline.
-    pub time: f32,
+    #[serde(deserialize_with = "deserialize_timeline_frame")]
+    pub time: u32,
     /// The type of frame.
     #[serde(rename = "type")]
     pub kind: FrameType,
@@ -95,6 +85,13 @@ pub struct KeyFrameContent<S> {
     pub opa: Option<f32>,
     /// Mask/stencil flags.
     pub mask: Option<u32>,
+}
+
+impl<S> KeyFrameContent<S> {
+    /// Linearly interpolates transform properties and composes them into an affine matrix.
+    pub fn linearly_interpolate_to_affine2(&self, other: &Self, ratio: f32) -> Affine2 {
+        TransformState::interpolate(self, other, ratio).to_affine2()
+    }
 }
 
 /// One named image resource.
