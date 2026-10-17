@@ -62,7 +62,7 @@ pub enum ImageLoadingError {
         /// The operating-system error.
         source: std::io::Error,
     },
-    /// A declared icon did not have a matching PNG image.
+    /// A declared icon did not have a matching supported image.
     Missing {
         /// The exported icon path.
         icon: String,
@@ -93,7 +93,7 @@ impl fmt::Display for ImageLoadingError {
             }
             Self::Missing { icon, directory } => write!(
                 formatter,
-                "could not find PNG for icon {icon} in {}",
+                "could not find a supported image for icon {icon} in {}",
                 directory.display()
             ),
             Self::Io { icon, path, source } => {

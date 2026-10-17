@@ -127,18 +127,27 @@ pub struct IconImage {
 }
 
 /// The kind of image.
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum IconImageKind {
     Png,
 }
 
-impl IconImage {
-    /// Creates an image from its encoded PNG bytes.
-    pub(crate) fn png(data: Arc<[u8]>) -> Self {
-        Self {
-            kind: IconImageKind::Png,
-            data,
+impl IconImageKind {
+    /// All the supported image kinds.
+    pub const ALL: &'static [Self] = &[Self::Png];
+
+    /// Gets the filename extension used for this image kind.
+    pub fn extension(self) -> &'static str {
+        match self {
+            Self::Png => "png",
         }
+    }
+}
+
+impl IconImage {
+    /// Creates an image from its encoded bytes and known kind.
+    pub(crate) fn new(kind: IconImageKind, data: Arc<[u8]>) -> Self {
+        Self { kind, data }
     }
 
     /// Gets the encoded image format.

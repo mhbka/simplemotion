@@ -4,6 +4,7 @@ use crate::{
     FrameType, KeyFrame, Layer, LayerType, MotionKey, MotionResources, ResourceReference,
 };
 use glam::Affine2;
+use tracing::debug;
 
 mod time;
 
@@ -37,8 +38,8 @@ fn get_layer_commands(
         LayerType::Motion => {
             get_motion_commands(buffer, resources, layer, layer_transform, time, local_time)
         }
-        LayerType::Mask => println!("SKIPPING MASK FOR NOW"),
-        LayerType::Other(other) => println!("UNKNOWN LAYER TYPE: {other}"),
+        LayerType::Mask => debug!("SKIPPING MASK FOR NOW"),
+        LayerType::Other(other) => debug!("UNKNOWN LAYER TYPE: {other}"),
     }
     for child_layer in &layer.children {
         get_layer_commands(
@@ -123,7 +124,9 @@ fn get_motion_commands_inner(
     parent_transform: Affine2,
     time: InheritedTime,
 ) {
-    let motion = resources.motion(motion).expect("motion should exist");
+    let motion = resources
+        .motion(motion)
+        .expect("motion should exist");
     let local_time = MotionLocalTime::calculate(time, motion.loop_time, motion.last_time);
     for layer in &motion.layer {
         let local_transform =
@@ -172,20 +175,39 @@ fn get_local_linear_interpolated_transform(
 ///
 /// Returns `None` if time is before the first frame,
 /// or if there are no frames.
+/// 
+/// Does not consider empty final frames.
 ///
 /// Returns the last frame if `time` is beyond the last frame's time.
 fn active_frame_at(
     time: MotionLocalTime,
-    keyframes: &[KeyFrame<ResourceReference>],
+    mut keyframes: &[KeyFrame<ResourceReference>],
 ) -> Option<usize> {
+    // NOTE: if the last frame is empty, we filter it out
+    // as it messes with getting the correct active frame
+    // and doesn't seem to serve any purpose (other than an "end" marker?).
+    //
+    // However, it's possible they have an actual purpose in certain situations.
+    // Should keep an eye out for any bugs.
+    if let Some(last_frame) = keyframes.last() {
+        if last_frame.kind == FrameType::Empty {
+            keyframes = &keyframes[0..keyframes.len() - 1];
+        }
+    } 
+
+    // if `time` is past the last frame's time, just return it
+    // if there are no last keyframes, return None
     match keyframes.last() {
         Some(last_frame) => {
+            
             if last_frame.time <= time.into() {
                 return Some(keyframes.len() - 1);
             }
         }
         None => return None,
     }
+
+    // search
     for (i, frame) in keyframes.iter().enumerate() {
         if frame.time > time.into() {
             if i == 0 {

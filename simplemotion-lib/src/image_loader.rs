@@ -1,4 +1,4 @@
-use crate::{Icon, IconImage, IconKey, ImageLoadingError, Named, ParseMotionError};
+use crate::{Icon, IconImage, IconImageKind, IconKey, ImageLoadingError, Named, ParseMotionError};
 use slotmap::{SecondaryMap, SlotMap};
 use std::{
     fs,
@@ -9,6 +9,13 @@ use std::{
 /// Loads every declared icon image from one animation's image directory.
 ///
 /// It attempts to load all images and coalesces all errors.
+///
+/// It is opinionated. It expects the images to be in a subfolder in the animation folder,
+/// named the same as the animation itself,
+/// and that images are named exactly the same as their icon labels,
+/// or are prefixed with the animation name.
+///
+/// It only accepts .png images for now.
 pub(crate) fn load_icon_images(
     icons: &SlotMap<IconKey, Named<Icon>>,
     image_directory: &Path,
@@ -27,7 +34,9 @@ pub(crate) fn load_icon_images(
     let mut errors = Vec::new();
 
     for (icon_path, key) in icons {
-        let Some(image_path) = find_icon_image(&image_paths, animation_name, &icon_path) else {
+        let Some((image_path, image_kind)) =
+            find_icon_image(&image_paths, animation_name, &icon_path)
+        else {
             errors.push(ImageLoadingError::Missing {
                 icon: icon_path,
                 directory: image_directory.to_path_buf(),
@@ -36,7 +45,7 @@ pub(crate) fn load_icon_images(
         };
         match fs::read(&image_path) {
             Ok(bytes) => {
-                image_map.insert(key, IconImage::png(Arc::from(bytes)));
+                image_map.insert(key, IconImage::new(image_kind, Arc::from(bytes)));
             }
             Err(source) => {
                 errors.push(ImageLoadingError::Io {
@@ -87,27 +96,34 @@ fn find_icon_image(
     image_paths: &[PathBuf],
     animation_name: &str,
     icon_path: &str,
-) -> Option<PathBuf> {
+) -> Option<(PathBuf, IconImageKind)> {
     let icon_name = icon_path
         .rsplit('/')
         .next()
         .expect("icon paths have a final name");
-    let exact_name = format!("{icon_name}.png");
-    let prefixed_name = format!("{animation_name}-{icon_name}.png");
-    let mut prefixed = None;
-
-    for path in image_paths {
-        let Some(file_name) = path.file_name().and_then(|name| name.to_str()) else {
-            continue;
-        };
-
-        if file_name.eq_ignore_ascii_case(&exact_name) {
-            return Some(path.clone());
-        }
-        if file_name.eq_ignore_ascii_case(&prefixed_name) {
-            prefixed = Some(path.clone());
+    for kind in IconImageKind::ALL {
+        let exact_name = format!("{icon_name}.{}", kind.extension());
+        if let Some(path) = find_named_image(image_paths, &exact_name) {
+            return Some((path, *kind));
         }
     }
 
-    prefixed
+    for kind in IconImageKind::ALL {
+        let prefixed_name = format!("{animation_name}-{icon_name}.{}", kind.extension());
+        if let Some(path) = find_named_image(image_paths, &prefixed_name) {
+            return Some((path, *kind));
+        }
+    }
+
+    None
+}
+
+/// Finds one supported image filename without depending on filesystem case rules.
+fn find_named_image(image_paths: &[PathBuf], expected_name: &str) -> Option<PathBuf> {
+    image_paths.iter().find_map(|path| {
+        let file_name = path.file_name()?.to_str()?;
+        file_name
+            .eq_ignore_ascii_case(expected_name)
+            .then(|| path.clone())
+    })
 }
