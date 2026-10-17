@@ -1,0 +1,29 @@
+{
+  "PsbVersion": 3,
+  "PsbType": "Motion",
+  "Platform": "krkr",
+  "CryptKey": null,
+  "ExternalTextures": false,
+  "Context": {},
+  "Resources": {
+    "0": "sd203/SD203-3なんですか？as1.png",
+    "1": "sd203/SD203-ジーem.png",
+    "2": "sd203/SD203-3なんですか？as0.png",
+    "3": "sd203/SD203-4妹離れできるのかなぁem.png",
+    "4": "sd203/SD203-3なんですか？em.png",
+    "5": "sd203/SD203-腕お手拭きを渡す.png",
+    "6": "sd203/SD203-腕お手拭き回収.png",
+    "7": "sd203/SD203-ジーji.png",
+    "8": "sd203/SD203-暁.png",
+    "9": "sd203/SD203-1笑顔.png",
+    "10": "sd203/SD203-腕ウーロン茶.png",
+    "11": "sd203/SD203-4妹離れできるのかなぁ.png",
+    "12": "sd203/SD203-3なんですか？.png",
+    "13": "sd203/SD203-腕食べかす取る.png",
+    "14": "sd203/SD203-0ベース.png",
+    "15": "sd203/SD203-2早く妹離れしてくれないと.png",
+    "16": "sd203/SD203-ジー.png",
+    "17": "sd203/SD203-nanami.png",
+    "18": "sd203/SD203-bg.png"
+  }
+}

@@ -8,6 +8,7 @@ fn content() -> KeyFrameContent<&'static str> {
         ox: None,
         oy: None,
         coord: None,
+        motion: None,
         angle: None,
         zx: None,
         zy: None,

@@ -1,0 +1,30 @@
+{
+  "PsbVersion": 3,
+  "PsbType": "Motion",
+  "Platform": "krkr",
+  "CryptKey": null,
+  "ExternalTextures": false,
+  "Context": {},
+  "Resources": {
+    "0": "sd008/SD008-暁0目as.png",
+    "1": "sd008/SD008-暁1as2.png",
+    "2": "sd008/SD008-1苦笑いas.png",
+    "3": "sd008/SD008-将軍様pr.png",
+    "4": "sd008/SD008-3不満顔em.png",
+    "5": "sd008/SD008-暁1戸惑いながら会話.png",
+    "6": "sd008/SD008-暁0目(俺じゃねえか…！).png",
+    "7": "sd008/SD008-4憧れpr2.png",
+    "8": "sd008/SD008-将軍bg1.png",
+    "9": "sd008/SD008-0ベース.png",
+    "10": "sd008/SD008-bg1pr.png",
+    "11": "sd008/SD008-2笑顔で会話.png",
+    "12": "sd008/SD008-将軍bg2.png",
+    "13": "sd008/SD008-3不満顔.png",
+    "14": "sd008/SD008-1苦笑い.png",
+    "15": "sd008/SD008-将軍様.png",
+    "16": "sd008/SD008-4憧れ.png",
+    "17": "sd008/SD008-body.png",
+    "18": "sd008/SD008-bg0.png",
+    "19": "sd008/SD008-bg1.png"
+  }
+}

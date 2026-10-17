@@ -1,8 +1,8 @@
-use std::{convert::TryFrom, fmt};
 use serde::{
     de::{self, Visitor},
     Deserializer,
 };
+use std::{convert::TryFrom, fmt};
 
 /// Deserializes a non-negative timeline frame, including exporters that write `1.0`.
 pub fn deserialize_timeline_frame<'de, D>(deserializer: D) -> Result<u32, D::Error>
@@ -36,10 +36,7 @@ where
         where
             E: de::Error,
         {
-            if !value.is_finite()
-                || value.fract() != 0.0
-                || value < 0.0
-                || value > u32::MAX as f64
+            if !value.is_finite() || value.fract() != 0.0 || value < 0.0 || value > u32::MAX as f64
             {
                 return Err(E::custom("timeline frame must be a u32"));
             }
@@ -49,6 +46,45 @@ where
     }
 
     deserializer.deserialize_any(TimelineFrameVisitor)
+}
+
+/// Deserializes an optional non-negative timeline frame.
+pub fn deserialize_optional_timeline_frame<'de, D>(deserializer: D) -> Result<Option<u32>, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    struct OptionalTimelineFrameVisitor;
+
+    impl<'de> Visitor<'de> for OptionalTimelineFrameVisitor {
+        type Value = Option<u32>;
+
+        fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+            formatter.write_str("an optional integral timeline frame")
+        }
+
+        fn visit_none<E>(self) -> Result<Self::Value, E>
+        where
+            E: de::Error,
+        {
+            Ok(None)
+        }
+
+        fn visit_unit<E>(self) -> Result<Self::Value, E>
+        where
+            E: de::Error,
+        {
+            Ok(None)
+        }
+
+        fn visit_some<D>(self, deserializer: D) -> Result<Self::Value, D::Error>
+        where
+            D: Deserializer<'de>,
+        {
+            deserialize_timeline_frame(deserializer).map(Some)
+        }
+    }
+
+    deserializer.deserialize_option(OptionalTimelineFrameVisitor)
 }
 
 /// Deserializes an integral loop period, including the negative no-loop sentinel.

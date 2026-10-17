@@ -1,4 +1,5 @@
 use simplemotion_lib::parse_motion_resources;
+use simplemotion_lib::to_anim_commands;
 use simplemotion_lib::IconKey;
 use simplemotion_lib::KeyFrame;
 use simplemotion_lib::Layer;
@@ -29,6 +30,11 @@ fn main() {
         "Document: {}",
         resources.label.as_deref().unwrap_or("<unnamed>")
     );
+
+    let mut buffer = Vec::new();
+    to_anim_commands(&mut buffer, &resources, resources.roots[0], 0);
+    println!("commands: {:#?}", buffer);
+    return;
 
     for &root in &resources.roots {
         println!(" === ROOT ===");

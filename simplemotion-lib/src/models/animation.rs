@@ -1,10 +1,12 @@
-use glam::{Affine2, Mat2, Vec2};
 use crate::{IconKey, KeyFrameContent};
+use glam::{Affine2, Mat2, Vec2};
 
 /// A command to animate an icon/image with the given transform.
+#[derive(Debug, Clone)]
 pub struct AnimationCommand {
     pub icon: IconKey,
-    pub transform: Affine2
+    pub transform: Affine2,
+    pub opacity: f32,
 }
 
 /// The supported transforms.
@@ -18,7 +20,11 @@ pub(super) struct TransformState {
 
 impl TransformState {
     /// Linearly interpolates between `start` and `end` into a representative `TransformState`.
-    pub fn interpolate<S>(start: &KeyFrameContent<S>, end: &KeyFrameContent<S>, ratio: f32) -> Self {
+    pub fn interpolate<S>(
+        start: &KeyFrameContent<S>,
+        end: &KeyFrameContent<S>,
+        ratio: f32,
+    ) -> Self {
         let ratio = ratio.clamp(0.0, 1.0);
         let start_coord = start.coord.map(|coord| Vec2::new(coord[0], coord[1]));
         let end_coord = end.coord.map(|coord| Vec2::new(coord[0], coord[1]));
@@ -74,4 +80,3 @@ fn lerp_optional_vec2(start: Option<Vec2>, end: Option<Vec2>, default: Vec2, rat
         (None, None) => default,
     }
 }
-

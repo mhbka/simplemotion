@@ -1,11 +1,17 @@
-use crate::models::{
-    objects::{Icon, KeyFrame, KeyFrameContent, Layer, Motion, ObjectType, ScreenSize},
-    raw::{RawMotion, RawMotionDocument, RawSource},
+use crate::{
+    models::{
+        objects::{Icon, KeyFrame, KeyFrameContent, Layer, Motion, ObjectType, ScreenSize},
+        raw::{RawMotion, RawMotionDocument, RawSource},
+    },
+    IconImage,
 };
-use slotmap::{new_key_type, SlotMap};
-use std::collections::{BTreeMap, HashMap, HashSet};
+use slotmap::{new_key_type, SecondaryMap, SlotMap};
 use std::error::Error;
 use std::fmt;
+use std::{
+    collections::{BTreeMap, HashMap, HashSet},
+    sync::Arc,
+};
 
 new_key_type! {
     /// A handle to a resolved motion.
@@ -73,8 +79,10 @@ pub struct MotionResources {
     pub roots: Vec<MotionKey>,
     /// All the defined motions.
     motions: SlotMap<MotionKey, MotionEntry>,
-    /// Basically the actual images that can be rendered.
+    /// Info of the actual images that can be rendered.
     icons: SlotMap<IconKey, Named<Icon>>,
+    /// The bytes of the icon images.
+    icon_images: SecondaryMap<IconKey, IconImage>,
     /// Map of "label" strings -> our handles.
     motion_labels: BTreeMap<String, MotionKey>,
     motion_paths: HashMap<String, MotionKey>,
@@ -88,7 +96,7 @@ struct MotionEntry {
 }
 
 impl MotionResources {
-    /// Resolves one raw object into typed handles owned by this resource graph.
+    /// Resolves the raw document into the final resources used for animating.
     pub(crate) fn from_raw(raw: RawMotionDocument) -> Result<Self, ResolutionError> {
         let RawMotionDocument {
             label,
@@ -105,6 +113,7 @@ impl MotionResources {
             roots: Vec::new(),
             motions: SlotMap::with_key(),
             icons: SlotMap::with_key(),
+            icon_images: SecondaryMap::new(),
             motion_labels: BTreeMap::new(),
             motion_paths: HashMap::new(),
             icon_paths: HashMap::new(),
@@ -143,6 +152,28 @@ impl MotionResources {
     /// Gets an image resource and its exported name by handle.
     pub fn icon(&self, key: IconKey) -> Option<&Named<Icon>> {
         self.icons.get(key)
+    }
+
+    /// Gets the loaded image bytes for an icon.
+    pub fn icon_image(&self, key: IconKey) -> Option<&IconImage> {
+        self.icon_images.get(key)
+    }
+
+    /// Iterates through exported icon paths and their handles.
+    pub fn icons(&self) -> impl Iterator<Item = (&str, IconKey)> {
+        self.icon_paths
+            .iter()
+            .map(|(path, key)| (path.as_str(), *key))
+    }
+
+    /// Gets the icon storage used by the image loader.
+    pub(crate) fn icon_entries(&self) -> &SlotMap<IconKey, Named<Icon>> {
+        &self.icons
+    }
+
+    /// Replaces all loaded icon images after a successful load pass.
+    pub(crate) fn set_icon_images(&mut self, images: SecondaryMap<IconKey, IconImage>) {
+        self.icon_images = images;
     }
 
     /// Iterates through exported motion names and their handles.
@@ -305,6 +336,7 @@ impl MotionResources {
             ox: raw.ox,
             oy: raw.oy,
             coord: raw.coord,
+            motion: raw.motion,
             angle: raw.angle,
             zx: raw.zx,
             zy: raw.zy,

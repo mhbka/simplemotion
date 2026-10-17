@@ -1,8 +1,12 @@
+use std::sync::Arc;
+
 use crate::{animation::TransformState, numeric_type_enum};
 use glam::{Affine2, Mat2, Vec2};
 use serde::{Deserialize, Deserializer};
 
-use super::utils::{deserialize_loop_time, deserialize_timeline_frame};
+use super::utils::{
+    deserialize_loop_time, deserialize_optional_timeline_frame, deserialize_timeline_frame,
+};
 
 /// A playable motion with its root layer nodes.
 #[derive(Debug, Deserialize)]
@@ -71,6 +75,8 @@ pub struct KeyFrameContent<S> {
     pub oy: Option<f32>,
     /// Translation in x, y, z order.
     pub coord: Option<[f32; 3]>,
+    /// Settings used when this frame references a child motion.
+    pub motion: Option<MotionFrame>,
     /// Rotation angle.
     pub angle: Option<f32>,
     /// Horizontal scale.
@@ -85,6 +91,15 @@ pub struct KeyFrameContent<S> {
     pub opa: Option<f32>,
     /// Mask/stencil flags.
     pub mask: Option<u32>,
+}
+
+/// The playback settings of a nested motion frame.
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct MotionFrame {
+    /// Child motion timeline phase at this parent frame.
+    #[serde(default, deserialize_with = "deserialize_optional_timeline_frame")]
+    pub time_offset: Option<u32>,
 }
 
 impl<S> KeyFrameContent<S> {
@@ -102,6 +117,39 @@ pub struct Icon {
     pub origin_y: Option<f32>,
     pub width: Option<f32>,
     pub height: Option<f32>,
+}
+
+/// Contains info/data of the icon's image.
+#[derive(Debug)]
+pub struct IconImage {
+    kind: IconImageKind,
+    data: Arc<[u8]>,
+}
+
+/// The kind of image.
+#[derive(Debug)]
+pub enum IconImageKind {
+    Png,
+}
+
+impl IconImage {
+    /// Creates an image from its encoded PNG bytes.
+    pub(crate) fn png(data: Arc<[u8]>) -> Self {
+        Self {
+            kind: IconImageKind::Png,
+            data,
+        }
+    }
+
+    /// Gets the encoded image format.
+    pub fn kind(&self) -> &IconImageKind {
+        &self.kind
+    }
+
+    /// Gets the encoded image bytes.
+    pub fn data(&self) -> &[u8] {
+        &self.data
+    }
 }
 
 /// The dimensions and origin of the motion's canvas.

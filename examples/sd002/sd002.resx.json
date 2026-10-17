@@ -1,0 +1,20 @@
+{
+  "PsbVersion": 3,
+  "PsbType": "Motion",
+  "Platform": "krkr",
+  "CryptKey": null,
+  "ExternalTextures": false,
+  "Context": {},
+  "Resources": {
+    "0": "sd002/SD002-たすけっ…as1.png",
+    "1": "sd002/SD002-七海体ef12.png",
+    "2": "sd002/SD002-七海体ef1.png",
+    "3": "sd002/SD002-七海体ef13.png",
+    "4": "sd002/SD002-たすけっ…as2.png",
+    "5": "sd002/SD002-スマホ.png32.png",
+    "6": "sd002/SD002-おちる….png",
+    "7": "sd002/SD002-たすけっ….png",
+    "8": "sd002/SD002-七海体.png",
+    "9": "sd002/SD002-bg.png"
+  }
+}

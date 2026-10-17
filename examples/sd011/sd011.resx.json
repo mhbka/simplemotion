@@ -1,0 +1,31 @@
+{
+  "PsbVersion": 3,
+  "PsbType": "Motion",
+  "Platform": "krkr",
+  "CryptKey": null,
+  "ExternalTextures": false,
+  "Context": {},
+  "Resources": {
+    "0": "sd011/SD011-小目1hl.png",
+    "1": "sd011/SD011-中目1hl.png",
+    "2": "sd011/SD011-大目1hl.png",
+    "3": "sd011/SD011-中目2目over.png",
+    "4": "sd011/SD011-bg.png",
+    "5": "sd011/SD011-小コフー1.png",
+    "6": "sd011/SD011-中コフー1.png",
+    "7": "sd011/SD011-小目1.png",
+    "8": "sd011/SD011-小コフー2.png",
+    "9": "sd011/SD011-大コフー1.png",
+    "10": "sd011/SD011-大コフー2.png",
+    "11": "sd011/SD011-中目2.png",
+    "12": "sd011/SD011-中目1.png",
+    "13": "sd011/SD011-中コフー2.png",
+    "14": "sd011/SD011-大目1.png",
+    "15": "sd011/SD011-bge1.png",
+    "16": "sd011/SD011-あやせoverray.png",
+    "17": "sd011/SD011-あやせ小body.png",
+    "18": "sd011/SD011-大あやせbody.png",
+    "19": "sd011/SD011-中あやせbody.png",
+    "20": "sd011/SD011-bge2.png"
+  }
+}

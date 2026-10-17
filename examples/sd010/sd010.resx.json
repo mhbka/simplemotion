@@ -1,0 +1,32 @@
+{
+  "PsbVersion": 3,
+  "PsbType": "Motion",
+  "Platform": "krkr",
+  "CryptKey": null,
+  "ExternalTextures": false,
+  "Context": {},
+  "Resources": {
+    "0": "sd010/SD010-1もじもじas.png",
+    "1": "sd010/SD010-5あのね！as.png",
+    "2": "sd010/SD010-6ごまかすas2.png",
+    "3": "sd010/SD010-6ごまかす3.png",
+    "4": "sd010/SD010-3悲しくなるどろろ2.png",
+    "5": "sd010/SD010-5あのね！em.png",
+    "6": "sd010/SD010-3悲しくなるどろろ4.png",
+    "7": "sd010/SD010-3悲しくなるどろろ3.png",
+    "8": "sd010/SD010-3悲しくなるどろろ1.png",
+    "9": "sd010/SD010-2またまた～as.png",
+    "10": "sd010/SD010-2またまた～.png",
+    "11": "sd010/SD010-0ベース.png",
+    "12": "sd010/SD010-5あのね！.png",
+    "13": "sd010/SD010-1もじもじ.png",
+    "14": "sd010/SD010-5あのね！集中.png",
+    "15": "sd010/SD010-嬉しそう.png",
+    "16": "sd010/SD010-7照れ笑い.png",
+    "17": "sd010/SD010-4照れるけど嬉しそう.png",
+    "18": "sd010/SD010-6ごまかす.png",
+    "19": "sd010/SD010-3悲しくなる.png",
+    "20": "sd010/SD010-3悲しくなるb.png",
+    "21": "sd010/SD010-bg0.png"
+  }
+}

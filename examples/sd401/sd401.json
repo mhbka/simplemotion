@@ -1,0 +1,3261 @@
+{
+  "id": "motion",
+  "label": "SD401",
+  "metadata": null,
+  "object": {
+    "SD401": {
+      "metadata": null,
+      "motion": {
+        "AAfun": {
+          "lastTime": 60,
+          "layer": [{
+              "children": [],
+              "coordinate": 0,
+              "exportSelf": 1,
+              "frameList": [{
+                  "content": {
+                    "coord": [-351.75,-171,0],
+                    "mask": 3,
+                    "ox": 65.25,
+                    "oy": 57,
+                    "src": "src/SD401/0ベースem0"
+                  },
+                  "time": 0,
+                  "type": 2
+                },{
+                  "content": {
+                    "angle": 349.547943,
+                    "coord": [-351.75,-171,0],
+                    "mask": 115,
+                    "ox": 65.25,
+                    "oy": 57,
+                    "src": "src/SD401/0ベースem0",
+                    "zx": 0.9,
+                    "zy": 0.9
+                  },
+                  "time": 30,
+                  "type": 2
+                },{
+                  "time": 60,
+                  "type": 0
+                }],
+              "groundCorrection": 0,
+              "inheritMask": 33556476,
+              "joinTarget": 1,
+              "label": "0ベースem0",
+              "meshCombine": 0,
+              "meshDivision": 10,
+              "meshTransform": 0,
+              "metadata": null,
+              "objTriPriority": 2,
+              "parameterize": null,
+              "stencilType": 0,
+              "transformOrder": [0,3,2,1],
+              "type": 0
+            },{
+              "children": [],
+              "coordinate": 0,
+              "exportSelf": 1,
+              "frameList": [{
+                  "content": {
+                    "coord": [-98.25,193.5,0],
+                    "mask": 3,
+                    "ox": 0,
+                    "oy": 0,
+                    "src": "src/SD401/0ベースhs2"
+                  },
+                  "time": 0,
+                  "type": 2
+                },{
+                  "content": {
+                    "angle": 344.431671,
+                    "coord": [-95.25,200.25,0],
+                    "mask": 115,
+                    "ox": 0,
+                    "oy": 0,
+                    "src": "src/SD401/0ベースhs2",
+                    "zx": 1.1,
+                    "zy": 1.1
+                  },
+                  "time": 30,
+                  "type": 2
+                },{
+                  "time": 60,
+                  "type": 0
+                }],
+              "groundCorrection": 0,
+              "inheritMask": 33556476,
+              "joinTarget": 1,
+              "label": "hosi3",
+              "meshCombine": 0,
+              "meshDivision": 10,
+              "meshTransform": 0,
+              "metadata": null,
+              "objTriPriority": 2,
+              "parameterize": null,
+              "stencilType": 0,
+              "transformOrder": [0,3,2,1],
+              "type": 0
+            },{
+              "children": [],
+              "coordinate": 0,
+              "exportSelf": 1,
+              "frameList": [{
+                  "content": {
+                    "coord": [-408,-0.75,0],
+                    "mask": 3,
+                    "ox": 0,
+                    "oy": 0,
+                    "src": "src/SD401/0ベースhs1"
+                  },
+                  "time": 0,
+                  "type": 2
+                },{
+                  "content": {
+                    "angle": 13.7308216,
+                    "coord": [-406.5,-8.25,0],
+                    "mask": 115,
+                    "ox": 0,
+                    "oy": 0,
+                    "src": "src/SD401/0ベースhs1",
+                    "zx": 1.1,
+                    "zy": 1.1
+                  },
+                  "time": 30,
+                  "type": 2
+                },{
+                  "time": 60,
+                  "type": 0
+                }],
+              "groundCorrection": 0,
+              "inheritMask": 33556476,
+              "joinTarget": 1,
+              "label": "hosi2",
+              "meshCombine": 0,
+              "meshDivision": 10,
+              "meshTransform": 0,
+              "metadata": null,
+              "objTriPriority": 2,
+              "parameterize": null,
+              "stencilType": 0,
+              "transformOrder": [0,3,2,1],
+              "type": 0
+            },{
+              "children": [],
+              "coordinate": 0,
+              "exportSelf": 1,
+              "frameList": [{
+                  "content": {
+                    "coord": [-422.25,-140.25,0],
+                    "mask": 3,
+                    "ox": 0,
+                    "oy": 0,
+                    "src": "src/SD401/0ベースhs0"
+                  },
+                  "time": 0,
+                  "type": 2
+                },{
+                  "content": {
+                    "angle": 349.155243,
+                    "coord": [-429,-140.25,0],
+                    "mask": 19,
+                    "ox": 0,
+                    "oy": 0,
+                    "src": "src/SD401/0ベースhs0"
+                  },
+                  "time": 30,
+                  "type": 2
+                },{
+                  "time": 60,
+                  "type": 0
+                }],
+              "groundCorrection": 0,
+              "inheritMask": 33556476,
+              "joinTarget": 1,
+              "label": "hosi1",
+              "meshCombine": 0,
+              "meshDivision": 10,
+              "meshTransform": 0,
+              "metadata": null,
+              "objTriPriority": 2,
+              "parameterize": null,
+              "stencilType": 0,
+              "transformOrder": [0,3,2,1],
+              "type": 0
+            }],
+          "loopTime": 0,
+          "metadata": null,
+          "parameter": [],
+          "parameterize": null,
+          "priority": [{
+              "content": [3,2,1,0],
+              "time": 0,
+              "type": 1
+            },{
+              "content": null,
+              "time": 60,
+              "type": 1
+            }],
+          "referenceModelFileList": [],
+          "referenceProjectFileList": [],
+          "tag": [],
+          "type": 0,
+          "variable": []
+        },
+        "ACfun": {
+          "lastTime": 60,
+          "layer": [{
+              "children": [],
+              "coordinate": 0,
+              "exportSelf": 1,
+              "frameList": [{
+                  "content": {
+                    "coord": [-321,-231,0],
+                    "mask": 3,
+                    "ox": 35.25,
+                    "oy": 48.75,
+                    "src": "src/SD401/1ドヤ顔em0"
+                  },
+                  "time": 0,
+                  "type": 2
+                },{
+                  "content": {
+                    "coord": [-321,-231,0],
+                    "mask": 99,
+                    "ox": 35.25,
+                    "oy": 48.75,
+                    "src": "src/SD401/1ドヤ顔em0",
+                    "zx": 0.8,
+                    "zy": 0.8
+                  },
+                  "time": 30,
+                  "type": 2
+                },{
+                  "time": 60,
+                  "type": 0
+                }],
+              "groundCorrection": 0,
+              "inheritMask": 33556476,
+              "joinTarget": 1,
+              "label": "1ドヤ顔em0",
+              "meshCombine": 0,
+              "meshDivision": 10,
+              "meshTransform": 0,
+              "metadata": null,
+              "objTriPriority": 2,
+              "parameterize": null,
+              "stencilType": 0,
+              "transformOrder": [0,3,2,1],
+              "type": 0
+            },{
+              "children": [],
+              "coordinate": 0,
+              "exportSelf": 1,
+              "frameList": [{
+                  "content": {
+                    "coord": [-384.75,-176.25,0],
+                    "mask": 3,
+                    "ox": 58.5,
+                    "oy": 28.5,
+                    "src": "src/SD401/1ドヤ顔em1"
+                  },
+                  "time": 0,
+                  "type": 2
+                },{
+                  "content": {
+                    "coord": [-384.75,-176.25,0],
+                    "mask": 99,
+                    "ox": 58.5,
+                    "oy": 28.5,
+                    "src": "src/SD401/1ドヤ顔em1",
+                    "zx": 0.8,
+                    "zy": 0.8
+                  },
+                  "time": 30,
+                  "type": 2
+                },{
+                  "time": 60,
+                  "type": 0
+                }],
+              "groundCorrection": 0,
+              "inheritMask": 33556476,
+              "joinTarget": 1,
+              "label": "1ドヤ顔em1",
+              "meshCombine": 0,
+              "meshDivision": 10,
+              "meshTransform": 0,
+              "metadata": null,
+              "objTriPriority": 2,
+              "parameterize": null,
+              "stencilType": 0,
+              "transformOrder": [0,3,2,1],
+              "type": 0
+            },{
+              "children": [],
+              "coordinate": 0,
+              "exportSelf": 1,
+              "frameList": [{
+                  "content": {
+                    "coord": [-405,-81.75,0],
+                    "mask": 3,
+                    "ox": 43.5,
+                    "oy": -12.75,
+                    "src": "src/SD401/1ドヤ顔em2"
+                  },
+                  "time": 0,
+                  "type": 2
+                },{
+                  "content": {
+                    "coord": [-405,-81.75,0],
+                    "mask": 99,
+                    "ox": 43.5,
+                    "oy": -12.75,
+                    "src": "src/SD401/1ドヤ顔em2",
+                    "zx": 0.8,
+                    "zy": 0.8
+                  },
+                  "time": 30,
+                  "type": 2
+                },{
+                  "time": 60,
+                  "type": 0
+                }],
+              "groundCorrection": 0,
+              "inheritMask": 33556476,
+              "joinTarget": 1,
+              "label": "1ドヤ顔em2",
+              "meshCombine": 0,
+              "meshDivision": 10,
+              "meshTransform": 0,
+              "metadata": null,
+              "objTriPriority": 2,
+              "parameterize": null,
+              "stencilType": 0,
+              "transformOrder": [0,3,2,1],
+              "type": 0
+            }],
+          "loopTime": 0,
+          "metadata": null,
+          "parameter": [],
+          "parameterize": null,
+          "priority": [{
+              "content": [2,1,0],
+              "time": 0,
+              "type": 1
+            },{
+              "content": null,
+              "time": 60,
+              "type": 1
+            }],
+          "referenceModelFileList": [],
+          "referenceProjectFileList": [],
+          "tag": [],
+          "type": 0,
+          "variable": []
+        },
+        "ADemo": {
+          "lastTime": 60,
+          "layer": [{
+              "children": [],
+              "coordinate": 0,
+              "exportSelf": 1,
+              "frameList": [{
+                  "content": {
+                    "angle": 90,
+                    "coord": [-49.5,150.75,0],
+                    "mask": 524307,
+                    "motion": {
+                      "mask": 0,
+                      "timeOffset": 0
+                    },
+                    "ox": 0,
+                    "oy": 0,
+                    "src": "motion/SD401/hana1"
+                  },
+                  "time": 0,
+                  "type": 2
+                },{
+                  "time": 60,
+                  "type": 0
+                }],
+              "groundCorrection": 0,
+              "inheritMask": 33556476,
+              "joinTarget": 1,
+              "label": "hana",
+              "meshCombine": 0,
+              "meshDivision": 10,
+              "meshTransform": 0,
+              "metadata": null,
+              "motionIndependentLayerInherit": 0,
+              "parameterize": null,
+              "stencilType": 0,
+              "transformOrder": [0,3,2,1],
+              "type": 3
+            },{
+              "children": [],
+              "coordinate": 0,
+              "exportSelf": 1,
+              "frameList": [{
+                  "content": {
+                    "coord": [-403.5,-204,0],
+                    "mask": 524291,
+                    "motion": {
+                      "mask": 0,
+                      "timeOffset": 0
+                    },
+                    "ox": 0,
+                    "oy": 0,
+                    "src": "motion/SD401/hana1"
+                  },
+                  "time": 0,
+                  "type": 2
+                },{
+                  "time": 60,
+                  "type": 0
+                }],
+              "groundCorrection": 0,
+              "inheritMask": 33556476,
+              "joinTarget": 1,
+              "label": "hana",
+              "meshCombine": 0,
+              "meshDivision": 10,
+              "meshTransform": 0,
+              "metadata": null,
+              "motionIndependentLayerInherit": 0,
+              "parameterize": null,
+              "stencilType": 0,
+              "transformOrder": [0,3,2,1],
+              "type": 3
+            },{
+              "children": [],
+              "coordinate": 0,
+              "exportSelf": 1,
+              "frameList": [{
+                  "content": {
+                    "coord": [-442.5,-54.75,0],
+                    "mask": 524291,
+                    "motion": {
+                      "mask": 0,
+                      "timeOffset": 0
+                    },
+                    "ox": 0,
+                    "oy": 0,
+                    "src": "motion/SD401/hana2"
+                  },
+                  "time": 0,
+                  "type": 2
+                },{
+                  "time": 60,
+                  "type": 0
+                }],
+              "groundCorrection": 0,
+              "inheritMask": 33556476,
+              "joinTarget": 1,
+              "label": "hana",
+              "meshCombine": 0,
+              "meshDivision": 10,
+              "meshTransform": 0,
+              "metadata": null,
+              "motionIndependentLayerInherit": 0,
+              "parameterize": null,
+              "stencilType": 0,
+              "transformOrder": [0,3,2,1],
+              "type": 3
+            },{
+              "children": [],
+              "coordinate": 0,
+              "exportSelf": 1,
+              "frameList": [{
+                  "content": {
+                    "angle": 270,
+                    "coord": [27,-171,0],
+                    "mask": 524307,
+                    "motion": {
+                      "mask": 0,
+                      "timeOffset": 0
+                    },
+                    "ox": 0,
+                    "oy": 0,
+                    "src": "motion/SD401/hana2"
+                  },
+                  "time": 0,
+                  "type": 2
+                },{
+                  "time": 60,
+                  "type": 0
+                }],
+              "groundCorrection": 0,
+              "inheritMask": 33556476,
+              "joinTarget": 1,
+              "label": "hana",
+              "meshCombine": 0,
+              "meshDivision": 10,
+              "meshTransform": 0,
+              "metadata": null,
+              "motionIndependentLayerInherit": 0,
+              "parameterize": null,
+              "stencilType": 0,
+              "transformOrder": [0,3,2,1],
+              "type": 3
+            },{
+              "children": [],
+              "coordinate": 0,
+              "exportSelf": 1,
+              "frameList": [{
+                  "content": {
+                    "angle": 291.3476,
+                    "coord": [-97.5,-294.75,0],
+                    "mask": 1048691,
+                    "ox": 0,
+                    "oy": 0,
+                    "prt": {
+                      "fmax": 6.0,
+                      "fmin": 4.0,
+                      "mask": 18,
+                      "zmax": 1.0,
+                      "zmin": 0.3
+                    },
+                    "src": "particle/ellipse",
+                    "zx": 3.134722,
+                    "zy": 12.37876
+                  },
+                  "time": 0,
+                  "type": 2
+                },{
+                  "time": 60,
+                  "type": 0
+                }],
+              "groundCorrection": 0,
+              "inheritMask": 33556476,
+              "joinTarget": 1,
+              "label": "レイヤ2",
+              "meshCombine": 0,
+              "meshDivision": 10,
+              "meshTransform": 0,
+              "metadata": null,
+              "parameterize": null,
+              "particle": 1,
+              "particleAccelRatio": 1.0,
+              "particleApplyZoomToVelocity": 0,
+              "particleDeleteOutsideScreen": 0,
+              "particleFlyDirection": 0,
+              "particleInheritAngle": 0,
+              "particleInheritOpacity": 2,
+              "particleInheritVelocity": 0,
+              "particleMaxNum": 20,
+              "particleMotionList": ["motion/SD401/parKira2"],
+              "particleTriVolume": 0,
+              "transformOrder": [0,3,2,1],
+              "type": 4
+            },{
+              "children": [],
+              "coordinate": 0,
+              "exportSelf": 1,
+              "frameList": [{
+                  "content": {
+                    "angle": 17.5940533,
+                    "coord": [-429,-110.25,0],
+                    "mask": 1048691,
+                    "ox": 0,
+                    "oy": 0,
+                    "prt": {
+                      "fmax": 6.0,
+                      "fmin": 4.0,
+                      "mask": 18,
+                      "zmax": 1.0,
+                      "zmin": 0.3
+                    },
+                    "src": "particle/ellipse",
+                    "zx": 5.01274633,
+                    "zy": 16.04635
+                  },
+                  "time": 0,
+                  "type": 2
+                },{
+                  "time": 60,
+                  "type": 0
+                }],
+              "groundCorrection": 0,
+              "inheritMask": 33556476,
+              "joinTarget": 1,
+              "label": "レイヤ2",
+              "meshCombine": 0,
+              "meshDivision": 10,
+              "meshTransform": 0,
+              "metadata": null,
+              "parameterize": null,
+              "particle": 1,
+              "particleAccelRatio": 1.0,
+              "particleApplyZoomToVelocity": 0,
+              "particleDeleteOutsideScreen": 0,
+              "particleFlyDirection": 0,
+              "particleInheritAngle": 0,
+              "particleInheritOpacity": 2,
+              "particleInheritVelocity": 0,
+              "particleMaxNum": 20,
+              "particleMotionList": ["motion/SD401/parKira2"],
+              "particleTriVolume": 0,
+              "transformOrder": [0,3,2,1],
+              "type": 4
+            },{
+              "children": [],
+              "coordinate": 0,
+              "exportSelf": 1,
+              "frameList": [{
+                  "content": {
+                    "angle": 30.0807114,
+                    "coord": [-48.75,53.25,0],
+                    "mask": 1048691,
+                    "ox": 0,
+                    "oy": 0,
+                    "prt": {
+                      "fmax": 6.0,
+                      "fmin": 4.0,
+                      "mask": 18,
+                      "zmax": 1.0,
+                      "zmin": 0.3
+                    },
+                    "src": "particle/ellipse",
+                    "zx": 4.573406,
+                    "zy": 15.769371
+                  },
+                  "time": 0,
+                  "type": 2
+                },{
+                  "time": 60,
+                  "type": 0
+                }],
+              "groundCorrection": 0,
+              "inheritMask": 33556476,
+              "joinTarget": 1,
+              "label": "レイヤ2",
+              "meshCombine": 0,
+              "meshDivision": 10,
+              "meshTransform": 0,
+              "metadata": null,
+              "parameterize": null,
+              "particle": 1,
+              "particleAccelRatio": 1.0,
+              "particleApplyZoomToVelocity": 0,
+              "particleDeleteOutsideScreen": 0,
+              "particleFlyDirection": 0,
+              "particleInheritAngle": 0,
+              "particleInheritOpacity": 2,
+              "particleInheritVelocity": 0,
+              "particleMaxNum": 20,
+              "particleMotionList": ["motion/SD401/parKira2"],
+              "particleTriVolume": 0,
+              "transformOrder": [0,3,2,1],
+              "type": 4
+            }],
+          "loopTime": 0,
+          "metadata": null,
+          "parameter": [],
+          "parameterize": null,
+          "priority": [{
+              "content": [6,5,4,3,2,1,0],
+              "time": 0,
+              "type": 1
+            },{
+              "content": null,
+              "time": 60,
+              "type": 1
+            }],
+          "referenceModelFileList": [],
+          "referenceProjectFileList": [],
+          "tag": [],
+          "type": 0,
+          "variable": []
+        },
+        "AEase": {
+          "lastTime": 60,
+          "layer": [{
+              "children": [],
+              "coordinate": 0,
+              "exportSelf": 1,
+              "frameList": [{
+                  "content": {
+                    "coord": [-288,-63.75,0],
+                    "mask": 3,
+                    "ox": 0,
+                    "oy": 0,
+                    "src": "src/SD401/3ジト目0"
+                  },
+                  "time": 0,
+                  "type": 2
+                },{
+                  "content": {
+                    "coord": [-296.25,-53.25,0],
+                    "mask": 3,
+                    "ox": 0,
+                    "oy": 0,
+                    "src": "src/SD401/3ジト目0"
+                  },
+                  "time": 30,
+                  "type": 2
+                },{
+                  "time": 60,
+                  "type": 0
+                }],
+              "groundCorrection": 0,
+              "inheritMask": 33556476,
+              "joinTarget": 1,
+              "label": "3ジト目0",
+              "meshCombine": 0,
+              "meshDivision": 10,
+              "meshTransform": 0,
+              "metadata": null,
+              "objTriPriority": 2,
+              "parameterize": null,
+              "stencilType": 0,
+              "transformOrder": [0,3,2,1],
+              "type": 0
+            }],
+          "loopTime": 0,
+          "metadata": null,
+          "parameter": [],
+          "parameterize": null,
+          "priority": [{
+              "content": [0],
+              "time": 0,
+              "type": 1
+            },{
+              "content": null,
+              "time": 60,
+              "type": 1
+            }],
+          "referenceModelFileList": [],
+          "referenceProjectFileList": [],
+          "tag": [],
+          "type": 0,
+          "variable": []
+        },
+        "AFase": {
+          "lastTime": 120,
+          "layer": [{
+              "children": [],
+              "coordinate": 0,
+              "exportSelf": 1,
+              "frameList": [{
+                  "content": {
+                    "coord": [-282.75,-71.25,0],
+                    "mask": 1027,
+                    "opa": 0,
+                    "ox": 0,
+                    "oy": 0,
+                    "src": "src/SD401/4なんだと！？em"
+                  },
+                  "time": 0,
+                  "type": 3
+                },{
+                  "content": {
+                    "coord": [-288,-63.75,0],
+                    "mask": 3,
+                    "ox": 0,
+                    "oy": 0,
+                    "src": "src/SD401/4なんだと！？em"
+                  },
+                  "time": 20,
+                  "type": 2
+                },{
+                  "content": {
+                    "coord": [-292.5,-57.75,0],
+                    "mask": 3,
+                    "ox": 0,
+                    "oy": 0,
+                    "src": "src/SD401/4なんだと！？em"
+                  },
+                  "time": 35,
+                  "type": 2
+                },{
+                  "content": {
+                    "coord": [-288,-63.75,0],
+                    "mask": 3,
+                    "ox": 0,
+                    "oy": 0,
+                    "src": "src/SD401/4なんだと！？em"
+                  },
+                  "time": 60,
+                  "type": 2
+                },{
+                  "content": {
+                    "coord": [-292.5,-57.75,0],
+                    "mask": 3,
+                    "ox": 0,
+                    "oy": 0,
+                    "src": "src/SD401/4なんだと！？em"
+                  },
+                  "time": 90,
+                  "type": 2
+                },{
+                  "time": 120,
+                  "type": 0
+                }],
+              "groundCorrection": 0,
+              "inheritMask": 33556476,
+              "joinTarget": 1,
+              "label": "3ジト目0",
+              "meshCombine": 0,
+              "meshDivision": 10,
+              "meshTransform": 0,
+              "metadata": null,
+              "objTriPriority": 2,
+              "parameterize": null,
+              "stencilType": 0,
+              "transformOrder": [0,3,2,1],
+              "type": 0
+            },{
+              "children": [],
+              "coordinate": 0,
+              "exportSelf": 1,
+              "frameList": [{
+                  "content": {
+                    "coord": [-213.375,-218.625,0],
+                    "mask": 99,
+                    "ox": 0,
+                    "oy": 0,
+                    "src": "src/SD401/4なんだと！？as0",
+                    "zx": 0.5,
+                    "zy": 0.5
+                  },
+                  "time": 0,
+                  "type": 2
+                },{
+                  "content": {
+                    "coord": [-213.375,-218.625,0],
+                    "mask": 99,
+                    "ox": 0,
+                    "oy": 0,
+                    "src": "src/SD401/4なんだと！？as0",
+                    "zx": 1.2,
+                    "zy": 1.2
+                  },
+                  "time": 6,
+                  "type": 2
+                },{
+                  "content": {
+                    "coord": [-213.375,-218.625,0],
+                    "mask": 3,
+                    "ox": 0,
+                    "oy": 0,
+                    "src": "src/SD401/4なんだと！？as0"
+                  },
+                  "time": 12,
+                  "type": 2
+                },{
+                  "content": {
+                    "coord": [-220.875,-205.875,0],
+                    "mask": 3,
+                    "ox": 0,
+                    "oy": 0,
+                    "src": "src/SD401/4なんだと！？as0"
+                  },
+                  "time": 35,
+                  "type": 2
+                },{
+                  "content": {
+                    "coord": [-213.375,-218.625,0],
+                    "mask": 3,
+                    "ox": 0,
+                    "oy": 0,
+                    "src": "src/SD401/4なんだと！？as0"
+                  },
+                  "time": 60,
+                  "type": 2
+                },{
+                  "content": {
+                    "coord": [-220.875,-205.875,0],
+                    "mask": 3,
+                    "ox": 0,
+                    "oy": 0,
+                    "src": "src/SD401/4なんだと！？as0"
+                  },
+                  "time": 90,
+                  "type": 2
+                },{
+                  "time": 120,
+                  "type": 0
+                }],
+              "groundCorrection": 0,
+              "inheritMask": 33556476,
+              "joinTarget": 1,
+              "label": "4なんだと！？as0",
+              "meshCombine": 0,
+              "meshDivision": 10,
+              "meshTransform": 0,
+              "metadata": null,
+              "objTriPriority": 2,
+              "parameterize": null,
+              "stencilType": 0,
+              "transformOrder": [0,3,2,1],
+              "type": 0
+            },{
+              "children": [],
+              "coordinate": 0,
+              "exportSelf": 1,
+              "frameList": [{
+                  "content": {
+                    "coord": [-297.75,-183.75,0],
+                    "mask": 99,
+                    "ox": 93.75,
+                    "oy": 54,
+                    "src": "src/SD401/4なんだと！？as1",
+                    "zx": 0.7,
+                    "zy": 0.7
+                  },
+                  "time": 0,
+                  "type": 2
+                },{
+                  "content": {
+                    "coord": [-297.75,-183.75,0],
+                    "mask": 99,
+                    "ox": 93.75,
+                    "oy": 54,
+                    "src": "src/SD401/4なんだと！？as1",
+                    "zx": 1.2,
+                    "zy": 1.2
+                  },
+                  "time": 6,
+                  "type": 2
+                },{
+                  "content": {
+                    "coord": [-297.75,-183.75,0],
+                    "mask": 3,
+                    "ox": 93.75,
+                    "oy": 54,
+                    "src": "src/SD401/4なんだと！？as1"
+                  },
+                  "time": 12,
+                  "type": 2
+                },{
+                  "content": {
+                    "coord": [-297.75,-183.75,0],
+                    "mask": 99,
+                    "ox": 93.75,
+                    "oy": 54,
+                    "src": "src/SD401/4なんだと！？as1",
+                    "zx": 0.9,
+                    "zy": 0.9
+                  },
+                  "time": 35,
+                  "type": 2
+                },{
+                  "content": {
+                    "coord": [-297.75,-183.75,0],
+                    "mask": 3,
+                    "ox": 93.75,
+                    "oy": 54,
+                    "src": "src/SD401/4なんだと！？as1"
+                  },
+                  "time": 60,
+                  "type": 2
+                },{
+                  "content": {
+                    "coord": [-297.75,-183.75,0],
+                    "mask": 99,
+                    "ox": 93.75,
+                    "oy": 54,
+                    "src": "src/SD401/4なんだと！？as1",
+                    "zx": 1.1,
+                    "zy": 1.1
+                  },
+                  "time": 90,
+                  "type": 2
+                },{
+                  "time": 120,
+                  "type": 0
+                }],
+              "groundCorrection": 0,
+              "inheritMask": 33556476,
+              "joinTarget": 1,
+              "label": "4なんだと！？as1",
+              "meshCombine": 0,
+              "meshDivision": 10,
+              "meshTransform": 0,
+              "metadata": null,
+              "objTriPriority": 2,
+              "parameterize": null,
+              "stencilType": 0,
+              "transformOrder": [0,3,2,1],
+              "type": 0
+            }],
+          "loopTime": 60,
+          "metadata": null,
+          "parameter": [],
+          "parameterize": null,
+          "priority": [{
+              "content": [2,1,0],
+              "time": 0,
+              "type": 1
+            },{
+              "content": null,
+              "time": 120,
+              "type": 1
+            }],
+          "referenceModelFileList": [],
+          "referenceProjectFileList": [],
+          "tag": [],
+          "type": 0,
+          "variable": []
+        },
+        "SD401AA": {
+          "lastTime": 10,
+          "layer": [{
+              "children": [{
+                  "children": [{
+                      "children": [],
+                      "coordinate": 0,
+                      "exportSelf": 1,
+                      "frameList": [{
+                          "content": {
+                            "mask": 524289,
+                            "motion": {
+                              "mask": 0,
+                              "timeOffset": 0
+                            },
+                            "ox": 0,
+                            "oy": 0,
+                            "src": "motion/SD401/tinunosuke"
+                          },
+                          "time": 0,
+                          "type": 2
+                        },{
+                          "time": 10,
+                          "type": 0
+                        }],
+                      "groundCorrection": 0,
+                      "inheritMask": 33556476,
+                      "joinTarget": 1,
+                      "label": "tinu",
+                      "meshCombine": 0,
+                      "meshDivision": 10,
+                      "meshTransform": 0,
+                      "metadata": null,
+                      "motionIndependentLayerInherit": 0,
+                      "parameterize": null,
+                      "stencilType": 0,
+                      "transformOrder": [0,3,2,1],
+                      "type": 3
+                    },{
+                      "children": [{
+                          "children": [],
+                          "coordinate": 0,
+                          "exportSelf": 1,
+                          "frameList": [{
+                              "content": {
+                                "coord": [64.5,-101.25,0],
+                                "mask": 3,
+                                "ox": 0,
+                                "oy": 0,
+                                "src": "src/SD401/0ベース"
+                              },
+                              "time": 0,
+                              "type": 2
+                            },{
+                              "time": 10,
+                              "type": 0
+                            }],
+                          "groundCorrection": 0,
+                          "inheritMask": 33556476,
+                          "joinTarget": 1,
+                          "label": "face",
+                          "meshCombine": 0,
+                          "meshDivision": 10,
+                          "meshTransform": 0,
+                          "metadata": null,
+                          "objTriPriority": 2,
+                          "parameterize": null,
+                          "stencilType": 0,
+                          "transformOrder": [0,3,2,1],
+                          "type": 0
+                        }],
+                      "coordinate": 0,
+                      "exportSelf": 1,
+                      "frameList": [{
+                          "content": {
+                            "coord": [-258,21.75,0],
+                            "mask": 3,
+                            "ox": 0,
+                            "oy": 0,
+                            "src": "src/SD401/羽月"
+                          },
+                          "time": 0,
+                          "type": 2
+                        },{
+                          "time": 10,
+                          "type": 0
+                        }],
+                      "groundCorrection": 0,
+                      "inheritMask": 33556476,
+                      "joinTarget": 1,
+                      "label": "body",
+                      "meshCombine": 0,
+                      "meshDivision": 10,
+                      "meshTransform": 0,
+                      "metadata": null,
+                      "objTriPriority": 2,
+                      "parameterize": null,
+                      "stencilType": 0,
+                      "transformOrder": [0,3,2,1],
+                      "type": 0
+                    },{
+                      "children": [],
+                      "coordinate": 0,
+                      "exportSelf": 1,
+                      "frameList": [{
+                          "content": {
+                            "mask": 524289,
+                            "motion": {
+                              "mask": 0,
+                              "timeOffset": 0
+                            },
+                            "ox": 0,
+                            "oy": 0,
+                            "src": "motion/SD401/AAfun"
+                          },
+                          "time": 0,
+                          "type": 2
+                        },{
+                          "time": 10,
+                          "type": 0
+                        }],
+                      "groundCorrection": 0,
+                      "inheritMask": 33556476,
+                      "joinTarget": 1,
+                      "label": "funs",
+                      "meshCombine": 0,
+                      "meshDivision": 10,
+                      "meshTransform": 0,
+                      "metadata": null,
+                      "motionIndependentLayerInherit": 0,
+                      "parameterize": null,
+                      "stencilType": 0,
+                      "transformOrder": [0,3,2,1],
+                      "type": 3
+                    }],
+                  "coordinate": 0,
+                  "exportSelf": 1,
+                  "frameList": [{
+                      "content": {
+                        "mask": 1,
+                        "ox": 0,
+                        "oy": 0,
+                        "src": "src/SD401/bg"
+                      },
+                      "time": 0,
+                      "type": 2
+                    },{
+                      "time": 10.0,
+                      "type": 0
+                    }],
+                  "groundCorrection": 0,
+                  "inheritMask": 33556476,
+                  "joinTarget": 1,
+                  "label": "bg",
+                  "meshCombine": 0,
+                  "meshDivision": 10,
+                  "meshTransform": 0,
+                  "metadata": null,
+                  "objTriPriority": 2,
+                  "parameterize": null,
+                  "stencilType": 0,
+                  "transformOrder": [0,3,2,1],
+                  "type": 0
+                }],
+              "coordinate": 0,
+              "exportSelf": 1,
+              "frameList": [{
+                  "content": {
+                    "mask": 1,
+                    "ox": 0,
+                    "oy": 0,
+                    "src": "src/SD401/bg"
+                  },
+                  "time": 0,
+                  "type": 2
+                },{
+                  "time": 10.0,
+                  "type": 0
+                }],
+              "groundCorrection": 0,
+              "inheritMask": 37750780,
+              "joinTarget": 1,
+              "label": "mask",
+              "meshCombine": 0,
+              "meshDivision": 10,
+              "meshTransform": 0,
+              "metadata": null,
+              "parameterize": null,
+              "stencilCompositeMaskLayerList": [],
+              "stencilType": 1,
+              "transformOrder": [0,3,2,1],
+              "type": 12
+            }],
+          "loopTime": -1,
+          "metadata": null,
+          "parameter": [],
+          "parameterize": null,
+          "priority": [{
+              "content": [5,4,3,2,1,0],
+              "time": 0,
+              "type": 1
+            },{
+              "content": null,
+              "time": 10,
+              "type": 1
+            }],
+          "referenceModelFileList": [],
+          "referenceProjectFileList": [],
+          "tag": [],
+          "type": 0,
+          "variable": []
+        },
+        "SD401AB": {
+          "lastTime": 10,
+          "layer": [{
+              "children": [{
+                  "children": [{
+                      "children": [],
+                      "coordinate": 0,
+                      "exportSelf": 1,
+                      "frameList": [{
+                          "content": {
+                            "mask": 524289,
+                            "motion": {
+                              "mask": 0,
+                              "timeOffset": 0
+                            },
+                            "ox": 0,
+                            "oy": 0,
+                            "src": "motion/SD401/tinunosuke"
+                          },
+                          "time": 0,
+                          "type": 2
+                        },{
+                          "time": 10,
+                          "type": 0
+                        }],
+                      "groundCorrection": 0,
+                      "inheritMask": 33556476,
+                      "joinTarget": 1,
+                      "label": "tinu",
+                      "meshCombine": 0,
+                      "meshDivision": 10,
+                      "meshTransform": 0,
+                      "metadata": null,
+                      "motionIndependentLayerInherit": 0,
+                      "parameterize": null,
+                      "stencilType": 0,
+                      "transformOrder": [0,3,2,1],
+                      "type": 3
+                    },{
+                      "children": [{
+                          "children": [],
+                          "coordinate": 0,
+                          "exportSelf": 1,
+                          "frameList": [{
+                              "content": {
+                                "coord": [64.5,-101.25,0],
+                                "mask": 3,
+                                "ox": 0,
+                                "oy": 0,
+                                "src": "src/SD401/0にっこり"
+                              },
+                              "time": 0,
+                              "type": 2
+                            },{
+                              "time": 10,
+                              "type": 0
+                            }],
+                          "groundCorrection": 0,
+                          "inheritMask": 33556476,
+                          "joinTarget": 1,
+                          "label": "face",
+                          "meshCombine": 0,
+                          "meshDivision": 10,
+                          "meshTransform": 0,
+                          "metadata": null,
+                          "objTriPriority": 2,
+                          "parameterize": null,
+                          "stencilType": 0,
+                          "transformOrder": [0,3,2,1],
+                          "type": 0
+                        }],
+                      "coordinate": 0,
+                      "exportSelf": 1,
+                      "frameList": [{
+                          "content": {
+                            "coord": [-258,21.75,0],
+                            "mask": 3,
+                            "ox": 0,
+                            "oy": 0,
+                            "src": "src/SD401/羽月"
+                          },
+                          "time": 0,
+                          "type": 2
+                        },{
+                          "time": 10,
+                          "type": 0
+                        }],
+                      "groundCorrection": 0,
+                      "inheritMask": 33556476,
+                      "joinTarget": 1,
+                      "label": "body",
+                      "meshCombine": 0,
+                      "meshDivision": 10,
+                      "meshTransform": 0,
+                      "metadata": null,
+                      "objTriPriority": 2,
+                      "parameterize": null,
+                      "stencilType": 0,
+                      "transformOrder": [0,3,2,1],
+                      "type": 0
+                    }],
+                  "coordinate": 0,
+                  "exportSelf": 1,
+                  "frameList": [{
+                      "content": {
+                        "mask": 1,
+                        "ox": 0,
+                        "oy": 0,
+                        "src": "src/SD401/bg"
+                      },
+                      "time": 0,
+                      "type": 2
+                    },{
+                      "time": 10.0,
+                      "type": 0
+                    }],
+                  "groundCorrection": 0,
+                  "inheritMask": 33556476,
+                  "joinTarget": 1,
+                  "label": "bg",
+                  "meshCombine": 0,
+                  "meshDivision": 10,
+                  "meshTransform": 0,
+                  "metadata": null,
+                  "objTriPriority": 2,
+                  "parameterize": null,
+                  "stencilType": 0,
+                  "transformOrder": [0,3,2,1],
+                  "type": 0
+                }],
+              "coordinate": 0,
+              "exportSelf": 1,
+              "frameList": [{
+                  "content": {
+                    "mask": 1,
+                    "ox": 0,
+                    "oy": 0,
+                    "src": "src/SD401/bg"
+                  },
+                  "time": 0,
+                  "type": 2
+                },{
+                  "time": 10.0,
+                  "type": 0
+                }],
+              "groundCorrection": 0,
+              "inheritMask": 37750780,
+              "joinTarget": 1,
+              "label": "mask",
+              "meshCombine": 0,
+              "meshDivision": 10,
+              "meshTransform": 0,
+              "metadata": null,
+              "parameterize": null,
+              "stencilCompositeMaskLayerList": [],
+              "stencilType": 1,
+              "transformOrder": [0,3,2,1],
+              "type": 12
+            }],
+          "loopTime": -1,
+          "metadata": null,
+          "parameter": [],
+          "parameterize": null,
+          "priority": [{
+              "content": [4,3,2,1,0],
+              "time": 0,
+              "type": 1
+            },{
+              "content": null,
+              "time": 10,
+              "type": 1
+            }],
+          "referenceModelFileList": [],
+          "referenceProjectFileList": [],
+          "tag": [],
+          "type": 0,
+          "variable": []
+        },
+        "SD401AC": {
+          "lastTime": 10,
+          "layer": [{
+              "children": [{
+                  "children": [{
+                      "children": [],
+                      "coordinate": 0,
+                      "exportSelf": 1,
+                      "frameList": [{
+                          "content": {
+                            "mask": 524289,
+                            "motion": {
+                              "mask": 0,
+                              "timeOffset": 0
+                            },
+                            "ox": 0,
+                            "oy": 0,
+                            "src": "motion/SD401/tinunosuke"
+                          },
+                          "time": 0,
+                          "type": 2
+                        },{
+                          "time": 10,
+                          "type": 0
+                        }],
+                      "groundCorrection": 0,
+                      "inheritMask": 33556476,
+                      "joinTarget": 1,
+                      "label": "tinu",
+                      "meshCombine": 0,
+                      "meshDivision": 10,
+                      "meshTransform": 0,
+                      "metadata": null,
+                      "motionIndependentLayerInherit": 0,
+                      "parameterize": null,
+                      "stencilType": 0,
+                      "transformOrder": [0,3,2,1],
+                      "type": 3
+                    },{
+                      "children": [{
+                          "children": [],
+                          "coordinate": 0,
+                          "exportSelf": 1,
+                          "frameList": [{
+                              "content": {
+                                "coord": [64.5,-101.25,0],
+                                "mask": 3,
+                                "ox": 0,
+                                "oy": 0,
+                                "src": "src/SD401/1ドヤ顔"
+                              },
+                              "time": 0,
+                              "type": 2
+                            },{
+                              "time": 10,
+                              "type": 0
+                            }],
+                          "groundCorrection": 0,
+                          "inheritMask": 33556476,
+                          "joinTarget": 1,
+                          "label": "face",
+                          "meshCombine": 0,
+                          "meshDivision": 10,
+                          "meshTransform": 0,
+                          "metadata": null,
+                          "objTriPriority": 2,
+                          "parameterize": null,
+                          "stencilType": 0,
+                          "transformOrder": [0,3,2,1],
+                          "type": 0
+                        }],
+                      "coordinate": 0,
+                      "exportSelf": 1,
+                      "frameList": [{
+                          "content": {
+                            "coord": [-258,21.75,0],
+                            "mask": 3,
+                            "ox": 0,
+                            "oy": 0,
+                            "src": "src/SD401/羽月"
+                          },
+                          "time": 0,
+                          "type": 2
+                        },{
+                          "time": 10,
+                          "type": 0
+                        }],
+                      "groundCorrection": 0,
+                      "inheritMask": 33556476,
+                      "joinTarget": 1,
+                      "label": "body",
+                      "meshCombine": 0,
+                      "meshDivision": 10,
+                      "meshTransform": 0,
+                      "metadata": null,
+                      "objTriPriority": 2,
+                      "parameterize": null,
+                      "stencilType": 0,
+                      "transformOrder": [0,3,2,1],
+                      "type": 0
+                    },{
+                      "children": [],
+                      "coordinate": 0,
+                      "exportSelf": 1,
+                      "frameList": [{
+                          "content": {
+                            "mask": 524289,
+                            "motion": {
+                              "mask": 0,
+                              "timeOffset": 0
+                            },
+                            "ox": 0,
+                            "oy": 0,
+                            "src": "motion/SD401/ACfun"
+                          },
+                          "time": 0,
+                          "type": 2
+                        },{
+                          "time": 10,
+                          "type": 0
+                        }],
+                      "groundCorrection": 0,
+                      "inheritMask": 33556476,
+                      "joinTarget": 1,
+                      "label": "funs",
+                      "meshCombine": 0,
+                      "meshDivision": 10,
+                      "meshTransform": 0,
+                      "metadata": null,
+                      "motionIndependentLayerInherit": 0,
+                      "parameterize": null,
+                      "stencilType": 0,
+                      "transformOrder": [0,3,2,1],
+                      "type": 3
+                    }],
+                  "coordinate": 0,
+                  "exportSelf": 1,
+                  "frameList": [{
+                      "content": {
+                        "mask": 1,
+                        "ox": 0,
+                        "oy": 0,
+                        "src": "src/SD401/bg"
+                      },
+                      "time": 0,
+                      "type": 2
+                    },{
+                      "time": 10.0,
+                      "type": 0
+                    }],
+                  "groundCorrection": 0,
+                  "inheritMask": 33556476,
+                  "joinTarget": 1,
+                  "label": "bg",
+                  "meshCombine": 0,
+                  "meshDivision": 10,
+                  "meshTransform": 0,
+                  "metadata": null,
+                  "objTriPriority": 2,
+                  "parameterize": null,
+                  "stencilType": 0,
+                  "transformOrder": [0,3,2,1],
+                  "type": 0
+                }],
+              "coordinate": 0,
+              "exportSelf": 1,
+              "frameList": [{
+                  "content": {
+                    "mask": 1,
+                    "ox": 0,
+                    "oy": 0,
+                    "src": "src/SD401/bg"
+                  },
+                  "time": 0,
+                  "type": 2
+                },{
+                  "time": 10.0,
+                  "type": 0
+                }],
+              "groundCorrection": 0,
+              "inheritMask": 37750780,
+              "joinTarget": 1,
+              "label": "mask",
+              "meshCombine": 0,
+              "meshDivision": 10,
+              "meshTransform": 0,
+              "metadata": null,
+              "parameterize": null,
+              "stencilCompositeMaskLayerList": [],
+              "stencilType": 1,
+              "transformOrder": [0,3,2,1],
+              "type": 12
+            }],
+          "loopTime": -1,
+          "metadata": null,
+          "parameter": [],
+          "parameterize": null,
+          "priority": [{
+              "content": [5,4,3,2,1,0],
+              "time": 0,
+              "type": 1
+            },{
+              "content": null,
+              "time": 10,
+              "type": 1
+            }],
+          "referenceModelFileList": [],
+          "referenceProjectFileList": [],
+          "tag": [],
+          "type": 0,
+          "variable": []
+        },
+        "SD401AD": {
+          "lastTime": 10,
+          "layer": [{
+              "children": [{
+                  "children": [{
+                      "children": [],
+                      "coordinate": 0,
+                      "exportSelf": 1,
+                      "frameList": [{
+                          "content": {
+                            "mask": 524289,
+                            "motion": {
+                              "mask": 0,
+                              "timeOffset": 0
+                            },
+                            "ox": 0,
+                            "oy": 0,
+                            "src": "motion/SD401/tinunosuke"
+                          },
+                          "time": 0,
+                          "type": 2
+                        },{
+                          "time": 10,
+                          "type": 0
+                        }],
+                      "groundCorrection": 0,
+                      "inheritMask": 33556476,
+                      "joinTarget": 1,
+                      "label": "tinu",
+                      "meshCombine": 0,
+                      "meshDivision": 10,
+                      "meshTransform": 0,
+                      "metadata": null,
+                      "motionIndependentLayerInherit": 0,
+                      "parameterize": null,
+                      "stencilType": 0,
+                      "transformOrder": [0,3,2,1],
+                      "type": 3
+                    },{
+                      "children": [],
+                      "coordinate": 0,
+                      "exportSelf": 1,
+                      "frameList": [{
+                          "content": {
+                            "mask": 524289,
+                            "motion": {
+                              "mask": 0,
+                              "timeOffset": 0
+                            },
+                            "ox": 0,
+                            "oy": 0,
+                            "src": "motion/SD401/ADemo"
+                          },
+                          "time": 0,
+                          "type": 2
+                        },{
+                          "time": 10,
+                          "type": 0
+                        }],
+                      "groundCorrection": 0,
+                      "inheritMask": 33556476,
+                      "joinTarget": 1,
+                      "label": "funs",
+                      "meshCombine": 0,
+                      "meshDivision": 10,
+                      "meshTransform": 0,
+                      "metadata": null,
+                      "motionIndependentLayerInherit": 0,
+                      "parameterize": null,
+                      "stencilType": 0,
+                      "transformOrder": [0,3,2,1],
+                      "type": 3
+                    },{
+                      "children": [{
+                          "children": [],
+                          "coordinate": 0,
+                          "exportSelf": 1,
+                          "frameList": [{
+                              "content": {
+                                "coord": [64.5,-101.25,0],
+                                "mask": 3,
+                                "ox": 0,
+                                "oy": 0,
+                                "src": "src/SD401/2ぽわーん"
+                              },
+                              "time": 0,
+                              "type": 2
+                            },{
+                              "time": 10,
+                              "type": 0
+                            }],
+                          "groundCorrection": 0,
+                          "inheritMask": 33556476,
+                          "joinTarget": 1,
+                          "label": "face",
+                          "meshCombine": 0,
+                          "meshDivision": 10,
+                          "meshTransform": 0,
+                          "metadata": null,
+                          "objTriPriority": 2,
+                          "parameterize": null,
+                          "stencilType": 0,
+                          "transformOrder": [0,3,2,1],
+                          "type": 0
+                        }],
+                      "coordinate": 0,
+                      "exportSelf": 1,
+                      "frameList": [{
+                          "content": {
+                            "coord": [-258,21.75,0],
+                            "mask": 3,
+                            "ox": 0,
+                            "oy": 0,
+                            "src": "src/SD401/羽月"
+                          },
+                          "time": 0,
+                          "type": 2
+                        },{
+                          "time": 10,
+                          "type": 0
+                        }],
+                      "groundCorrection": 0,
+                      "inheritMask": 33556476,
+                      "joinTarget": 1,
+                      "label": "body",
+                      "meshCombine": 0,
+                      "meshDivision": 10,
+                      "meshTransform": 0,
+                      "metadata": null,
+                      "objTriPriority": 2,
+                      "parameterize": null,
+                      "stencilType": 0,
+                      "transformOrder": [0,3,2,1],
+                      "type": 0
+                    }],
+                  "coordinate": 0,
+                  "exportSelf": 1,
+                  "frameList": [{
+                      "content": {
+                        "mask": 1,
+                        "ox": 0,
+                        "oy": 0,
+                        "src": "src/SD401/bg"
+                      },
+                      "time": 0,
+                      "type": 2
+                    },{
+                      "time": 10.0,
+                      "type": 0
+                    }],
+                  "groundCorrection": 0,
+                  "inheritMask": 33556476,
+                  "joinTarget": 1,
+                  "label": "bg",
+                  "meshCombine": 0,
+                  "meshDivision": 10,
+                  "meshTransform": 0,
+                  "metadata": null,
+                  "objTriPriority": 2,
+                  "parameterize": null,
+                  "stencilType": 0,
+                  "transformOrder": [0,3,2,1],
+                  "type": 0
+                }],
+              "coordinate": 0,
+              "exportSelf": 1,
+              "frameList": [{
+                  "content": {
+                    "mask": 1,
+                    "ox": 0,
+                    "oy": 0,
+                    "src": "src/SD401/bg"
+                  },
+                  "time": 0,
+                  "type": 2
+                },{
+                  "time": 10.0,
+                  "type": 0
+                }],
+              "groundCorrection": 0,
+              "inheritMask": 37750780,
+              "joinTarget": 1,
+              "label": "mask",
+              "meshCombine": 0,
+              "meshDivision": 10,
+              "meshTransform": 0,
+              "metadata": null,
+              "parameterize": null,
+              "stencilCompositeMaskLayerList": [],
+              "stencilType": 1,
+              "transformOrder": [0,3,2,1],
+              "type": 12
+            }],
+          "loopTime": -1,
+          "metadata": null,
+          "parameter": [],
+          "parameterize": null,
+          "priority": [{
+              "content": [5,4,3,2,1,0],
+              "time": 0,
+              "type": 1
+            },{
+              "content": null,
+              "time": 10,
+              "type": 1
+            }],
+          "referenceModelFileList": [],
+          "referenceProjectFileList": [],
+          "tag": [],
+          "type": 0,
+          "variable": []
+        },
+        "SD401AE": {
+          "lastTime": 10,
+          "layer": [{
+              "children": [{
+                  "children": [{
+                      "children": [],
+                      "coordinate": 0,
+                      "exportSelf": 1,
+                      "frameList": [{
+                          "content": {
+                            "mask": 524289,
+                            "motion": {
+                              "mask": 0,
+                              "timeOffset": 0
+                            },
+                            "ox": 0,
+                            "oy": 0,
+                            "src": "motion/SD401/tinunosuke"
+                          },
+                          "time": 0,
+                          "type": 2
+                        },{
+                          "time": 10,
+                          "type": 0
+                        }],
+                      "groundCorrection": 0,
+                      "inheritMask": 33556476,
+                      "joinTarget": 1,
+                      "label": "tinu",
+                      "meshCombine": 0,
+                      "meshDivision": 10,
+                      "meshTransform": 0,
+                      "metadata": null,
+                      "motionIndependentLayerInherit": 0,
+                      "parameterize": null,
+                      "stencilType": 0,
+                      "transformOrder": [0,3,2,1],
+                      "type": 3
+                    },{
+                      "children": [{
+                          "children": [],
+                          "coordinate": 0,
+                          "exportSelf": 1,
+                          "frameList": [{
+                              "content": {
+                                "coord": [64.5,-101.25,0],
+                                "mask": 3,
+                                "ox": 0,
+                                "oy": 0,
+                                "src": "src/SD401/3ジト目"
+                              },
+                              "time": 0,
+                              "type": 2
+                            },{
+                              "time": 10,
+                              "type": 0
+                            }],
+                          "groundCorrection": 0,
+                          "inheritMask": 33556476,
+                          "joinTarget": 1,
+                          "label": "face",
+                          "meshCombine": 0,
+                          "meshDivision": 10,
+                          "meshTransform": 0,
+                          "metadata": null,
+                          "objTriPriority": 2,
+                          "parameterize": null,
+                          "stencilType": 0,
+                          "transformOrder": [0,3,2,1],
+                          "type": 0
+                        }],
+                      "coordinate": 0,
+                      "exportSelf": 1,
+                      "frameList": [{
+                          "content": {
+                            "coord": [-258,21.75,0],
+                            "mask": 3,
+                            "ox": 0,
+                            "oy": 0,
+                            "src": "src/SD401/羽月"
+                          },
+                          "time": 0,
+                          "type": 2
+                        },{
+                          "time": 10,
+                          "type": 0
+                        }],
+                      "groundCorrection": 0,
+                      "inheritMask": 33556476,
+                      "joinTarget": 1,
+                      "label": "body",
+                      "meshCombine": 0,
+                      "meshDivision": 10,
+                      "meshTransform": 0,
+                      "metadata": null,
+                      "objTriPriority": 2,
+                      "parameterize": null,
+                      "stencilType": 0,
+                      "transformOrder": [0,3,2,1],
+                      "type": 0
+                    },{
+                      "children": [],
+                      "coordinate": 0,
+                      "exportSelf": 1,
+                      "frameList": [{
+                          "content": {
+                            "mask": 524289,
+                            "motion": {
+                              "mask": 0,
+                              "timeOffset": 0
+                            },
+                            "ox": 0,
+                            "oy": 0,
+                            "src": "motion/SD401/AEase"
+                          },
+                          "time": 0,
+                          "type": 2
+                        },{
+                          "time": 10,
+                          "type": 0
+                        }],
+                      "groundCorrection": 0,
+                      "inheritMask": 33556476,
+                      "joinTarget": 1,
+                      "label": "funs",
+                      "meshCombine": 0,
+                      "meshDivision": 10,
+                      "meshTransform": 0,
+                      "metadata": null,
+                      "motionIndependentLayerInherit": 0,
+                      "parameterize": null,
+                      "stencilType": 0,
+                      "transformOrder": [0,3,2,1],
+                      "type": 3
+                    }],
+                  "coordinate": 0,
+                  "exportSelf": 1,
+                  "frameList": [{
+                      "content": {
+                        "mask": 1,
+                        "ox": 0,
+                        "oy": 0,
+                        "src": "src/SD401/bg"
+                      },
+                      "time": 0,
+                      "type": 2
+                    },{
+                      "time": 10.0,
+                      "type": 0
+                    }],
+                  "groundCorrection": 0,
+                  "inheritMask": 33556476,
+                  "joinTarget": 1,
+                  "label": "bg",
+                  "meshCombine": 0,
+                  "meshDivision": 10,
+                  "meshTransform": 0,
+                  "metadata": null,
+                  "objTriPriority": 2,
+                  "parameterize": null,
+                  "stencilType": 0,
+                  "transformOrder": [0,3,2,1],
+                  "type": 0
+                }],
+              "coordinate": 0,
+              "exportSelf": 1,
+              "frameList": [{
+                  "content": {
+                    "mask": 1,
+                    "ox": 0,
+                    "oy": 0,
+                    "src": "src/SD401/bg"
+                  },
+                  "time": 0,
+                  "type": 2
+                },{
+                  "time": 10.0,
+                  "type": 0
+                }],
+              "groundCorrection": 0,
+              "inheritMask": 37750780,
+              "joinTarget": 1,
+              "label": "mask",
+              "meshCombine": 0,
+              "meshDivision": 10,
+              "meshTransform": 0,
+              "metadata": null,
+              "parameterize": null,
+              "stencilCompositeMaskLayerList": [],
+              "stencilType": 1,
+              "transformOrder": [0,3,2,1],
+              "type": 12
+            }],
+          "loopTime": -1,
+          "metadata": null,
+          "parameter": [],
+          "parameterize": null,
+          "priority": [{
+              "content": [5,4,3,2,1,0],
+              "time": 0,
+              "type": 1
+            },{
+              "content": null,
+              "time": 10,
+              "type": 1
+            }],
+          "referenceModelFileList": [],
+          "referenceProjectFileList": [],
+          "tag": [],
+          "type": 0,
+          "variable": []
+        },
+        "SD401AF": {
+          "lastTime": 30,
+          "layer": [{
+              "children": [{
+                  "children": [{
+                      "children": [],
+                      "coordinate": 0,
+                      "exportSelf": 1,
+                      "frameList": [{
+                          "content": {
+                            "mask": 524289,
+                            "motion": {
+                              "mask": 0,
+                              "timeOffset": 0
+                            },
+                            "ox": 0,
+                            "oy": 0,
+                            "src": "motion/SD401/tinunosuke"
+                          },
+                          "time": 0,
+                          "type": 2
+                        },{
+                          "time": 30,
+                          "type": 0
+                        }],
+                      "groundCorrection": 0,
+                      "inheritMask": 33556476,
+                      "joinTarget": 1,
+                      "label": "tinu",
+                      "meshCombine": 0,
+                      "meshDivision": 10,
+                      "meshTransform": 0,
+                      "metadata": null,
+                      "motionIndependentLayerInherit": 0,
+                      "parameterize": null,
+                      "stencilType": 0,
+                      "transformOrder": [0,3,2,1],
+                      "type": 3
+                    },{
+                      "children": [{
+                          "children": [],
+                          "coordinate": 0,
+                          "exportSelf": 1,
+                          "frameList": [{
+                              "content": {
+                                "coord": [64.5,-101.25,0],
+                                "mask": 3,
+                                "ox": 0,
+                                "oy": 0,
+                                "src": "src/SD401/4なんだと！？"
+                              },
+                              "time": 0,
+                              "type": 2
+                            },{
+                              "time": 30,
+                              "type": 0
+                            }],
+                          "groundCorrection": 0,
+                          "inheritMask": 33556476,
+                          "joinTarget": 1,
+                          "label": "face",
+                          "meshCombine": 0,
+                          "meshDivision": 10,
+                          "meshTransform": 0,
+                          "metadata": null,
+                          "objTriPriority": 2,
+                          "parameterize": null,
+                          "stencilType": 0,
+                          "transformOrder": [0,3,2,1],
+                          "type": 0
+                        }],
+                      "coordinate": 0,
+                      "exportSelf": 1,
+                      "frameList": [{
+                          "content": {
+                            "coord": [-258,21.75,0],
+                            "mask": 3,
+                            "ox": 0,
+                            "oy": 0,
+                            "src": "src/SD401/羽月"
+                          },
+                          "time": 0,
+                          "type": 2
+                        },{
+                          "time": 30,
+                          "type": 0
+                        }],
+                      "groundCorrection": 0,
+                      "inheritMask": 33556476,
+                      "joinTarget": 1,
+                      "label": "body",
+                      "meshCombine": 0,
+                      "meshDivision": 10,
+                      "meshTransform": 0,
+                      "metadata": null,
+                      "objTriPriority": 2,
+                      "parameterize": null,
+                      "stencilType": 0,
+                      "transformOrder": [0,3,2,1],
+                      "type": 0
+                    },{
+                      "children": [],
+                      "coordinate": 0,
+                      "exportSelf": 1,
+                      "frameList": [{
+                          "time": 0,
+                          "type": 0
+                        },{
+                          "content": {
+                            "mask": 524289,
+                            "motion": {
+                              "mask": 0,
+                              "timeOffset": 0
+                            },
+                            "ox": 0,
+                            "oy": 0,
+                            "src": "motion/SD401/AFase"
+                          },
+                          "time": 20,
+                          "type": 2
+                        },{
+                          "time": 30,
+                          "type": 0
+                        }],
+                      "groundCorrection": 0,
+                      "inheritMask": 33556476,
+                      "joinTarget": 1,
+                      "label": "funs",
+                      "meshCombine": 0,
+                      "meshDivision": 10,
+                      "meshTransform": 0,
+                      "metadata": null,
+                      "motionIndependentLayerInherit": 0,
+                      "parameterize": null,
+                      "stencilType": 0,
+                      "transformOrder": [0,3,2,1],
+                      "type": 3
+                    }],
+                  "coordinate": 0,
+                  "exportSelf": 1,
+                  "frameList": [{
+                      "content": {
+                        "mask": 1,
+                        "ox": 0,
+                        "oy": 0,
+                        "src": "src/SD401/bg"
+                      },
+                      "time": 0,
+                      "type": 2
+                    },{
+                      "time": 30.0,
+                      "type": 0
+                    }],
+                  "groundCorrection": 0,
+                  "inheritMask": 33556476,
+                  "joinTarget": 1,
+                  "label": "bg",
+                  "meshCombine": 0,
+                  "meshDivision": 10,
+                  "meshTransform": 0,
+                  "metadata": null,
+                  "objTriPriority": 2,
+                  "parameterize": null,
+                  "stencilType": 0,
+                  "transformOrder": [0,3,2,1],
+                  "type": 0
+                }],
+              "coordinate": 0,
+              "exportSelf": 1,
+              "frameList": [{
+                  "content": {
+                    "mask": 1,
+                    "ox": 0,
+                    "oy": 0,
+                    "src": "src/SD401/bg"
+                  },
+                  "time": 0,
+                  "type": 2
+                },{
+                  "time": 30.0,
+                  "type": 0
+                }],
+              "groundCorrection": 0,
+              "inheritMask": 37750780,
+              "joinTarget": 1,
+              "label": "mask",
+              "meshCombine": 0,
+              "meshDivision": 10,
+              "meshTransform": 0,
+              "metadata": null,
+              "parameterize": null,
+              "stencilCompositeMaskLayerList": [],
+              "stencilType": 1,
+              "transformOrder": [0,3,2,1],
+              "type": 12
+            }],
+          "loopTime": -1,
+          "metadata": null,
+          "parameter": [],
+          "parameterize": null,
+          "priority": [{
+              "content": [5,4,3,2,1,0],
+              "time": 0,
+              "type": 1
+            },{
+              "content": null,
+              "time": 30,
+              "type": 1
+            }],
+          "referenceModelFileList": [],
+          "referenceProjectFileList": [],
+          "tag": [],
+          "type": 0,
+          "variable": []
+        },
+        "hana1": {
+          "lastTime": 120,
+          "layer": [{
+              "children": [],
+              "coordinate": 0,
+              "exportSelf": 1,
+              "frameList": [{
+                  "content": {
+                    "mask": 1,
+                    "ox": 6,
+                    "oy": 0,
+                    "src": "src/SD401/2ぽわーんhana0"
+                  },
+                  "time": 0,
+                  "type": 3
+                },{
+                  "content": {
+                    "angle": 720,
+                    "mask": 17,
+                    "ox": 6,
+                    "oy": 0,
+                    "src": "src/SD401/2ぽわーんhana0"
+                  },
+                  "time": 120,
+                  "type": 3
+                },{
+                  "time": 121,
+                  "type": 0
+                }],
+              "groundCorrection": 0,
+              "inheritMask": 33556476,
+              "joinTarget": 1,
+              "label": "2ぽわーんhana0",
+              "meshCombine": 0,
+              "meshDivision": 10,
+              "meshTransform": 0,
+              "metadata": null,
+              "objTriPriority": 2,
+              "parameterize": null,
+              "stencilType": 0,
+              "transformOrder": [0,3,2,1],
+              "type": 0
+            }],
+          "loopTime": 0,
+          "metadata": null,
+          "parameter": [],
+          "parameterize": null,
+          "priority": [{
+              "content": [0],
+              "time": 0,
+              "type": 1
+            },{
+              "content": null,
+              "time": 120,
+              "type": 1
+            }],
+          "referenceModelFileList": [],
+          "referenceProjectFileList": [],
+          "tag": [],
+          "type": 0,
+          "variable": []
+        },
+        "hana2": {
+          "lastTime": 120,
+          "layer": [{
+              "children": [],
+              "coordinate": 0,
+              "exportSelf": 1,
+              "frameList": [{
+                  "content": {
+                    "mask": 1,
+                    "ox": 4.5,
+                    "oy": 0,
+                    "src": "src/SD401/2ぽわーんhana1"
+                  },
+                  "time": 0,
+                  "type": 3
+                },{
+                  "content": {
+                    "angle": 720,
+                    "mask": 17,
+                    "ox": 4.5,
+                    "oy": 0,
+                    "src": "src/SD401/2ぽわーんhana1"
+                  },
+                  "time": 120,
+                  "type": 3
+                },{
+                  "time": 121,
+                  "type": 0
+                }],
+              "groundCorrection": 0,
+              "inheritMask": 33556476,
+              "joinTarget": 1,
+              "label": "2ぽわーんhana0",
+              "meshCombine": 0,
+              "meshDivision": 10,
+              "meshTransform": 0,
+              "metadata": null,
+              "objTriPriority": 2,
+              "parameterize": null,
+              "stencilType": 0,
+              "transformOrder": [0,3,2,1],
+              "type": 0
+            }],
+          "loopTime": 0,
+          "metadata": null,
+          "parameter": [],
+          "parameterize": null,
+          "priority": [{
+              "content": [0],
+              "time": 0,
+              "type": 1
+            },{
+              "content": null,
+              "time": 120,
+              "type": 1
+            }],
+          "referenceModelFileList": [],
+          "referenceProjectFileList": [],
+          "tag": [],
+          "type": 0,
+          "variable": []
+        },
+        "parKira": {
+          "lastTime": 90,
+          "layer": [{
+              "children": [],
+              "coordinate": 0,
+              "exportSelf": 1,
+              "frameList": [{
+                  "content": {
+                    "mask": 1121,
+                    "opa": 32,
+                    "ox": 0,
+                    "oy": 0,
+                    "src": "src/SD401/par_kira",
+                    "zx": 0.4,
+                    "zy": 0.4
+                  },
+                  "time": 0.0,
+                  "type": 3
+                },{
+                  "content": {
+                    "mask": 1,
+                    "ox": 0,
+                    "oy": 0,
+                    "src": "src/SD401/par_kira"
+                  },
+                  "time": 7.0,
+                  "type": 3
+                },{
+                  "content": {
+                    "mask": 1,
+                    "ox": 0,
+                    "oy": 0,
+                    "src": "src/SD401/par_kira"
+                  },
+                  "time": 20.0,
+                  "type": 3
+                },{
+                  "content": {
+                    "mask": 1121,
+                    "opa": 0,
+                    "ox": 0,
+                    "oy": 0,
+                    "src": "src/SD401/par_kira",
+                    "zx": 0.75,
+                    "zy": 0.75
+                  },
+                  "time": 89.0,
+                  "type": 3
+                },{
+                  "time": 90.0,
+                  "type": 0
+                }],
+              "groundCorrection": 0,
+              "inheritMask": 33556476,
+              "joinTarget": 1,
+              "label": "レイヤ1",
+              "meshCombine": 0,
+              "meshDivision": 10,
+              "meshTransform": 0,
+              "metadata": null,
+              "objTriPriority": 2,
+              "parameterize": null,
+              "stencilType": 0,
+              "transformOrder": [0,3,2,1],
+              "type": 0
+            },{
+              "children": [],
+              "coordinate": 0,
+              "exportSelf": 1,
+              "frameList": [{
+                  "content": {
+                    "mask": 1121,
+                    "opa": 0,
+                    "ox": 0,
+                    "oy": 0,
+                    "src": "src/SD401/par_kira",
+                    "zx": 0.2,
+                    "zy": 0.2
+                  },
+                  "time": 0.0,
+                  "type": 3
+                },{
+                  "content": {
+                    "mask": 1,
+                    "ox": 0,
+                    "oy": 0,
+                    "src": "src/SD401/par_kira"
+                  },
+                  "time": 7.0,
+                  "type": 3
+                },{
+                  "content": {
+                    "mask": 1121,
+                    "opa": 0,
+                    "ox": 0,
+                    "oy": 0,
+                    "src": "src/SD401/par_kira",
+                    "zx": 1.6,
+                    "zy": 1.6
+                  },
+                  "time": 30.0,
+                  "type": 3
+                },{
+                  "time": 31.0,
+                  "type": 0
+                },{
+                  "time": 90,
+                  "type": 0
+                }],
+              "groundCorrection": 0,
+              "inheritMask": 33556476,
+              "joinTarget": 1,
+              "label": "レイヤ2",
+              "meshCombine": 0,
+              "meshDivision": 10,
+              "meshTransform": 0,
+              "metadata": null,
+              "objTriPriority": 2,
+              "parameterize": null,
+              "stencilType": 0,
+              "transformOrder": [0,3,2,1],
+              "type": 0
+            }],
+          "loopTime": -1,
+          "metadata": null,
+          "parameter": [],
+          "parameterize": null,
+          "priority": [{
+              "content": [1,0],
+              "time": 0,
+              "type": 1
+            },{
+              "content": null,
+              "time": 90,
+              "type": 1
+            }],
+          "referenceModelFileList": [],
+          "referenceProjectFileList": [],
+          "tag": [],
+          "type": 0,
+          "variable": []
+        },
+        "parKira2": {
+          "lastTime": 90,
+          "layer": [{
+              "children": [],
+              "coordinate": 0,
+              "exportSelf": 1,
+              "frameList": [{
+                  "content": {
+                    "mask": 1121,
+                    "opa": 32,
+                    "ox": 0,
+                    "oy": 0,
+                    "src": "src/SD401/2ぽわーんkira",
+                    "zx": 0.4,
+                    "zy": 0.4
+                  },
+                  "time": 0.0,
+                  "type": 3
+                },{
+                  "content": {
+                    "mask": 1,
+                    "ox": 0,
+                    "oy": 0,
+                    "src": "src/SD401/2ぽわーんkira"
+                  },
+                  "time": 7.0,
+                  "type": 3
+                },{
+                  "content": {
+                    "mask": 1,
+                    "ox": 0,
+                    "oy": 0,
+                    "src": "src/SD401/2ぽわーんkira"
+                  },
+                  "time": 20.0,
+                  "type": 3
+                },{
+                  "content": {
+                    "mask": 1121,
+                    "opa": 0,
+                    "ox": 0,
+                    "oy": 0,
+                    "src": "src/SD401/2ぽわーんkira",
+                    "zx": 0.75,
+                    "zy": 0.75
+                  },
+                  "time": 89.0,
+                  "type": 3
+                },{
+                  "time": 90.0,
+                  "type": 0
+                }],
+              "groundCorrection": 0,
+              "inheritMask": 33556476,
+              "joinTarget": 1,
+              "label": "レイヤ1",
+              "meshCombine": 0,
+              "meshDivision": 10,
+              "meshTransform": 0,
+              "metadata": null,
+              "objTriPriority": 2,
+              "parameterize": null,
+              "stencilType": 0,
+              "transformOrder": [0,3,2,1],
+              "type": 0
+            },{
+              "children": [],
+              "coordinate": 0,
+              "exportSelf": 1,
+              "frameList": [{
+                  "content": {
+                    "mask": 1121,
+                    "opa": 0,
+                    "ox": 0,
+                    "oy": 0,
+                    "src": "src/SD401/2ぽわーんkira",
+                    "zx": 0.2,
+                    "zy": 0.2
+                  },
+                  "time": 0.0,
+                  "type": 3
+                },{
+                  "content": {
+                    "mask": 1,
+                    "ox": 0,
+                    "oy": 0,
+                    "src": "src/SD401/2ぽわーんkira"
+                  },
+                  "time": 7.0,
+                  "type": 3
+                },{
+                  "content": {
+                    "mask": 1121,
+                    "opa": 0,
+                    "ox": 0,
+                    "oy": 0,
+                    "src": "src/SD401/2ぽわーんkira",
+                    "zx": 1.6,
+                    "zy": 1.6
+                  },
+                  "time": 30.0,
+                  "type": 3
+                },{
+                  "time": 31.0,
+                  "type": 0
+                },{
+                  "time": 90,
+                  "type": 0
+                }],
+              "groundCorrection": 0,
+              "inheritMask": 33556476,
+              "joinTarget": 1,
+              "label": "レイヤ2",
+              "meshCombine": 0,
+              "meshDivision": 10,
+              "meshTransform": 0,
+              "metadata": null,
+              "objTriPriority": 2,
+              "parameterize": null,
+              "stencilType": 0,
+              "transformOrder": [0,3,2,1],
+              "type": 0
+            }],
+          "loopTime": -1,
+          "metadata": null,
+          "parameter": [],
+          "parameterize": null,
+          "priority": [{
+              "content": [1,0],
+              "time": 0,
+              "type": 1
+            },{
+              "content": null,
+              "time": 90,
+              "type": 1
+            }],
+          "referenceModelFileList": [],
+          "referenceProjectFileList": [],
+          "tag": [],
+          "type": 0,
+          "variable": []
+        },
+        "tinunosuke": {
+          "lastTime": 10,
+          "layer": [{
+              "children": [],
+              "coordinate": 0,
+              "exportSelf": 1,
+              "frameList": [{
+                  "content": {
+                    "angle": 10.7021084,
+                    "coord": [446.25,33,0],
+                    "mask": 1048691,
+                    "ox": 0,
+                    "oy": 0,
+                    "prt": {
+                      "fmax": 6.0,
+                      "fmin": 4.0,
+                      "mask": 18,
+                      "zmax": 1.0,
+                      "zmin": 0.3
+                    },
+                    "src": "particle/ellipse",
+                    "zx": 5.39369,
+                    "zy": 16.936676
+                  },
+                  "time": 0,
+                  "type": 2
+                },{
+                  "time": 10,
+                  "type": 0
+                }],
+              "groundCorrection": 0,
+              "inheritMask": 33556476,
+              "joinTarget": 1,
+              "label": "レイヤ2",
+              "meshCombine": 0,
+              "meshDivision": 10,
+              "meshTransform": 0,
+              "metadata": null,
+              "parameterize": null,
+              "particle": 1,
+              "particleAccelRatio": 1.0,
+              "particleApplyZoomToVelocity": 0,
+              "particleDeleteOutsideScreen": 0,
+              "particleFlyDirection": 0,
+              "particleInheritAngle": 0,
+              "particleInheritOpacity": 2,
+              "particleInheritVelocity": 0,
+              "particleMaxNum": 20,
+              "particleMotionList": ["motion/SD401/parKira"],
+              "particleTriVolume": 0,
+              "transformOrder": [0,3,2,1],
+              "type": 4
+            },{
+              "children": [],
+              "coordinate": 0,
+              "exportSelf": 1,
+              "frameList": [{
+                  "content": {
+                    "angle": 281.59137,
+                    "coord": [290.25,-282,0],
+                    "mask": 1048691,
+                    "ox": 0,
+                    "oy": 0,
+                    "prt": {
+                      "fmax": 6.0,
+                      "fmin": 4.0,
+                      "mask": 18,
+                      "zmax": 1.0,
+                      "zmin": 0.3
+                    },
+                    "src": "particle/ellipse",
+                    "zx": 4.488853,
+                    "zy": 11.63188
+                  },
+                  "time": 0,
+                  "type": 2
+                },{
+                  "time": 10,
+                  "type": 0
+                }],
+              "groundCorrection": 0,
+              "inheritMask": 33556476,
+              "joinTarget": 1,
+              "label": "レイヤ2",
+              "meshCombine": 0,
+              "meshDivision": 10,
+              "meshTransform": 0,
+              "metadata": null,
+              "parameterize": null,
+              "particle": 1,
+              "particleAccelRatio": 1.0,
+              "particleApplyZoomToVelocity": 0,
+              "particleDeleteOutsideScreen": 0,
+              "particleFlyDirection": 0,
+              "particleInheritAngle": 0,
+              "particleInheritOpacity": 2,
+              "particleInheritVelocity": 0,
+              "particleMaxNum": 20,
+              "particleMotionList": ["motion/SD401/parKira"],
+              "particleTriVolume": 0,
+              "transformOrder": [0,3,2,1],
+              "type": 4
+            },{
+              "children": [],
+              "coordinate": 0,
+              "exportSelf": 1,
+              "frameList": [{
+                  "content": {
+                    "angle": 285.176331,
+                    "coord": [168,228.75,0],
+                    "mask": 1048691,
+                    "ox": 0,
+                    "oy": 0,
+                    "prt": {
+                      "fmax": 6.0,
+                      "fmin": 4.0,
+                      "mask": 18,
+                      "zmax": 1.0,
+                      "zmin": 0.3
+                    },
+                    "src": "particle/ellipse",
+                    "zx": 4.63015938,
+                    "zy": 11.63188
+                  },
+                  "time": 0,
+                  "type": 2
+                },{
+                  "time": 10,
+                  "type": 0
+                }],
+              "groundCorrection": 0,
+              "inheritMask": 33556476,
+              "joinTarget": 1,
+              "label": "レイヤ2",
+              "meshCombine": 0,
+              "meshDivision": 10,
+              "meshTransform": 0,
+              "metadata": null,
+              "parameterize": null,
+              "particle": 1,
+              "particleAccelRatio": 1.0,
+              "particleApplyZoomToVelocity": 0,
+              "particleDeleteOutsideScreen": 0,
+              "particleFlyDirection": 0,
+              "particleInheritAngle": 0,
+              "particleInheritOpacity": 2,
+              "particleInheritVelocity": 0,
+              "particleMaxNum": 20,
+              "particleMotionList": ["motion/SD401/parKira"],
+              "particleTriVolume": 0,
+              "transformOrder": [0,3,2,1],
+              "type": 4
+            },{
+              "children": [],
+              "coordinate": 0,
+              "exportSelf": 1,
+              "frameList": [{
+                  "content": {
+                    "angle": 14.2198524,
+                    "coord": [20.25,-60.75,0],
+                    "mask": 1048691,
+                    "ox": 0,
+                    "oy": 0,
+                    "prt": {
+                      "fmax": 6.0,
+                      "fmin": 4.0,
+                      "mask": 18,
+                      "zmax": 1.0,
+                      "zmin": 0.3
+                    },
+                    "src": "particle/ellipse",
+                    "zx": 5.615597,
+                    "zy": 16.936676
+                  },
+                  "time": 0,
+                  "type": 2
+                },{
+                  "time": 10,
+                  "type": 0
+                }],
+              "groundCorrection": 0,
+              "inheritMask": 33556476,
+              "joinTarget": 1,
+              "label": "レイヤ2",
+              "meshCombine": 0,
+              "meshDivision": 10,
+              "meshTransform": 0,
+              "metadata": null,
+              "parameterize": null,
+              "particle": 1,
+              "particleAccelRatio": 1.0,
+              "particleApplyZoomToVelocity": 0,
+              "particleDeleteOutsideScreen": 0,
+              "particleFlyDirection": 0,
+              "particleInheritAngle": 0,
+              "particleInheritOpacity": 2,
+              "particleInheritVelocity": 0,
+              "particleMaxNum": 20,
+              "particleMotionList": ["motion/SD401/parKira"],
+              "particleTriVolume": 0,
+              "transformOrder": [0,3,2,1],
+              "type": 4
+            },{
+              "children": [],
+              "coordinate": 0,
+              "exportSelf": 1,
+              "frameList": [{
+                  "content": {
+                    "coord": [238.5,-9.75,0],
+                    "mask": 3,
+                    "ox": 0,
+                    "oy": 0,
+                    "src": "src/SD401/チヌ"
+                  },
+                  "time": 0,
+                  "type": 2
+                },{
+                  "time": 10,
+                  "type": 0
+                }],
+              "groundCorrection": 0,
+              "inheritMask": 33556476,
+              "joinTarget": 1,
+              "label": "チヌ",
+              "meshCombine": 0,
+              "meshDivision": 10,
+              "meshTransform": 0,
+              "metadata": null,
+              "objTriPriority": 2,
+              "parameterize": null,
+              "stencilType": 0,
+              "transformOrder": [0,3,2,1],
+              "type": 0
+            }],
+          "loopTime": -1,
+          "metadata": null,
+          "parameter": [],
+          "parameterize": null,
+          "priority": [{
+              "content": [4,3,2,1,0],
+              "time": 0,
+              "type": 1
+            },{
+              "content": null,
+              "time": 10,
+              "type": 1
+            }],
+          "referenceModelFileList": [],
+          "referenceProjectFileList": [],
+          "tag": [],
+          "type": 0,
+          "variable": []
+        }
+      },
+      "type": 0
+    }
+  },
+  "screenSize": {
+    "height": 675,
+    "originX": 0,
+    "originY": 0,
+    "width": 1125
+  },
+  "source": {
+    "SD401": {
+      "icon": {
+        "0にっこり": {
+          "clip": {
+            "bottom": 0.948717952,
+            "left": 0.012820513,
+            "right": 0.9145299,
+            "top": 0.141025648
+          },
+          "compress": "RL",
+          "height": 189,
+          "metadata": null,
+          "originX": 114,
+          "originY": 84,
+          "pixel": "#resource#17",
+          "width": 211
+        },
+        "0ベース": {
+          "clip": {
+            "bottom": 0.97863245,
+            "left": 0.025641026,
+            "right": 0.97863245,
+            "top": 0.008547009
+          },
+          "compress": "RL",
+          "height": 227,
+          "metadata": null,
+          "originX": 111,
+          "originY": 115,
+          "pixel": "#resource#20",
+          "width": 223
+        },
+        "0ベースem0": {
+          "clip": {
+            "bottom": 1.0,
+            "left": 0.0303030312,
+            "right": 0.969697,
+            "top": 0.0
+          },
+          "compress": "RL",
+          "height": 60,
+          "metadata": null,
+          "originX": 31,
+          "originY": 30,
+          "pixel": "#resource#5",
+          "width": 62
+        },
+        "0ベースhs0": {
+          "clip": {
+            "bottom": 1.0,
+            "left": 0.0416666679,
+            "right": 0.9583333,
+            "top": 0.0
+          },
+          "compress": "RL",
+          "height": 54,
+          "metadata": null,
+          "originX": 22,
+          "originY": 27,
+          "pixel": "#resource#4",
+          "width": 44
+        },
+        "0ベースhs1": {
+          "compress": "RL",
+          "height": 72,
+          "metadata": null,
+          "originX": 30,
+          "originY": 36,
+          "pixel": "#resource#10",
+          "width": 60
+        },
+        "0ベースhs2": {
+          "clip": {
+            "bottom": 0.983333349,
+            "left": 0.0,
+            "right": 1.0,
+            "top": 0.0
+          },
+          "compress": "RL",
+          "height": 59,
+          "metadata": null,
+          "originX": 24,
+          "originY": 30,
+          "pixel": "#resource#9",
+          "width": 48
+        },
+        "1ドヤ顔": {
+          "clip": {
+            "bottom": 0.987179458,
+            "left": 0.012820513,
+            "right": 0.940170944,
+            "top": 0.0940170959
+          },
+          "compress": "RL",
+          "height": 209,
+          "metadata": null,
+          "originX": 114,
+          "originY": 95,
+          "pixel": "#resource#19",
+          "width": 217
+        },
+        "1ドヤ顔em0": {
+          "clip": {
+            "bottom": 1.0,
+            "left": 0.0370370373,
+            "right": 0.962963,
+            "top": 0.0
+          },
+          "compress": "RL",
+          "height": 60,
+          "metadata": null,
+          "originX": 25,
+          "originY": 30,
+          "pixel": "#resource#7",
+          "width": 50
+        },
+        "1ドヤ顔em1": {
+          "clip": {
+            "bottom": 1.0,
+            "left": 0.0,
+            "right": 0.9861111,
+            "top": 0.0
+          },
+          "compress": "RL",
+          "height": 48,
+          "metadata": null,
+          "originX": 36,
+          "originY": 24,
+          "pixel": "#resource#6",
+          "width": 71
+        },
+        "1ドヤ顔em2": {
+          "compress": "RL",
+          "height": 36,
+          "metadata": null,
+          "originX": 30,
+          "originY": 18,
+          "pixel": "#resource#3",
+          "width": 60
+        },
+        "2ぽわーん": {
+          "clip": {
+            "bottom": 0.9358974,
+            "left": 0.08974359,
+            "right": 0.8717949,
+            "top": 0.21794872
+          },
+          "compress": "RL",
+          "height": 168,
+          "metadata": null,
+          "originX": 96,
+          "originY": 66,
+          "pixel": "#resource#18",
+          "width": 183
+        },
+        "2ぽわーんhana0": {
+          "compress": "RL",
+          "height": 90,
+          "metadata": null,
+          "originX": 48,
+          "originY": 45,
+          "pixel": "#resource#14",
+          "width": 96
+        },
+        "2ぽわーんhana1": {
+          "compress": "RL",
+          "height": 90,
+          "metadata": null,
+          "originX": 42,
+          "originY": 45,
+          "pixel": "#resource#13",
+          "width": 84
+        },
+        "2ぽわーんkira": {
+          "clip": {
+            "bottom": 1.0,
+            "left": 0.0238095243,
+            "right": 0.976190448,
+            "top": 0.0
+          },
+          "compress": "RL",
+          "height": 42,
+          "metadata": null,
+          "originX": 20,
+          "originY": 21,
+          "pixel": "#resource#2",
+          "width": 40
+        },
+        "3ジト目": {
+          "clip": {
+            "bottom": 0.8888889,
+            "left": 0.08974359,
+            "right": 0.9017094,
+            "top": 0.17521368
+          },
+          "compress": "RL",
+          "height": 167,
+          "metadata": null,
+          "originX": 96,
+          "originY": 76,
+          "pixel": "#resource#16",
+          "width": 190
+        },
+        "3ジト目0": {
+          "clip": {
+            "bottom": 0.9444444,
+            "left": 0.055555556,
+            "right": 0.8888889,
+            "top": 0.0
+          },
+          "compress": "RL",
+          "height": 17,
+          "metadata": null,
+          "originX": 8,
+          "originY": 9,
+          "pixel": "#resource#1",
+          "width": 15
+        },
+        "4なんだと！？": {
+          "clip": {
+            "bottom": 0.965811968,
+            "left": 0.162393168,
+            "right": 0.9273504,
+            "top": 0.0811965838
+          },
+          "compress": "RL",
+          "height": 207,
+          "metadata": null,
+          "originX": 79,
+          "originY": 98,
+          "pixel": "#resource#15",
+          "width": 179
+        },
+        "4なんだと！？as0": {
+          "clip": {
+            "bottom": 0.954545438,
+            "left": 0.0,
+            "right": 1.0,
+            "top": 0.0303030312
+          },
+          "compress": "RL",
+          "height": 61,
+          "metadata": null,
+          "originX": 24,
+          "originY": 31,
+          "pixel": "#resource#8",
+          "width": 48
+        },
+        "4なんだと！？as1": {
+          "clip": {
+            "bottom": 0.9895833,
+            "left": 0.0119047621,
+            "right": 0.976190448,
+            "top": 0.0
+          },
+          "compress": "RL",
+          "height": 95,
+          "metadata": null,
+          "originX": 41,
+          "originY": 48,
+          "pixel": "#resource#12",
+          "width": 81
+        },
+        "4なんだと！？em": {
+          "clip": {
+            "bottom": 0.9444444,
+            "left": 0.055555556,
+            "right": 0.8888889,
+            "top": 0.0
+          },
+          "compress": "RL",
+          "height": 17,
+          "metadata": null,
+          "originX": 8,
+          "originY": 9,
+          "pixel": "#resource#0",
+          "width": 15
+        },
+        "bg": {
+          "clip": {
+            "bottom": 0.9985251,
+            "left": 0.0008865248,
+            "right": 0.9991135,
+            "top": 0.00147492625
+          },
+          "compress": "RL",
+          "height": 676,
+          "metadata": null,
+          "originX": 563,
+          "originY": 338,
+          "pixel": "#resource#21",
+          "width": 1126
+        },
+        "par_kira": {
+          "compress": "RL",
+          "height": 84,
+          "metadata": null,
+          "originX": 42,
+          "originY": 42,
+          "pixel": "#resource#11",
+          "width": 84
+        },
+        "チヌ": {
+          "clip": {
+            "bottom": 0.998442352,
+            "left": 0.0,
+            "right": 1.0,
+            "top": 0.00155763235
+          },
+          "compress": "RL",
+          "height": 640,
+          "metadata": null,
+          "originX": 321,
+          "originY": 320,
+          "pixel": "#resource#23",
+          "width": 642
+        },
+        "羽月": {
+          "clip": {
+            "bottom": 0.9968553,
+            "left": 0.001633987,
+            "right": 0.998366,
+            "top": 0.003144654
+          },
+          "compress": "RL",
+          "height": 632,
+          "metadata": null,
+          "originX": 305,
+          "originY": 316,
+          "pixel": "#resource#22",
+          "width": 610
+        }
+      },
+      "metadata": null,
+      "type": 1
+    }
+  },
+  "spec": "krkr",
+  "stereovisionProfile": {
+    "dist_e2d": 972.0,
+    "dist_eye": 65.0,
+    "eye_angle_ltd": 1.0,
+    "f_level": 700,
+    "fov": 0.6,
+    "len_disp": 324.0
+  },
+  "version": 3.03
+}

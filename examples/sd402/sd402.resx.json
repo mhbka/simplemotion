@@ -1,0 +1,33 @@
+{
+  "PsbVersion": 3,
+  "PsbType": "Motion",
+  "Platform": "krkr",
+  "CryptKey": null,
+  "ExternalTextures": false,
+  "Context": {},
+  "Resources": {
+    "0": "sd402/SD402-悪土下座as.png",
+    "1": "sd402/SD402-目唄うem1.png",
+    "2": "sd402/SD402-目唄うem2.png",
+    "3": "sd402/SD402-振り回すbt3.png",
+    "4": "sd402/SD402-目唄う.png",
+    "5": "sd402/SD402-悪動揺em.png",
+    "6": "sd402/SD402-振り回すbt2.png",
+    "7": "sd402/SD402-振り回すbt1.png",
+    "8": "sd402/SD402-決めポーズef2.png",
+    "9": "sd402/SD402-目真剣.png",
+    "10": "sd402/SD402-振り回すef.png",
+    "11": "sd402/SD402-mask.png",
+    "12": "sd402/SD402-決めポーズef1.png",
+    "13": "sd402/SD402-成敗！.png",
+    "14": "sd402/SD402-悪土下座.png",
+    "15": "sd402/SD402-決めポーズ.png",
+    "16": "sd402/SD402-登場.png",
+    "17": "sd402/SD402-傘を突き出す.png",
+    "18": "sd402/SD402-悪動揺.png",
+    "19": "sd402/SD402-着地.png",
+    "20": "sd402/SD402-振り回す.png",
+    "21": "sd402/SD402-bg2.png",
+    "22": "sd402/SD402-bg.png"
+  }
+}

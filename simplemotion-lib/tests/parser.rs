@@ -1,6 +1,10 @@
 use simplemotion_lib::{
-    parse_motion_resources, FrameType, Layer, LayerType, ObjectType, ParseMotionError,
-    ResourceReference,
+    parse_motion_resources, parse_motion_resources_from_folder, FrameType, IconImageKind,
+    ImageLoadingError, Layer, LayerType, ObjectType, ParseMotionError, ResourceReference,
+};
+use std::{
+    fs,
+    time::{SystemTime, UNIX_EPOCH},
 };
 
 /// Collects layers recursively for assertions without adding a runtime traversal API.
@@ -14,10 +18,54 @@ fn collect_layers<'a>(
     }
 }
 
+/// Loads declared icon bytes from the example's animation-named image directory.
+#[test]
+fn loads_icon_images_from_an_animation_folder() {
+    let resources = parse_motion_resources_from_folder("../examples/sd002").unwrap();
+    let key = resources.icon_key("src/SD002/bg").unwrap();
+    let image = resources.icon_image(key).unwrap();
+
+    assert!(matches!(image.kind(), IconImageKind::Png));
+    assert!(!image.data().is_empty());
+}
+
+/// Reports every missing icon image instead of stopping at the first one.
+#[test]
+fn reports_all_missing_icon_images() {
+    let unique = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_nanos();
+    let animation_name = format!("simplemotion-image-errors-{unique}");
+    let directory = std::env::temp_dir().join(&animation_name);
+    let image_directory = directory.join(&animation_name);
+    fs::create_dir_all(&image_directory).unwrap();
+    fs::write(
+        directory.join(format!("{animation_name}.json")),
+        r#"{
+          "object": { "unit": { "type": 0, "motion": {} } },
+          "source": { "unit": { "icon": { "first": {}, "second": {} } } }
+        }"#,
+    )
+    .unwrap();
+
+    let result = parse_motion_resources_from_folder(&directory);
+    fs::remove_dir_all(&directory).unwrap();
+
+    let Err(ParseMotionError::ImageLoading(errors)) = result else {
+        panic!("expected aggregated image-loading errors");
+    };
+    assert_eq!(errors.len(), 2);
+    assert!(errors
+        .iter()
+        .all(|error| matches!(error, ImageLoadingError::Missing { .. })));
+}
+
 /// Parses the supplied simple motion and preserves its layer tree.
 #[test]
 fn parses_the_example_motion() {
-    let resources = parse_motion_resources(include_str!("../../examples/sd002.json")).unwrap();
+    let resources =
+        parse_motion_resources(include_str!("../../examples/sd002/sd002.json")).unwrap();
     let motion = resources
         .motion(resources.motion_key("SD002AA").unwrap())
         .unwrap();
@@ -45,7 +93,8 @@ fn parses_the_example_motion() {
 /// Resolves nested motion paths to stable motion handles.
 #[test]
 fn resolves_nested_motion_references() {
-    let resources = parse_motion_resources(include_str!("../../examples/sd002.json")).unwrap();
+    let resources =
+        parse_motion_resources(include_str!("../../examples/sd002/sd002.json")).unwrap();
     let key = resources.motion_key("SD002AA").unwrap();
     let motion = resources.motion(key).unwrap();
     let mut layers = Vec::new();
@@ -63,6 +112,17 @@ fn resolves_nested_motion_references() {
 
     assert_eq!(nested_frame.kind, FrameType::ParentTransformsStatically);
     assert_eq!(
+        nested_frame
+            .content
+            .as_ref()
+            .unwrap()
+            .motion
+            .as_ref()
+            .unwrap()
+            .time_offset,
+        Some(0)
+    );
+    assert_eq!(
         &nested_frame.content.as_ref().unwrap().src,
         &ResourceReference::Motion(resources.motion_key("swing1suma").unwrap())
     );
@@ -74,12 +134,24 @@ fn resolves_nested_motion_references() {
         animated.layer[0].frame_list[0].kind,
         FrameType::ParentTransformsDynamically
     );
+    assert_eq!(
+        animated.layer[0].frame_list[1]
+            .content
+            .as_ref()
+            .unwrap()
+            .motion
+            .as_ref()
+            .unwrap()
+            .time_offset,
+        Some(45)
+    );
 }
 
 /// Identifies motions that are not nested by another exported motion.
 #[test]
 fn identifies_motion_graph_roots() {
-    let resources = parse_motion_resources(include_str!("../../examples/sd002.json")).unwrap();
+    let resources =
+        parse_motion_resources(include_str!("../../examples/sd002/sd002.json")).unwrap();
     let expected = ["SD002AA", "SD002AB", "SD002BA", "SD002BB", "swing2suma"]
         .iter()
         .map(|label| resources.motion_key(label).unwrap())
@@ -91,7 +163,8 @@ fn identifies_motion_graph_roots() {
 /// Maps the sample's layer types to their observed frame-resource roles.
 #[test]
 fn identifies_layer_resource_roles() {
-    let resources = parse_motion_resources(include_str!("../../examples/sd002.json")).unwrap();
+    let resources =
+        parse_motion_resources(include_str!("../../examples/sd002/sd002.json")).unwrap();
     let root = resources
         .motion(resources.motion_key("SD002AA").unwrap())
         .unwrap();

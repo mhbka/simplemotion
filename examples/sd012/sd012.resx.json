@@ -1,0 +1,29 @@
+{
+  "PsbVersion": 3,
+  "PsbType": "Motion",
+  "Platform": "krkr",
+  "CryptKey": null,
+  "ExternalTextures": false,
+  "Context": {},
+  "Resources": {
+    "0": "sd012/SD012-1不安そうase.png",
+    "1": "sd012/SD012-0ベースase.png",
+    "2": "sd012/SD012-3これも違うのかase.png",
+    "3": "sd012/SD012-4軍人口調ef.png",
+    "4": "sd012/SD012-1不安そうemo.png",
+    "5": "sd012/SD012-3これも違うのかef.png",
+    "6": "sd012/SD012-hand.png",
+    "7": "sd012/SD012-0ベースef.png",
+    "8": "sd012/SD012-3これも違うのか.png",
+    "9": "sd012/SD012-猫耳.png",
+    "10": "sd012/SD012-4軍人口調.png",
+    "11": "sd012/SD012-0ベース.png",
+    "12": "sd012/SD012-1不安そう.png",
+    "13": "sd012/SD012-ベース服.png",
+    "14": "sd012/SD012-軍服.png",
+    "15": "sd012/SD012-2なるほど.png",
+    "16": "sd012/SD012-メイド服.png",
+    "17": "sd012/SD012-body.png",
+    "18": "sd012/SD012-bg.png"
+  }
+}

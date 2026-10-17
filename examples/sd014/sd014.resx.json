@@ -1,0 +1,30 @@
+{
+  "PsbVersion": 3,
+  "PsbType": "Motion",
+  "Platform": "krkr",
+  "CryptKey": null,
+  "ExternalTextures": false,
+  "Context": {},
+  "Resources": {
+    "0": "sd014/SD014-萌えキュンv.png",
+    "1": "sd014/SD014-heart2.png",
+    "2": "sd014/SD014-heart1.png",
+    "3": "sd014/SD014-4不満顔em1.png",
+    "4": "sd014/SD014-4不満顔em2.png",
+    "5": "sd014/SD014-0ベースem.png",
+    "6": "sd014/SD014-4不満顔.png",
+    "7": "sd014/SD014-腕腕基本.png",
+    "8": "sd014/SD014-1萌えきゅんef2.png",
+    "9": "sd014/SD014-3ひひ～.png",
+    "10": "sd014/SD014-腕萌えキュン手.png",
+    "11": "sd014/SD014-1萌えきゅんef1.png",
+    "12": "sd014/SD014-1萌えきゅん.png",
+    "13": "sd014/SD014-2駄目ですかね？.png",
+    "14": "sd014/SD014-0ベース.png",
+    "15": "sd014/SD014-3ひひ～ef1.png",
+    "16": "sd014/SD014-3ひひ～ef2.png",
+    "17": "sd014/SD014-body.png",
+    "18": "sd014/SD014-bg1.png",
+    "19": "sd014/SD014-bg2.png"
+  }
+}
