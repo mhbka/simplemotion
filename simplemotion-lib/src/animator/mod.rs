@@ -17,11 +17,20 @@ pub fn to_anim_commands(
     motion: MotionKey,
     time: u32,
     debug_layers: bool,
-    debug_layer_transforms: &mut Vec<(String, String, Affine2)>
+    debug_layer_transforms: &mut Vec<(String, String, Affine2)>,
 ) {
     buffer.clear();
     debug_layer_transforms.clear();
-    get_motion_commands_inner(buffer, motion, resources, None, Affine2::IDENTITY, time.into(), debug_layers, debug_layer_transforms);
+    get_motion_commands_inner(
+        buffer,
+        motion,
+        resources,
+        None,
+        Affine2::IDENTITY,
+        time.into(),
+        debug_layers,
+        debug_layer_transforms,
+    );
 }
 
 /// Get the commands for a layer, then its children.
@@ -33,25 +42,37 @@ fn get_layer_commands(
     local_time: MotionLocalTime,
     time: InheritedTime,
     debug_layers: bool,
-    debug_layer_transforms: &mut Vec<(String, String, Affine2)>
+    debug_layer_transforms: &mut Vec<(String, String, Affine2)>,
 ) {
     match layer.layer_type {
         LayerType::Icon => get_icon_command(resources, buffer, layer, layer_transform, local_time),
         LayerType::Layout => {
             // we already apply layer transform, so nothing needs to be done
         }
-        LayerType::Motion => {
-            get_motion_commands(buffer, resources, layer, layer_transform, time, local_time, debug_layers, debug_layer_transforms)
-        }
+        LayerType::Motion => get_motion_commands(
+            buffer,
+            resources,
+            layer,
+            layer_transform,
+            time,
+            local_time,
+            debug_layers,
+            debug_layer_transforms,
+        ),
         LayerType::Mask => debug!("SKIPPING MASK FOR NOW"),
         LayerType::Other(other) => debug!("UNKNOWN LAYER TYPE: {other}"),
     }
     for child_layer in &layer.children {
-        let child_local_transform = get_local_linear_interpolated_transform(local_time, &child_layer.frame_list);
+        let child_local_transform =
+            get_local_linear_interpolated_transform(local_time, &child_layer.frame_list);
         let child_layer_transform = layer_transform * child_local_transform;
 
         if debug_layers {
-            debug_layer_transforms.push((layer.label.clone(), child_layer.label.clone(), child_layer_transform));
+            debug_layer_transforms.push((
+                layer.label.clone(),
+                child_layer.label.clone(),
+                child_layer_transform,
+            ));
         }
 
         get_layer_commands(
@@ -62,7 +83,7 @@ fn get_layer_commands(
             local_time,
             time,
             debug_layers,
-            debug_layer_transforms
+            debug_layer_transforms,
         );
     }
 }
@@ -85,34 +106,26 @@ fn get_icon_command(
             panic!("Icon layer contains frame with non-icon source: {keyframe:?}");
         };
         let icon_info = resources.icon(icon).expect("icon should exist");
-        let opacity = if let Some(opa) = content.opa {
-            opa
-        } else {
-            1.0
-        };
+        let opacity = content.opa;
 
         // origin translation (equation comes from the krkr2 docs)
         // (or maybe just common sense)
         let origin_transform = Affine2::from_translation(Vec2 {
-            x: -icon_info.value.origin_x - content.ox.unwrap_or(0.0),
-            y: -icon_info.value.origin_y - content.oy.unwrap_or(0.0),
+            x: -icon_info.value.origin_x - content.ox,
+            y: -icon_info.value.origin_y - content.oy,
         });
         transform *= origin_transform;
 
         // screen translation -- basically "move" the icon to the centre of the screen
-        let screen_translation = Affine2::from_translation(
-            Vec2 { 
-                x: resources.screen_size.width / 2.0,
-                y: resources.screen_size.height / 2.0
-            }
-        );
+        let screen_translation = Affine2::from_translation(Vec2 {
+            x: resources.screen_size.width / 2.0,
+            y: resources.screen_size.height / 2.0,
+        });
         transform = screen_translation * transform;
 
         // scale from unit quad to the icon's size
         // (we work with unit quad first, scale up, then sample for the image)
-        transform *= Affine2::from_scale(
-            Vec2::new(icon_info.value.width, icon_info.value.height)
-        );
+        transform *= Affine2::from_scale(Vec2::new(icon_info.value.width, icon_info.value.height));
 
         let command = AnimationCommand {
             icon,
@@ -137,7 +150,7 @@ fn get_motion_commands(
     mut time: InheritedTime,
     local_time: MotionLocalTime,
     debug_layers: bool,
-    debug_layer_transforms: &mut Vec<(String, String, Affine2)>
+    debug_layer_transforms: &mut Vec<(String, String, Affine2)>,
 ) {
     let Some(active_keyframe_index) = active_frame_at(local_time, &layer.frame_list) else {
         return;
@@ -155,14 +168,14 @@ fn get_motion_commands(
                 .and_then(|motion| motion.time_offset),
         );
         get_motion_commands_inner(
-            buffer, 
-            motion, 
-            resources, 
+            buffer,
+            motion,
+            resources,
             Some(layer.label.clone()),
-            parent_transform, 
-            time, 
-            debug_layers, 
-            debug_layer_transforms
+            parent_transform,
+            time,
+            debug_layers,
+            debug_layer_transforms,
         );
     }
 }
@@ -176,7 +189,7 @@ fn get_motion_commands_inner(
     parent_transform: Affine2,
     time: InheritedTime,
     debug_layers: bool,
-    debug_layer_transforms: &mut Vec<(String, String, Affine2)>
+    debug_layer_transforms: &mut Vec<(String, String, Affine2)>,
 ) {
     let motion = resources.motion(motion).expect("motion should exist");
     let local_time = MotionLocalTime::calculate(time, motion.loop_time, motion.last_time);
@@ -192,14 +205,14 @@ fn get_motion_commands_inner(
         }
 
         get_layer_commands(
-            layer, 
-            resources, 
-            buffer, 
-            layer_transform, 
-            local_time, 
+            layer,
+            resources,
+            buffer,
+            layer_transform,
+            local_time,
             time,
             debug_layers,
-            debug_layer_transforms
+            debug_layer_transforms,
         );
     }
 }

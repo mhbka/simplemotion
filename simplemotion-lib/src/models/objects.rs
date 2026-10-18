@@ -70,27 +70,46 @@ pub struct KeyFrameContent<S> {
     /// The image or nested-motion reference.
     pub src: S,
     /// Horizontal source offset.
-    pub ox: Option<f32>,
+    #[serde(default)]
+    pub ox: f32,
     /// Vertical source offset.
-    pub oy: Option<f32>,
+    #[serde(default)]
+    pub oy: f32,
     /// Translation in x, y, z order.
-    pub coord: Option<[f32; 3]>,
+    #[serde(default)]
+    pub coord: [f32; 3],
     /// Settings used when this frame references a child motion.
     pub motion: Option<MotionFrame>,
     /// Rotation angle.
-    pub angle: Option<f32>,
+    #[serde(default)]
+    pub angle: f32,
     /// Horizontal scale.
-    pub zx: Option<f32>,
+    #[serde(default = "default_scale")]
+    pub zx: f32,
     /// Vertical scale.
-    pub zy: Option<f32>,
+    #[serde(default = "default_scale")]
+    pub zy: f32,
     /// Horizontal shear.
-    pub sx: Option<f32>,
+    #[serde(default)]
+    pub sx: f32,
     /// Vertical shear.
-    pub sy: Option<f32>,
+    #[serde(default)]
+    pub sy: f32,
     /// Opacity.
-    pub opa: Option<f32>,
+    #[serde(default = "default_opacity")]
+    pub opa: f32,
     /// Mask/stencil flags.
     pub mask: Option<u32>,
+}
+
+/// Supplies the neutral scale for omitted transform fields.
+fn default_scale() -> f32 {
+    1.0
+}
+
+/// Supplies the fully opaque value for omitted opacity fields.
+fn default_opacity() -> f32 {
+    1.0
 }
 
 /// The playback settings of a nested motion frame.

@@ -5,16 +5,16 @@ use simplemotion_lib::KeyFrameContent;
 fn content() -> KeyFrameContent<&'static str> {
     KeyFrameContent {
         src: "sprite",
-        ox: None,
-        oy: None,
-        coord: None,
+        ox: 0.0,
+        oy: 0.0,
+        coord: [0.0, 0.0, 0.0],
         motion: None,
-        angle: None,
-        zx: None,
-        zy: None,
-        sx: None,
-        sy: None,
-        opa: None,
+        angle: 0.0,
+        zx: 1.0,
+        zy: 1.0,
+        sx: 0.0,
+        sy: 0.0,
+        opa: 1.0,
         mask: None,
     }
 }
@@ -23,14 +23,14 @@ fn content() -> KeyFrameContent<&'static str> {
 #[test]
 fn interpolates_transform_components() {
     let mut start = content();
-    start.coord = Some([0.0, 0.0, 0.0]);
-    start.zx = Some(2.0);
-    start.zy = Some(4.0);
+    start.coord = [0.0, 0.0, 0.0];
+    start.zx = 2.0;
+    start.zy = 4.0;
 
     let mut end = content();
-    end.coord = Some([10.0, 20.0, 0.0]);
-    end.zx = Some(4.0);
-    end.zy = Some(6.0);
+    end.coord = [10.0, 20.0, 0.0];
+    end.zx = 4.0;
+    end.zy = 6.0;
 
     let transform = start.linearly_interpolate_to_affine2(&end, 0.5);
 
@@ -38,26 +38,26 @@ fn interpolates_transform_components() {
     assert_eq!(transform.transform_point2(Vec2::ONE), Vec2::new(8.0, 15.0));
 }
 
-/// Holds a supplied property when the other endpoint does not define it.
+/// Interpolates an authored property toward the deserialized default value.
 #[test]
-fn preserves_sparse_transform_properties() {
+fn interpolates_transform_properties_toward_defaults() {
     let mut start = content();
-    start.zx = Some(2.0);
+    start.zx = 2.0;
 
     let mut end = content();
-    end.coord = Some([10.0, 0.0, 0.0]);
+    end.coord = [10.0, 0.0, 0.0];
 
     let transform = start.linearly_interpolate_to_affine2(&end, 0.5);
 
-    assert_eq!(transform.transform_point2(Vec2::ZERO), Vec2::new(10.0, 0.0));
-    assert_eq!(transform.transform_point2(Vec2::X), Vec2::new(12.0, 0.0));
+    assert_eq!(transform.transform_point2(Vec2::ZERO), Vec2::new(5.0, 0.0));
+    assert_eq!(transform.transform_point2(Vec2::X), Vec2::new(6.5, 0.0));
 }
 
 /// Includes shear when composing the interpolated affine transform.
 #[test]
 fn composes_shear_into_transform() {
     let mut start = content();
-    start.sx = Some(1.0);
+    start.sx = 1.0;
 
     let transform = start.linearly_interpolate_to_affine2(&start, 0.0);
 
@@ -68,11 +68,25 @@ fn composes_shear_into_transform() {
 #[test]
 fn interprets_angles_as_degrees() {
     let mut start = content();
-    start.angle = Some(180.0);
+    start.angle = 180.0;
 
     let transform = start.linearly_interpolate_to_affine2(&start, 0.0);
     let point = transform.transform_point2(Vec2::X);
 
     assert!((point.x + 1.0).abs() < 0.0001);
     assert!(point.y.abs() < 0.0001);
+}
+
+/// Rotates across zero instead of taking the long way around the circle.
+#[test]
+fn interpolates_angles_across_zero_by_the_shortest_turn() {
+    let start = content();
+    let mut end = content();
+    end.angle = 355.0;
+
+    let transform = start.linearly_interpolate_to_affine2(&end, 0.5);
+    let point = transform.transform_point2(Vec2::X);
+
+    assert!((point.x - 2.5_f32.to_radians().cos()).abs() < 0.0001);
+    assert!((point.y + 2.5_f32.to_radians().sin()).abs() < 0.0001);
 }

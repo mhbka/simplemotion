@@ -1,6 +1,6 @@
+use crate::models::objects::{Icon, Motion, ObjectType, ScreenSize};
 use serde::Deserialize;
 use std::collections::BTreeMap;
-use crate::models::objects::{Icon, Motion, ObjectType, ScreenSize};
 
 /// The unmodified document shape read directly from Motion JSON.
 #[derive(Debug, Deserialize)]

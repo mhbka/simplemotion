@@ -1,7 +1,24 @@
 use simplemotion_lib::{
     parse_motion_resources, parse_motion_resources_from_folder, FrameType, IconImageKind,
-    ImageLoadingError, Layer, LayerType, ObjectType, ParseMotionError, ResourceReference,
+    ImageLoadingError, KeyFrameContent, Layer, LayerType, ObjectType, ParseMotionError,
+    ResourceReference,
 };
+
+/// Applies neutral transform defaults to omitted fields in non-empty frame content.
+#[test]
+fn defaults_omitted_frame_transform_fields() {
+    let content: KeyFrameContent<String> = serde_json::from_str(r#"{"src":"sprite"}"#).unwrap();
+
+    assert_eq!(content.coord, [0.0, 0.0, 0.0]);
+    assert_eq!(content.angle, 0.0);
+    assert_eq!(content.sx, 0.0);
+    assert_eq!(content.sy, 0.0);
+    assert_eq!(content.ox, 0.0);
+    assert_eq!(content.oy, 0.0);
+    assert_eq!(content.zx, 1.0);
+    assert_eq!(content.zy, 1.0);
+    assert_eq!(content.opa, 1.0);
+}
 use std::{
     fs,
     time::{SystemTime, UNIX_EPOCH},

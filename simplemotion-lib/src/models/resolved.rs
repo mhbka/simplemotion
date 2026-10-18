@@ -84,7 +84,7 @@ pub struct MotionResources {
     icons: SlotMap<IconKey, Named<Icon>>,
     /// The bytes of the icon images.
     icon_images: SecondaryMap<IconKey, IconImage>,
-    
+
     // labels -> slotmap keys
     motion_labels: BTreeMap<String, MotionKey>,
     motion_paths: HashMap<String, MotionKey>,
@@ -118,7 +118,7 @@ impl MotionResources {
             icon_images: SecondaryMap::new(),
             motion_labels: BTreeMap::new(),
             motion_paths: HashMap::new(),
-            icon_paths: HashMap::new()
+            icon_paths: HashMap::new(),
         };
 
         resources.insert_icons(source);

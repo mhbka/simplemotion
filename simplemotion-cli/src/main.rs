@@ -11,10 +11,14 @@ async fn main() {
         eprintln!("Usage: simplemotion-cli <animation-folder> <root-number>");
         process::exit(2);
     });
-    let root = env::args().nth(2).unwrap_or_else(|| {
-        eprintln!("Usage: simplemotion-cli <animation-folder>  <root-number>");
-        process::exit(2);
-    }).parse::<usize>().unwrap();
+    let root = env::args()
+        .nth(2)
+        .unwrap_or_else(|| {
+            eprintln!("Usage: simplemotion-cli <animation-folder>  <root-number>");
+            process::exit(2);
+        })
+        .parse::<usize>()
+        .unwrap();
     let resources = parse_motion_resources_from_folder(&folder).unwrap_or_else(|error| {
         eprintln!("Could not load {folder}: {error}");
         process::exit(1);
@@ -41,8 +45,15 @@ async fn main() {
             debug_layers = !debug_layers;
         }
 
-        let frame = (0.0 * 60.0) as u32;
-        to_anim_commands(&mut commands, &resources, root, frame, debug_layers, &mut debug_layer_transforms);
+        let frame = (get_time() * 60.0) as u32;
+        to_anim_commands(
+            &mut commands,
+            &resources,
+            root,
+            frame,
+            debug_layers,
+            &mut debug_layer_transforms,
+        );
 
         clear_background(BLACK);
         for command in &commands {
@@ -53,7 +64,9 @@ async fn main() {
             draw_command(texture, clip, command.transform, command.opacity);
         }
         let line_height = 18.0;
-        let menu_height = (usize::max(commands.len(), debug_layer_transforms.len())  as f32 + 1.0) * line_height + 12.0;
+        let menu_height = (usize::max(commands.len(), debug_layer_transforms.len()) as f32 + 1.0)
+            * line_height
+            + 12.0;
         draw_rectangle(
             0.0,
             0.0,
@@ -61,24 +74,22 @@ async fn main() {
             menu_height,
             Color::new(0.0, 0.0, 0.0, 0.7),
         );
-        draw_text_ex(
-            &format!("frame: {frame}"), 
-            8.0, 18.0, 
-            text_params.clone()
-        );
-        
+        draw_text_ex(&format!("frame: {frame}"), 8.0, 18.0, text_params.clone());
+
         if debug_layers {
             for (index, (parent, current, transform)) in debug_layer_transforms.iter().enumerate() {
                 let transform_info = transform.to_scale_angle_translation();
                 let translation = format!("({:.1}, {:.1})", transform_info.2.x, transform_info.2.y);
                 let text = format!(
-                    "{parent} -> {current} -- angle: {:.1}, translation: {}", 
-                    transform_info.1.to_degrees(), translation
+                    "{parent} -> {current} -- angle: {:.1}, translation: {}",
+                    transform_info.1.to_degrees(),
+                    translation
                 );
                 draw_text_ex(
-                    &text, 
-                    8.0, 36.0 + index as f32 * line_height,
-                    text_params.clone()
+                    &text,
+                    8.0,
+                    36.0 + index as f32 * line_height,
+                    text_params.clone(),
                 );
             }
         } else {
@@ -90,17 +101,19 @@ async fn main() {
                 let transform_info = command.transform.to_scale_angle_translation();
                 let translation = format!("({:.1}, {:.1})", transform_info.2.x, transform_info.2.y);
                 let text = format!(
-                    "{label} - scale: {:.1}, angle: {:.1}, translation: {}", 
-                    transform_info.0, transform_info.1.to_degrees(), translation
+                    "{label} - scale: {:.1}, angle: {:.1}, translation: {}",
+                    transform_info.0,
+                    transform_info.1.to_degrees(),
+                    translation
                 );
                 draw_text_ex(
-                    &text, 
-                    8.0, 36.0 + index as f32 * line_height,
-                    text_params.clone()
+                    &text,
+                    8.0,
+                    36.0 + index as f32 * line_height,
+                    text_params.clone(),
                 );
             }
         }
-        
 
         next_frame().await;
     }

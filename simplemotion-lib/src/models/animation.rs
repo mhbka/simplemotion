@@ -26,19 +26,14 @@ impl TransformState {
         ratio: f32,
     ) -> Self {
         let ratio = ratio.clamp(0.0, 1.0);
-        let start_coord = start.coord.map(|coord| Vec2::new(coord[0], coord[1]));
-        let end_coord = end.coord.map(|coord| Vec2::new(coord[0], coord[1]));
         Self {
-            translation: lerp_optional_vec2(start_coord, end_coord, Vec2::ZERO, ratio),
-            angle: lerp_optional(start.angle, end.angle, 0.0, ratio).to_radians(),
-            scale: Vec2::new(
-                lerp_optional(start.zx, end.zx, 1.0, ratio),
-                lerp_optional(start.zy, end.zy, 1.0, ratio),
+            translation: Vec2::new(
+                lerp(start.coord[0], end.coord[0], ratio),
+                lerp(start.coord[1], end.coord[1], ratio),
             ),
-            shear: Vec2::new(
-                lerp_optional(start.sx, end.sx, 0.0, ratio),
-                lerp_optional(start.sy, end.sy, 0.0, ratio),
-            ),
+            angle: lerp_angle_degrees(start.angle, end.angle, ratio).to_radians(),
+            scale: Vec2::new(lerp(start.zx, end.zx, ratio), lerp(start.zy, end.zy, ratio)),
+            shear: Vec2::new(lerp(start.sx, end.sx, ratio), lerp(start.sy, end.sy, ratio)),
         }
     }
 
@@ -57,22 +52,8 @@ fn lerp(start: f32, end: f32, ratio: f32) -> f32 {
     start + (end - start) * ratio
 }
 
-/// Blends optional scalars. Returns only the known value if either is `None`,
-/// and returns `default` if both are `None`.
-fn lerp_optional(start: Option<f32>, end: Option<f32>, default: f32, ratio: f32) -> f32 {
-    match (start, end) {
-        (Some(start), Some(end)) => lerp(start, end, ratio),
-        (Some(value), None) | (None, Some(value)) => value,
-        (None, None) => default,
-    }
-}
-
-/// Blends optional vectors. Returns only the known value if either is `None`,
-/// and returns `default` if both are `None`.
-fn lerp_optional_vec2(start: Option<Vec2>, end: Option<Vec2>, default: Vec2, ratio: f32) -> Vec2 {
-    match (start, end) {
-        (Some(start), Some(end)) => start.lerp(end, ratio),
-        (Some(value), None) | (None, Some(value)) => value,
-        (None, None) => default,
-    }
+/// Blends angles through the shortest turn, treating 0 and 360 degrees as equal.
+fn lerp_angle_degrees(start: f32, end: f32, ratio: f32) -> f32 {
+    let delta = (end - start + 180.0).rem_euclid(360.0) - 180.0;
+    start + delta * ratio
 }
