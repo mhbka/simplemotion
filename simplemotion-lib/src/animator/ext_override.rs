@@ -11,7 +11,7 @@ pub struct OverrideLayerState {
     pub opa: f32,
 }
 
-/// Stores external layer-state replacements without modifying parsed resources.
+/// Overrides for the animation.
 #[derive(Default)]
 pub struct ExternalOverrides {
     layer_states: HashMap<LayerPath, OverrideLayerState>,

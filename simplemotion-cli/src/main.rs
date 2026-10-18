@@ -82,6 +82,8 @@ async fn main() {
     let mut debug_info = DebugInfo::new(true);
     let mut animation_started_at = get_time();
     let mut animation_menu = AnimationMenu::Closed;
+    let mut animation_menu_scroll = 0.0;
+    let mut root_menu_scroll = 0.0;
 
     let mut last_second = 0;
 
@@ -144,13 +146,16 @@ async fn main() {
             text_params.clone(),
         );
 
-
         let now_second = frame / 60;
-        if now_second > last_second {
-            println!("now: {now_second}");
+        if now_second < last_second {
             last_second = now_second;
-            let replacee_path1 = LayerPath::from_string("SD002AA/mask/bg/nanami/レイヤ1/七海体".to_string());
-            let replacement_path1 = LayerPath::from_string("SD002AB/mask/bg/nanami/レイヤ1/七海体".to_string());
+        }
+        if now_second > last_second {
+            last_second = now_second;
+            let replacee_path1 =
+                LayerPath::from_string("SD002AA/mask/bg/nanami/レイヤ1/七海体".to_string());
+            let replacement_path1 =
+                LayerPath::from_string("SD002AB/mask/bg/nanami/レイヤ1/七海体".to_string());
             if last_second % 2 == 0 {
                 overrides.replace_layer(replacee_path1, replacement_path1);
             } else {
@@ -203,19 +208,26 @@ async fn main() {
         match animation_menu {
             AnimationMenu::Closed => {}
             AnimationMenu::Animations => {
-                if let Some(selected_animation) =
-                    draw_animation_menu(&animations, animation_index, &font)
-                {
+                if let Some(selected_animation) = draw_animation_menu(
+                    &animations,
+                    animation_index,
+                    &font,
+                    &mut animation_menu_scroll,
+                ) {
                     animation_index = selected_animation;
                     root_index = 0;
                     animation_started_at = get_time();
+                    root_menu_scroll = 0.0;
                     animation_menu = AnimationMenu::Roots;
                 }
             }
             AnimationMenu::Roots => {
-                if let Some(selected_root) =
-                    draw_root_menu(&animations[animation_index], root_index, &font)
-                {
+                if let Some(selected_root) = draw_root_menu(
+                    &animations[animation_index],
+                    root_index,
+                    &font,
+                    &mut root_menu_scroll,
+                ) {
                     root_index = selected_root;
                     animation_started_at = get_time();
                 }
@@ -283,10 +295,14 @@ fn draw_animation_menu(
     animations: &[LoadedAnimation],
     current_animation_index: usize,
     font: &Font,
+    scroll: &mut f32,
 ) -> Option<usize> {
     let line_height = 22.0;
     let padding = 12.0;
-    let mut y = padding;
+    let list_top = padding + line_height + 8.0;
+    let content_height = animations.len() as f32 * line_height;
+    update_menu_scroll(scroll, content_height, list_top);
+    let mut y = list_top - *scroll;
     let mouse = mouse_position();
 
     draw_rectangle(
@@ -307,8 +323,6 @@ fn draw_animation_menu(
             ..Default::default()
         },
     );
-    y += line_height + 8.0;
-
     for (animation_index, animation) in animations.iter().enumerate() {
         let is_current = animation_index == current_animation_index;
         let row_color = if is_current {
@@ -316,22 +330,25 @@ fn draw_animation_menu(
         } else {
             Color::new(0.12, 0.12, 0.12, 0.9)
         };
-        draw_rectangle(padding, y, 360.0, line_height - 2.0, row_color);
-        draw_text_ex(
-            &animation.label,
-            padding + 4.0,
-            y + 16.0,
-            TextParams {
-                font: Some(font),
-                font_size: 16,
-                color: WHITE,
-                ..Default::default()
-            },
-        );
+        if y + line_height > list_top && y < screen_height() {
+            draw_rectangle(padding, y, 360.0, line_height - 2.0, row_color);
+            draw_text_ex(
+                &animation.label,
+                padding + 4.0,
+                y + 16.0,
+                TextParams {
+                    font: Some(font),
+                    font_size: 16,
+                    color: WHITE,
+                    ..Default::default()
+                },
+            );
+        }
 
         let clicked = is_mouse_button_pressed(MouseButton::Left)
             && mouse.0 >= padding
             && mouse.0 <= padding + 360.0
+            && mouse.1 >= list_top
             && mouse.1 >= y
             && mouse.1 <= y + line_height - 2.0;
         if clicked {
@@ -348,10 +365,14 @@ fn draw_root_menu(
     animation: &LoadedAnimation,
     current_root_index: usize,
     font: &Font,
+    scroll: &mut f32,
 ) -> Option<usize> {
     let line_height = 22.0;
     let padding = 12.0;
-    let mut y = padding;
+    let list_top = padding + line_height + 8.0;
+    let content_height = animation.resources.roots.len() as f32 * line_height;
+    update_menu_scroll(scroll, content_height, list_top);
+    let mut y = list_top - *scroll;
     let mouse = mouse_position();
 
     draw_rectangle(
@@ -375,8 +396,6 @@ fn draw_root_menu(
             ..Default::default()
         },
     );
-    y += line_height + 8.0;
-
     for (root_index, root) in animation.resources.roots.iter().enumerate() {
         let label = animation
             .resources
@@ -389,22 +408,25 @@ fn draw_root_menu(
         } else {
             Color::new(0.12, 0.12, 0.12, 0.9)
         };
-        draw_rectangle(padding, y, 360.0, line_height - 2.0, row_color);
-        draw_text_ex(
-            &format!("{root_index}: {label}"),
-            padding + 4.0,
-            y + 16.0,
-            TextParams {
-                font: Some(font),
-                font_size: 16,
-                color: WHITE,
-                ..Default::default()
-            },
-        );
+        if y + line_height > list_top && y < screen_height() {
+            draw_rectangle(padding, y, 360.0, line_height - 2.0, row_color);
+            draw_text_ex(
+                &format!("{root_index}: {label}"),
+                padding + 4.0,
+                y + 16.0,
+                TextParams {
+                    font: Some(font),
+                    font_size: 16,
+                    color: WHITE,
+                    ..Default::default()
+                },
+            );
+        }
 
         let clicked = is_mouse_button_pressed(MouseButton::Left)
             && mouse.0 >= padding
             && mouse.0 <= padding + 360.0
+            && mouse.1 >= list_top
             && mouse.1 >= y
             && mouse.1 <= y + line_height - 2.0;
         if clicked {
@@ -414,6 +436,13 @@ fn draw_root_menu(
     }
 
     None
+}
+
+/// Updates one menu's scroll offset from the mouse wheel.
+fn update_menu_scroll(scroll: &mut f32, content_height: f32, list_top: f32) {
+    let max_scroll = (content_height - (screen_height() - list_top)).max(0.0);
+    let (_, wheel_y) = mouse_wheel();
+    *scroll = (*scroll - wheel_y * 3.0 * 22.0).clamp(0.0, max_scroll);
 }
 
 /// Uploads every loaded icon image to a GPU texture.

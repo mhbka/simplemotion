@@ -4,7 +4,7 @@ use crate::{
     FrameType, KeyFrame, Layer, LayerType, MotionKey, MotionResources, ResourceReference,
 };
 use glam::Affine2;
-use tracing::{debug, trace};
+use tracing::{debug, trace, warn};
 
 mod debug;
 mod ext_override;
@@ -190,10 +190,8 @@ fn get_motion_commands(
     let active_keyframe = &layer.frame_list[active_keyframe_index];
     if let Some(content) = &active_keyframe.content {
         let ResourceReference::Motion(motion) = content.src else {
-            panic!(
-                "Motion layer has non-motion keyframe: {:?}",
-                active_keyframe
-            );
+            debug!("Motion layer has non-motion keyframe, not animating: {active_keyframe:?}");
+            return;
         };
         time = time.inherit(
             active_keyframe.time,
