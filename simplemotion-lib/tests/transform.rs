@@ -53,6 +53,21 @@ fn interpolates_transform_properties_toward_defaults() {
     assert_eq!(transform.transform_point2(Vec2::X), Vec2::new(6.5, 0.0));
 }
 
+/// Keeps a layer anchor separate from the affine inherited by structural children.
+#[test]
+fn keeps_anchor_offsets_out_of_the_inherited_transform() {
+    let mut start = content();
+    start.angle = 90.0;
+
+    let mut end = content();
+    end.angle = 90.0;
+    end.ox = 10.0;
+
+    let transform = start.linearly_interpolate_to_affine2(&end, 0.5);
+
+    assert_eq!(transform.transform_point2(Vec2::ZERO), Vec2::ZERO);
+}
+
 /// Includes shear when composing the interpolated affine transform.
 #[test]
 fn composes_shear_into_transform() {

@@ -1,6 +1,9 @@
 use std::sync::Arc;
 
-use crate::{animation::TransformState, numeric_type_enum};
+use crate::{
+    animation::{InterpolatedLayerState, TransformState},
+    numeric_type_enum,
+};
 use glam::Affine2;
 use serde::{Deserialize, Deserializer};
 
@@ -124,7 +127,12 @@ pub struct MotionFrame {
 impl<S> KeyFrameContent<S> {
     /// Linearly interpolates transform properties and composes them into an affine matrix.
     pub fn linearly_interpolate_to_affine2(&self, other: &Self, ratio: f32) -> Affine2 {
-        TransformState::interpolate(self, other, ratio).to_affine2()
+        self.linearly_interpolate(other, ratio).transform
+    }
+
+    /// Linearly interpolates every render property used by the simplified animator.
+    pub(crate) fn linearly_interpolate(&self, other: &Self, ratio: f32) -> InterpolatedLayerState {
+        TransformState::interpolate(self, other, ratio).to_interpolated_layer_state()
     }
 }
 

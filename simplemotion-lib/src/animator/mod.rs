@@ -1,9 +1,9 @@
 use crate::{
-    animation::AnimationCommand,
+    animation::{AnimationCommand, InterpolatedLayerState},
     animator::time::{InheritedTime, MotionLocalTime},
     FrameType, KeyFrame, Layer, LayerType, MotionKey, MotionResources, ResourceReference,
 };
-use glam::{Affine2, Vec2};
+use glam::Affine2;
 use tracing::debug;
 
 mod time;
@@ -20,13 +20,15 @@ pub fn to_anim_commands(
     debug_layer_transforms: &mut Vec<(String, String, Affine2)>,
 ) {
     buffer.clear();
-    debug_layer_transforms.clear();
+    if debug_layers {
+        debug_layer_transforms.clear();
+    }
     get_motion_commands_inner(
         buffer,
         motion,
         resources,
         None,
-        Affine2::IDENTITY,
+        InterpolatedLayerState::identity(),
         time.into(),
         debug_layers,
         debug_layer_transforms,
@@ -38,40 +40,44 @@ fn get_layer_commands(
     layer: &Layer<ResourceReference>,
     resources: &MotionResources,
     buffer: &mut Vec<AnimationCommand>,
-    layer_transform: Affine2,
+    layer_state: InterpolatedLayerState,
     local_time: MotionLocalTime,
     time: InheritedTime,
     debug_layers: bool,
     debug_layer_transforms: &mut Vec<(String, String, Affine2)>,
 ) {
     match layer.layer_type {
-        LayerType::Icon => get_icon_command(resources, buffer, layer, layer_transform, local_time),
-        LayerType::Layout => {
-            // we already apply layer transform, so nothing needs to be done
-        }
+        LayerType::Icon => get_icon_command(
+            resources, 
+            buffer, 
+            layer, 
+            layer_state, 
+            local_time
+        ),
         LayerType::Motion => get_motion_commands(
             buffer,
             resources,
             layer,
-            layer_transform,
+            layer_state,
             time,
             local_time,
             debug_layers,
             debug_layer_transforms,
         ),
+        LayerType::Layout => {}, // already applied layer transform, so nothing needs to be done
         LayerType::Mask => debug!("SKIPPING MASK FOR NOW"),
         LayerType::Other(other) => debug!("UNKNOWN LAYER TYPE: {other}"),
     }
     for child_layer in &layer.children {
-        let child_local_transform =
-            get_local_linear_interpolated_transform(local_time, &child_layer.frame_list);
-        let child_layer_transform = layer_transform * child_local_transform;
+        let child_local_state =
+            get_local_linear_interpolated_state(local_time, &child_layer.frame_list);
+        let child_layer_state = layer_state.with_child(child_local_state);
 
         if debug_layers {
             debug_layer_transforms.push((
                 layer.label.clone(),
                 child_layer.label.clone(),
-                child_layer_transform,
+                child_layer_state.transform,
             ));
         }
 
@@ -79,7 +85,7 @@ fn get_layer_commands(
             child_layer,
             resources,
             buffer,
-            child_layer_transform,
+            child_layer_state,
             local_time,
             time,
             debug_layers,
@@ -93,11 +99,11 @@ fn get_icon_command(
     resources: &MotionResources,
     buffer: &mut Vec<AnimationCommand>,
     layer: &Layer<ResourceReference>,
-    mut transform: Affine2,
+    layer_state: InterpolatedLayerState,
     local_time: MotionLocalTime,
 ) {
     let Some(active_keyframe_index) = active_frame_at(local_time, &layer.frame_list) else {
-        // don't animate anything if we don't have an active frame (should only be if we're before the first frame)
+        // don't animate if we don't have an active frame (should only happen if we're before the first frame)
         return;
     };
     let active_keyframe = &layer.frame_list[active_keyframe_index];
@@ -106,18 +112,16 @@ fn get_icon_command(
             panic!("Icon layer contains frame with non-icon source: {keyframe:?}");
         };
         let icon_info = resources.icon(icon).expect("icon should exist");
-        let opacity = content.opa;
-
         // origin translation (equation comes from the krkr2 docs)
         // (or maybe just common sense)
-        let origin_transform = Affine2::from_translation(Vec2 {
-            x: -icon_info.value.origin_x - content.ox,
-            y: -icon_info.value.origin_y - content.oy,
-        });
-        transform *= origin_transform;
+        let origin_offset = glam::Vec2::new(
+            -icon_info.value.origin_x - layer_state.anchor_offset.x,
+            -icon_info.value.origin_y - layer_state.anchor_offset.y,
+        );
+        let mut transform = layer_state.transform * Affine2::from_translation(origin_offset);
 
         // screen translation -- basically "move" the icon to the centre of the screen
-        let screen_translation = Affine2::from_translation(Vec2 {
+        let screen_translation = Affine2::from_translation(glam::Vec2 {
             x: resources.screen_size.width / 2.0,
             y: resources.screen_size.height / 2.0,
         });
@@ -125,28 +129,26 @@ fn get_icon_command(
 
         // scale from unit quad to the icon's size
         // (we work with unit quad first, scale up, then sample for the image)
-        transform *= Affine2::from_scale(Vec2::new(icon_info.value.width, icon_info.value.height));
+        transform *= Affine2::from_scale(glam::Vec2::new(
+            icon_info.value.width,
+            icon_info.value.height,
+        ));
 
         let command = AnimationCommand {
             icon,
             transform,
-            opacity,
+            opacity: layer_state.opacity,
         };
         buffer.push(command);
     }
 }
 
 /// Get the animation commands for a motion.
-///
-/// A motion loops on its own local time, not related to any parent motion.
-///
-/// TODO: is a motion's local time offset by the time it starts in its frame?
-/// if so i need to add that logic here
 fn get_motion_commands(
     buffer: &mut Vec<AnimationCommand>,
     resources: &MotionResources,
     layer: &Layer<ResourceReference>,
-    mut parent_transform: Affine2,
+    layer_state: InterpolatedLayerState,
     mut time: InheritedTime,
     local_time: MotionLocalTime,
     debug_layers: bool,
@@ -167,16 +169,12 @@ fn get_motion_commands(
                 .as_ref()
                 .and_then(|motion| motion.time_offset),
         );
-
-        // anchor at the motion's origin
-        parent_transform *= Affine2::from_translation(Vec2::new(-content.ox, -content.oy));
-
         get_motion_commands_inner(
             buffer,
             motion,
             resources,
             Some(layer.label.clone()),
-            parent_transform,
+            layer_state.into_motion_parent_state(),
             time,
             debug_layers,
             debug_layer_transforms,
@@ -190,7 +188,7 @@ fn get_motion_commands_inner(
     motion: MotionKey,
     resources: &MotionResources,
     parent_layer_name: Option<String>,
-    parent_transform: Affine2,
+    parent_state: InterpolatedLayerState,
     time: InheritedTime,
     debug_layers: bool,
     debug_layer_transforms: &mut Vec<(String, String, Affine2)>,
@@ -198,21 +196,24 @@ fn get_motion_commands_inner(
     let motion = resources.motion(motion).expect("motion should exist");
     let local_time = MotionLocalTime::calculate(time, motion.loop_time, motion.last_time);
     for layer in &motion.layer {
-        let local_transform =
-            get_local_linear_interpolated_transform(local_time, &layer.frame_list);
-        let mut layer_transform = parent_transform * local_transform;
+        let local_state = get_local_linear_interpolated_state(local_time, &layer.frame_list);
+        let layer_state = parent_state.with_child(local_state);
 
         if debug_layers {
             let parent_layer_name = parent_layer_name.clone().unwrap_or("<nil>".to_string());
             let child_layer_name = format!("{} (motion frame)", layer.label);
-            debug_layer_transforms.push((parent_layer_name, child_layer_name, layer_transform));
+            debug_layer_transforms.push((
+                parent_layer_name,
+                child_layer_name,
+                layer_state.transform,
+            ));
         }
 
         get_layer_commands(
             layer,
             resources,
             buffer,
-            layer_transform,
+            layer_state,
             local_time,
             time,
             debug_layers,
@@ -222,38 +223,38 @@ fn get_motion_commands_inner(
 }
 
 /// Gets the active layer transform, interpolating/blending only a dynamic frame toward the next frame.
-fn get_local_linear_interpolated_transform(
+fn get_local_linear_interpolated_state(
     local_time: MotionLocalTime,
     keyframes: &[KeyFrame<ResourceReference>],
-) -> Affine2 {
+) -> InterpolatedLayerState {
     // get current frame's content
     let Some(current_index) = active_frame_at(local_time, keyframes) else {
-        return Affine2::IDENTITY;
+        return InterpolatedLayerState::identity();
     };
     let current = &keyframes[current_index];
     let Some(content) = current.content.as_ref() else {
-        return Affine2::IDENTITY;
+        return InterpolatedLayerState::identity();
     };
 
     // try get the next frame
     let Some(next) = keyframes.get(current_index + 1) else {
-        return content.linearly_interpolate_to_affine2(content, 0.0);
+        return content.linearly_interpolate(content, 0.0);
     };
-    // if it has no content, just return current frame's transform
+    // if it has no content, use current frame's transform
     let Some(next_content) = next.content.as_ref() else {
-        return content.linearly_interpolate_to_affine2(content, 0.0);
+        return content.linearly_interpolate(content, 0.0);
     };
     // if we're not supposed to dynamically transform, or have some degenerate time,
     // just use current frame's transform
     if current.kind != FrameType::ParentTransformsDynamically || next.time <= current.time {
-        return content.linearly_interpolate_to_affine2(content, 0.0);
+        return content.linearly_interpolate(content, 0.0);
     }
 
     // linear interpolate
     // TODO: maybe we want other types of interpolation
     let duration = next.time - current.time;
     let progress = (u32::from(local_time) - current.time) as f32 / duration as f32;
-    content.linearly_interpolate_to_affine2(next_content, progress)
+    content.linearly_interpolate(next_content, progress)
 }
 
 /// Get the index of the active frame (the frame being interpolated away from).

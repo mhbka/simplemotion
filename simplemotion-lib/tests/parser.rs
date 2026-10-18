@@ -1,7 +1,7 @@
 use simplemotion_lib::{
-    parse_motion_resources, parse_motion_resources_from_folder, FrameType, IconImageKind,
-    ImageLoadingError, KeyFrameContent, Layer, LayerType, ObjectType, ParseMotionError,
-    ResourceReference,
+    parse_motion_resources, parse_motion_resources_from_folder, to_anim_commands, FrameType,
+    IconImageKind, ImageLoadingError, KeyFrameContent, Layer, LayerType, ObjectType,
+    ParseMotionError, ResourceReference,
 };
 
 /// Applies neutral transform defaults to omitted fields in non-empty frame content.
@@ -18,6 +18,66 @@ fn defaults_omitted_frame_transform_fields() {
     assert_eq!(content.zx, 1.0);
     assert_eq!(content.zy, 1.0);
     assert_eq!(content.opa, 1.0);
+}
+
+/// Multiplies interpolated child opacity by the opacity inherited from its parent layer.
+#[test]
+fn composes_interpolated_opacity_through_layers() {
+    let resources = parse_motion_resources(
+        r#"{
+          "screenSize": { "width": 1, "height": 1, "originX": 0, "originY": 0 },
+          "object": { "unit": { "type": 0, "motion": {
+            "idle": { "type": 0, "lastTime": 10, "loopTime": -1, "layer": [{
+              "type": 2, "label": "parent", "frameList": [{
+                "time": 0, "type": 2, "content": { "src": "layout", "opa": 0.5 }
+              }],
+              "children": [{ "type": 0, "label": "sprite", "frameList": [
+                { "time": 0, "type": 3, "content": { "src": "src/unit/hero", "opa": 1.0 } },
+                { "time": 10, "type": 3, "content": { "src": "src/unit/hero", "opa": 0.2 } }
+              ] }]
+            }] }
+          } } },
+          "source": { "unit": { "icon": { "hero": { "width": 1, "height": 1 } } } }
+        }"#,
+    )
+    .unwrap();
+    let mut commands = Vec::new();
+    let mut debug_layers = Vec::new();
+
+    to_anim_commands(
+        &mut commands,
+        &resources,
+        resources.roots[0],
+        5,
+        false,
+        &mut debug_layers,
+    );
+
+    assert_eq!(commands.len(), 1);
+    assert!((commands[0].opacity - 0.3).abs() < 0.0001);
+}
+
+/// Emits fully opaque icon commands for every SD002 root at the initial frame.
+#[test]
+fn sd002_roots_start_with_opaque_icon_commands() {
+    let resources =
+        parse_motion_resources(include_str!("../../examples/sd002/sd002.json")).unwrap();
+
+    for root in &resources.roots {
+        let mut commands = Vec::new();
+        let mut debug_layers = Vec::new();
+        to_anim_commands(
+            &mut commands,
+            &resources,
+            *root,
+            0,
+            false,
+            &mut debug_layers,
+        );
+
+        assert!(!commands.is_empty());
+        assert!(commands.iter().all(|command| command.opacity > 0.0));
+    }
 }
 use std::{
     fs,

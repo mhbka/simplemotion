@@ -16,6 +16,50 @@ pub(super) struct TransformState {
     angle: f32,
     scale: Vec2,
     shear: Vec2,
+    anchor_offset: Vec2,
+    opacity: f32,
+}
+
+/// The transform state carried while traversing a layer tree.
+#[derive(Clone, Copy, Debug)]
+pub(crate) struct InterpolatedLayerState {
+    /// The inherited, interpolated transform. This is (usually) then inherited by children.
+    pub transform: Affine2,
+    /// The offset of a layer. This is to bring the layer to the correct origin.
+    /// We keep this separate from transform because there are 2 cases:
+    /// - Motion: Child layers must anchor to its origin
+    /// - Icon: Origin is just for itself -- child layers don't care about it
+    pub anchor_offset: Vec2,
+    /// The inherited, interpolated opacity.
+    pub opacity: f32,
+}
+
+impl InterpolatedLayerState {
+    /// Returns the neutral state used before entering a root motion.
+    pub(crate) fn identity() -> Self {
+        Self {
+            transform: Affine2::IDENTITY,
+            anchor_offset: Vec2::ZERO,
+            opacity: 1.0,
+        }
+    }
+
+    /// Combines a child layer's local state with this inherited state.
+    pub(crate) fn with_child(self, child: Self) -> Self {
+        Self {
+            transform: self.transform * child.transform,
+            // Structural children do not inherit their parent's drawing anchor.
+            anchor_offset: child.anchor_offset,
+            opacity: self.opacity * child.opacity,
+        }
+    }
+
+    /// Consumes this layer's anchor when entering its referenced child motion.
+    pub(crate) fn into_motion_parent_state(mut self) -> Self {
+        self.transform *= Affine2::from_translation(-self.anchor_offset);
+        self.anchor_offset = Vec2::ZERO;
+        self
+    }
 }
 
 impl TransformState {
@@ -34,16 +78,24 @@ impl TransformState {
             angle: lerp_angle_degrees(start.angle, end.angle, ratio).to_radians(),
             scale: Vec2::new(lerp(start.zx, end.zx, ratio), lerp(start.zy, end.zy, ratio)),
             shear: Vec2::new(lerp(start.sx, end.sx, ratio), lerp(start.sy, end.sy, ratio)),
+            anchor_offset: Vec2::new(lerp(start.ox, end.ox, ratio), lerp(start.oy, end.oy, ratio)),
+            opacity: lerp(start.opa, end.opa, ratio),
         }
     }
 
-    /// Turns it into an `Affine2`.
-    pub fn to_affine2(self) -> Affine2 {
+    /// Turns it into the render properties used by the animator.
+    pub fn to_interpolated_layer_state(self) -> InterpolatedLayerState {
         let scale = Mat2::from_diagonal(self.scale);
         let shear = Mat2::from_cols(Vec2::new(1.0, self.shear.y), Vec2::new(self.shear.x, 1.0));
         let matrix = Mat2::from_angle(self.angle) * shear * scale;
 
-        Affine2::from_mat2_translation(matrix, self.translation)
+        let node_transform = Affine2::from_mat2_translation(matrix, self.translation);
+
+        InterpolatedLayerState {
+            transform: node_transform,
+            anchor_offset: self.anchor_offset,
+            opacity: self.opacity,
+        }
     }
 }
 
