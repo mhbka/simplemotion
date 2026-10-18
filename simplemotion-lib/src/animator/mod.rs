@@ -47,13 +47,7 @@ fn get_layer_commands(
     debug_layer_transforms: &mut Vec<(String, String, Affine2)>,
 ) {
     match layer.layer_type {
-        LayerType::Icon => get_icon_command(
-            resources, 
-            buffer, 
-            layer, 
-            layer_state, 
-            local_time
-        ),
+        LayerType::Icon => get_icon_command(resources, buffer, layer, layer_state, local_time),
         LayerType::Motion => get_motion_commands(
             buffer,
             resources,
@@ -64,7 +58,7 @@ fn get_layer_commands(
             debug_layers,
             debug_layer_transforms,
         ),
-        LayerType::Layout => {}, // already applied layer transform, so nothing needs to be done
+        LayerType::Layout => {} // already applied layer transform, so nothing needs to be done
         LayerType::Mask => debug!("SKIPPING MASK FOR NOW"),
         LayerType::Other(other) => debug!("UNKNOWN LAYER TYPE: {other}"),
     }

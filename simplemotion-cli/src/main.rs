@@ -1,6 +1,6 @@
 use macroquad::prelude::*;
 use simplemotion_lib::{
-    parse_motion_resources_from_folder, to_anim_commands, IconClip, IconKey, MotionResources,
+    parse_motion_resources_from_folder, to_anim_commands, IconKey, MotionResources,
 };
 use std::{
     collections::HashMap,
@@ -110,8 +110,7 @@ async fn main() {
             let Some(texture) = animation.textures.get(&command.icon) else {
                 continue;
             };
-            let clip = &animation.resources.icon(command.icon).unwrap().value.clip;
-            draw_command(texture, clip, command.transform, command.opacity);
+            draw_command(texture, command.transform, command.opacity);
         }
         let line_height = 18.0;
         let menu_height = (usize::max(commands.len(), debug_layer_transforms.len()) as f32 + 1.0)
@@ -182,7 +181,9 @@ async fn main() {
         match animation_menu {
             AnimationMenu::Closed => {}
             AnimationMenu::Animations => {
-                if let Some(selected_animation) = draw_animation_menu(&animations, &font) {
+                if let Some(selected_animation) =
+                    draw_animation_menu(&animations, animation_index, &font)
+                {
                     animation_index = selected_animation;
                     root_index = 0;
                     animation_started_at = get_time();
@@ -190,10 +191,11 @@ async fn main() {
                 }
             }
             AnimationMenu::Roots => {
-                if let Some(selected_root) = draw_root_menu(&animations[animation_index], &font) {
+                if let Some(selected_root) =
+                    draw_root_menu(&animations[animation_index], root_index, &font)
+                {
                     root_index = selected_root;
                     animation_started_at = get_time();
-                    animation_menu = AnimationMenu::Closed;
                 }
             }
         }
@@ -254,8 +256,12 @@ fn load_animation_folders(folder: &Path) -> Vec<LoadedAnimation> {
         .collect()
 }
 
-/// Draws the multi-animation picker and returns whether the active selection changed.
-fn draw_animation_menu(animations: &[LoadedAnimation], font: &Font) -> Option<usize> {
+/// Draws the multi-animation picker and returns the clicked animation index.
+fn draw_animation_menu(
+    animations: &[LoadedAnimation],
+    current_animation_index: usize,
+    font: &Font,
+) -> Option<usize> {
     let line_height = 22.0;
     let padding = 12.0;
     let mut y = padding;
@@ -269,7 +275,7 @@ fn draw_animation_menu(animations: &[LoadedAnimation], font: &Font) -> Option<us
         Color::new(0.0, 0.0, 0.0, 0.88),
     );
     draw_text_ex(
-        "Animations — click a root to play it; Enter closes this menu",
+        "Animations — click one to choose its roots; Enter closes this menu",
         padding,
         y + 16.0,
         TextParams {
@@ -282,13 +288,13 @@ fn draw_animation_menu(animations: &[LoadedAnimation], font: &Font) -> Option<us
     y += line_height + 8.0;
 
     for (animation_index, animation) in animations.iter().enumerate() {
-        draw_rectangle(
-            padding,
-            y,
-            360.0,
-            line_height - 2.0,
-            Color::new(0.12, 0.12, 0.12, 0.9),
-        );
+        let is_current = animation_index == current_animation_index;
+        let row_color = if is_current {
+            Color::new(0.16, 0.36, 0.60, 0.95)
+        } else {
+            Color::new(0.12, 0.12, 0.12, 0.9)
+        };
+        draw_rectangle(padding, y, 360.0, line_height - 2.0, row_color);
         draw_text_ex(
             &animation.label,
             padding + 4.0,
@@ -316,7 +322,11 @@ fn draw_animation_menu(animations: &[LoadedAnimation], font: &Font) -> Option<us
 }
 
 /// Draws the selected animation's root picker and returns the clicked root index.
-fn draw_root_menu(animation: &LoadedAnimation, font: &Font) -> Option<usize> {
+fn draw_root_menu(
+    animation: &LoadedAnimation,
+    current_root_index: usize,
+    font: &Font,
+) -> Option<usize> {
     let line_height = 22.0;
     let padding = 12.0;
     let mut y = padding;
@@ -351,13 +361,13 @@ fn draw_root_menu(animation: &LoadedAnimation, font: &Font) -> Option<usize> {
             .motion_label(*root)
             .map(String::as_str)
             .unwrap_or("<missing root>");
-        draw_rectangle(
-            padding,
-            y,
-            360.0,
-            line_height - 2.0,
-            Color::new(0.12, 0.12, 0.12, 0.9),
-        );
+        let is_current = root_index == current_root_index;
+        let row_color = if is_current {
+            Color::new(0.16, 0.36, 0.60, 0.95)
+        } else {
+            Color::new(0.12, 0.12, 0.12, 0.9)
+        };
+        draw_rectangle(padding, y, 360.0, line_height - 2.0, row_color);
         draw_text_ex(
             &format!("{root_index}: {label}"),
             padding + 4.0,
@@ -396,8 +406,8 @@ fn load_textures(resources: &MotionResources) -> HashMap<IconKey, Texture2D> {
         .collect()
 }
 
-/// Draws a clipped unit quad through the command's complete affine transform.
-fn draw_command(texture: &Texture2D, clip: &IconClip, transform: Affine2, opacity: f32) {
+/// Draws an exported icon image through the command's complete affine transform.
+fn draw_command(texture: &Texture2D, transform: Affine2, opacity: f32) {
     let color = Color::new(1.0, 1.0, 1.0, opacity.clamp(0.0, 1.0));
     let top_left = transform.transform_point2(Vec2::ZERO);
     let top_right = transform.transform_point2(Vec2::X);
@@ -405,24 +415,10 @@ fn draw_command(texture: &Texture2D, clip: &IconClip, transform: Affine2, opacit
     let bottom_left = transform.transform_point2(Vec2::Y);
     let mesh = Mesh {
         vertices: vec![
-            Vertex::new(top_left.x, top_left.y, 0.0, clip.left, clip.top, color),
-            Vertex::new(top_right.x, top_right.y, 0.0, clip.right, clip.top, color),
-            Vertex::new(
-                bottom_right.x,
-                bottom_right.y,
-                0.0,
-                clip.right,
-                clip.bottom,
-                color,
-            ),
-            Vertex::new(
-                bottom_left.x,
-                bottom_left.y,
-                0.0,
-                clip.left,
-                clip.bottom,
-                color,
-            ),
+            Vertex::new(top_left.x, top_left.y, 0.0, 0.0, 0.0, color),
+            Vertex::new(top_right.x, top_right.y, 0.0, 1.0, 0.0, color),
+            Vertex::new(bottom_right.x, bottom_right.y, 0.0, 1.0, 1.0, color),
+            Vertex::new(bottom_left.x, bottom_left.y, 0.0, 0.0, 1.0, color),
         ],
         indices: vec![0, 1, 2, 0, 2, 3],
         texture: Some(texture.clone()),
