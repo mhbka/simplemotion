@@ -3,7 +3,7 @@ use crate::{
         objects::{Icon, KeyFrame, KeyFrameContent, Layer, Motion, ObjectType, ScreenSize},
         raw::{RawMotion, RawMotionDocument, RawSource},
     },
-    IconImage,
+    IconImage, LayerPath,
 };
 use glam::Affine2;
 use slotmap::{new_key_type, SecondaryMap, SlotMap};
@@ -97,6 +97,14 @@ struct MotionEntry {
     motion: Option<ResolvedMotion>,
 }
 
+/// Identifies the motion that owns a layer found through a path lookup.
+pub(crate) struct LayerContext<'a> {
+    /// The motion containing the found layer.
+    pub motion: MotionKey,
+    /// The found layer.
+    pub layer: &'a Layer<ResourceReference>,
+}
+
 impl MotionResources {
     /// Resolves the raw document into the final resources used for animating.
     pub(crate) fn from_raw(raw: RawMotionDocument) -> Result<Self, ResolutionError> {
@@ -149,6 +157,61 @@ impl MotionResources {
     /// Gets a resolved motion by handle.
     pub fn motion(&self, key: MotionKey) -> Option<&ResolvedMotion> {
         self.motions.get(key)?.motion.as_ref()
+    }
+
+    /// Finds a layer by a path rooted at one motion and following every possible child motion.
+    pub fn layer_at(&self, path: &LayerPath) -> Option<&Layer<ResourceReference>> {
+        self.layer_context_at(path).map(|context| context.layer)
+    }
+
+    /// Finds a layer and the motion whose timeline evaluates that layer.
+    pub(crate) fn layer_context_at(&self, path: &LayerPath) -> Option<LayerContext<'_>> {
+        let labels: Vec<_> = path.segments().collect();
+        let (motion_label, layer_labels) = labels.split_first()?;
+        let motion_key = self.motion_key(motion_label)?;
+        let motion = self.motion(motion_key)?;
+        self.layer_in_tree(motion_key, &motion.layer, layer_labels)
+    }
+
+    /// Recursively follows structural children and every motion frame that may contain a path.
+    fn layer_in_tree<'a>(
+        &'a self,
+        motion_key: MotionKey,
+        layers: &'a [Layer<ResourceReference>],
+        labels: &[&str],
+    ) -> Option<LayerContext<'a>> {
+        let (label, remaining_labels) = labels.split_first()?;
+        let layer = layers.iter().find(|candidate| candidate.label == *label)?;
+        if remaining_labels.is_empty() {
+            return Some(LayerContext {
+                motion: motion_key,
+                layer,
+            });
+        }
+
+        if let Some(found_layer) = self.layer_in_tree(motion_key, &layer.children, remaining_labels)
+        {
+            return Some(found_layer);
+        }
+
+        for frame in &layer.frame_list {
+            let Some(content) = &frame.content else {
+                continue;
+            };
+            let ResourceReference::Motion(child_motion_key) = content.src else {
+                continue;
+            };
+            let Some(motion) = self.motion(child_motion_key) else {
+                continue;
+            };
+            if let Some(found_layer) =
+                self.layer_in_tree(child_motion_key, &motion.layer, remaining_labels)
+            {
+                return Some(found_layer);
+            }
+        }
+
+        None
     }
 
     /// Gets an image resource and its exported name by handle.

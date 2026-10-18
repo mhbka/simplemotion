@@ -4,9 +4,16 @@ use crate::{
     FrameType, KeyFrame, Layer, LayerType, MotionKey, MotionResources, ResourceReference,
 };
 use glam::Affine2;
-use tracing::debug;
+use tracing::{debug, trace};
 
+mod debug;
+mod ext_override;
+mod path;
 mod time;
+
+pub use debug::DebugInfo;
+pub use ext_override::{ExternalOverrides, OverrideLayerState};
+pub use path::LayerPath;
 
 /// Animates `motion` at the given `time`, outputting animation commands into `buffer`.
 ///
@@ -16,22 +23,42 @@ pub fn to_anim_commands(
     resources: &MotionResources,
     motion: MotionKey,
     time: u32,
-    debug_layers: bool,
-    debug_layer_transforms: &mut Vec<(String, String, Affine2)>,
+    debug_info: &mut DebugInfo,
+) {
+    to_anim_commands_with_overrides(
+        buffer,
+        resources,
+        motion,
+        time,
+        &ExternalOverrides::default(),
+        debug_info,
+    );
+}
+
+/// Animates `motion` with external layer-state replacements.
+pub fn to_anim_commands_with_overrides(
+    buffer: &mut Vec<AnimationCommand>,
+    resources: &MotionResources,
+    motion: MotionKey,
+    time: u32,
+    overrides: &ExternalOverrides,
+    debug_info: &mut DebugInfo,
 ) {
     buffer.clear();
-    if debug_layers {
-        debug_layer_transforms.clear();
-    }
+    debug_info.clear();
+    let root_label = resources
+        .motion_label(motion)
+        .map(String::as_str)
+        .unwrap_or("<unknown>");
     get_motion_commands_inner(
         buffer,
         motion,
         resources,
-        None,
+        LayerPath::root(root_label),
         InterpolatedLayerState::identity(),
         time.into(),
-        debug_layers,
-        debug_layer_transforms,
+        overrides,
+        debug_info,
     );
 }
 
@@ -41,10 +68,11 @@ fn get_layer_commands(
     resources: &MotionResources,
     buffer: &mut Vec<AnimationCommand>,
     layer_state: InterpolatedLayerState,
+    layer_path: LayerPath,
     local_time: MotionLocalTime,
     time: InheritedTime,
-    debug_layers: bool,
-    debug_layer_transforms: &mut Vec<(String, String, Affine2)>,
+    overrides: &ExternalOverrides,
+    debug_info: &mut DebugInfo,
 ) {
     match layer.layer_type {
         LayerType::Icon => get_icon_command(resources, buffer, layer, layer_state, local_time),
@@ -53,37 +81,42 @@ fn get_layer_commands(
             resources,
             layer,
             layer_state,
+            layer_path.clone(),
             time,
             local_time,
-            debug_layers,
-            debug_layer_transforms,
+            overrides,
+            debug_info,
         ),
         LayerType::Layout => {} // already applied layer transform, so nothing needs to be done
         LayerType::Mask => debug!("SKIPPING MASK FOR NOW"),
         LayerType::Other(other) => debug!("UNKNOWN LAYER TYPE: {other}"),
     }
     for child_layer in &layer.children {
+        let child_layer_path = layer_path.child(&child_layer.label);
+        let (child_layer, child_local_time) = check_layer_to_evaluate(
+            resources,
+            child_layer,
+            local_time,
+            time,
+            &child_layer_path,
+            overrides,
+        );
         let child_local_state =
-            get_local_linear_interpolated_state(local_time, &child_layer.frame_list);
+            get_local_overridden_state(child_local_time, child_layer, &child_layer_path, overrides);
         let child_layer_state = layer_state.with_child(child_local_state);
 
-        if debug_layers {
-            debug_layer_transforms.push((
-                layer.label.clone(),
-                child_layer.label.clone(),
-                child_layer_state.transform,
-            ));
-        }
+        debug_info.record_child_layer(&child_layer_path, child_layer_state.transform);
 
         get_layer_commands(
             child_layer,
             resources,
             buffer,
             child_layer_state,
-            local_time,
+            child_layer_path,
+            child_local_time,
             time,
-            debug_layers,
-            debug_layer_transforms,
+            overrides,
+            debug_info,
         );
     }
 }
@@ -97,13 +130,15 @@ fn get_icon_command(
     local_time: MotionLocalTime,
 ) {
     let Some(active_keyframe_index) = active_frame_at(local_time, &layer.frame_list) else {
-        // don't animate if we don't have an active frame (should only happen if we're before the first frame)
         return;
     };
     let active_keyframe = &layer.frame_list[active_keyframe_index];
     if let Some(content) = &active_keyframe.content {
         let ResourceReference::Icon(icon) = content.src else {
-            panic!("Icon layer contains frame with non-icon source: {keyframe:?}");
+            panic!(
+                "Icon layer contains frame with non-icon source: {:?}",
+                active_keyframe
+            );
         };
         let icon_info = resources.icon(icon).expect("icon should exist");
         // origin translation (equation comes from the krkr2 docs)
@@ -143,10 +178,11 @@ fn get_motion_commands(
     resources: &MotionResources,
     layer: &Layer<ResourceReference>,
     layer_state: InterpolatedLayerState,
+    layer_path: LayerPath,
     mut time: InheritedTime,
     local_time: MotionLocalTime,
-    debug_layers: bool,
-    debug_layer_transforms: &mut Vec<(String, String, Affine2)>,
+    overrides: &ExternalOverrides,
+    debug_info: &mut DebugInfo,
 ) {
     let Some(active_keyframe_index) = active_frame_at(local_time, &layer.frame_list) else {
         return;
@@ -154,7 +190,10 @@ fn get_motion_commands(
     let active_keyframe = &layer.frame_list[active_keyframe_index];
     if let Some(content) = &active_keyframe.content {
         let ResourceReference::Motion(motion) = content.src else {
-            panic!("Motion layer has non-motion keyframe: {active_keyframe:?}");
+            panic!(
+                "Motion layer has non-motion keyframe: {:?}",
+                active_keyframe
+            );
         };
         time = time.inherit(
             active_keyframe.time,
@@ -167,11 +206,11 @@ fn get_motion_commands(
             buffer,
             motion,
             resources,
-            Some(layer.label.clone()),
+            layer_path,
             layer_state.into_motion_parent_state(),
             time,
-            debug_layers,
-            debug_layer_transforms,
+            overrides,
+            debug_info,
         );
     }
 }
@@ -181,42 +220,83 @@ fn get_motion_commands_inner(
     buffer: &mut Vec<AnimationCommand>,
     motion: MotionKey,
     resources: &MotionResources,
-    parent_layer_name: Option<String>,
+    parent_path: LayerPath,
     parent_state: InterpolatedLayerState,
     time: InheritedTime,
-    debug_layers: bool,
-    debug_layer_transforms: &mut Vec<(String, String, Affine2)>,
+    overrides: &ExternalOverrides,
+    debug_info: &mut DebugInfo,
 ) {
     let motion = resources.motion(motion).expect("motion should exist");
     let local_time = MotionLocalTime::calculate(time, motion.loop_time, motion.last_time);
     for layer in &motion.layer {
-        let local_state = get_local_linear_interpolated_state(local_time, &layer.frame_list);
+        let layer_path = parent_path.child(&layer.label);
+        let (layer, layer_local_time) =
+            check_layer_to_evaluate(resources, layer, local_time, time, &layer_path, overrides);
+        let local_state =
+            get_local_overridden_state(layer_local_time, layer, &layer_path, overrides);
         let layer_state = parent_state.with_child(local_state);
 
-        if debug_layers {
-            let parent_layer_name = parent_layer_name.clone().unwrap_or("<nil>".to_string());
-            let child_layer_name = format!("{} (motion frame)", layer.label);
-            debug_layer_transforms.push((
-                parent_layer_name,
-                child_layer_name,
-                layer_state.transform,
-            ));
-        }
+        debug_info.record_motion_layer(&layer_path, layer_state.transform);
 
         get_layer_commands(
             layer,
             resources,
             buffer,
             layer_state,
-            local_time,
+            layer_path,
+            layer_local_time,
             time,
-            debug_layers,
-            debug_layer_transforms,
+            overrides,
+            debug_info,
         );
     }
 }
 
-/// Gets the active layer transform, interpolating/blending only a dynamic frame toward the next frame.
+/// Check if the layer to evaluate should be replaced with a different layer.
+fn check_layer_to_evaluate<'a>(
+    resources: &'a MotionResources,
+    layer: &'a Layer<ResourceReference>,
+    local_time: MotionLocalTime,
+    time: InheritedTime,
+    layer_path: &LayerPath,
+    overrides: &ExternalOverrides,
+) -> (&'a Layer<ResourceReference>, MotionLocalTime) {
+    let Some(donor_path) = overrides.replacement_for(layer_path) else {
+        trace!("no replement for layer: {layer_path:?}");
+        return (layer, local_time);
+    };
+    let Some(donor_context) = resources.layer_context_at(donor_path) else {
+        debug!("no layer for donor path: {donor_path:?}");
+        return (layer, local_time);
+    };
+    let Some(donor_motion) = resources.motion(donor_context.motion) else {
+        debug!("no motion found for donor path: {donor_path:?}");
+        return (layer, local_time);
+    };
+    let donor_local_time =
+        MotionLocalTime::calculate(time, donor_motion.loop_time, donor_motion.last_time);
+    trace!("donor layer obtained for donor path: {donor_path:?}");
+
+    (donor_context.layer, donor_local_time)
+}
+
+/// Gets a layer's interpolated state, applying an external replacement when present.
+fn get_local_overridden_state(
+    local_time: MotionLocalTime,
+    layer: &Layer<ResourceReference>,
+    layer_path: &LayerPath,
+    overrides: &ExternalOverrides,
+) -> InterpolatedLayerState {
+    let mut state = get_local_linear_interpolated_state(local_time, &layer.frame_list);
+    if let Some(override_state) = overrides.state_for(layer_path) {
+        state.transform = override_state.transform;
+        state.opacity = override_state.opa;
+    }
+    state
+}
+
+/// Gets the active layer state. Interpolate only a dynamic frame toward the next frame,
+/// otherwise just use the active frame.
 fn get_local_linear_interpolated_state(
     local_time: MotionLocalTime,
     keyframes: &[KeyFrame<ResourceReference>],
@@ -274,7 +354,6 @@ fn active_frame_at(
             keyframes = &keyframes[0..keyframes.len() - 1];
         }
     }
-
     // if `time` is past the last frame's time, just return it
     // if there are no last keyframes, return None
     match keyframes.last() {
@@ -285,7 +364,6 @@ fn active_frame_at(
         }
         None => return None,
     }
-
     // search
     for (i, frame) in keyframes.iter().enumerate() {
         if frame.time > time.into() {

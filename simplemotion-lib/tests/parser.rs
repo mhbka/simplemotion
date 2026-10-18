@@ -1,6 +1,6 @@
 use simplemotion_lib::{
-    parse_motion_resources, parse_motion_resources_from_folder, to_anim_commands, FrameType,
-    IconImageKind, ImageLoadingError, KeyFrameContent, Layer, LayerType, ObjectType,
+    parse_motion_resources, parse_motion_resources_from_folder, to_anim_commands, DebugInfo,
+    FrameType, IconImageKind, ImageLoadingError, KeyFrameContent, Layer, LayerType, ObjectType,
     ParseMotionError, ResourceReference,
 };
 
@@ -42,15 +42,14 @@ fn composes_interpolated_opacity_through_layers() {
     )
     .unwrap();
     let mut commands = Vec::new();
-    let mut debug_layers = Vec::new();
+    let mut debug_info = DebugInfo::new(false);
 
     to_anim_commands(
         &mut commands,
         &resources,
         resources.roots[0],
         5,
-        false,
-        &mut debug_layers,
+        &mut debug_info,
     );
 
     assert_eq!(commands.len(), 1);
@@ -65,15 +64,8 @@ fn sd002_roots_start_with_opaque_icon_commands() {
 
     for root in &resources.roots {
         let mut commands = Vec::new();
-        let mut debug_layers = Vec::new();
-        to_anim_commands(
-            &mut commands,
-            &resources,
-            *root,
-            0,
-            false,
-            &mut debug_layers,
-        );
+        let mut debug_info = DebugInfo::new(false);
+        to_anim_commands(&mut commands, &resources, *root, 0, &mut debug_info);
 
         assert!(!commands.is_empty());
         assert!(commands.iter().all(|command| command.opacity > 0.0));

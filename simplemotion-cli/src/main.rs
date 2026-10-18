@@ -1,6 +1,7 @@
 use macroquad::prelude::*;
 use simplemotion_lib::{
-    parse_motion_resources_from_folder, to_anim_commands, IconKey, MotionResources,
+    parse_motion_resources_from_folder, to_anim_commands, to_anim_commands_with_overrides,
+    DebugInfo, ExternalOverrides, IconKey, LayerPath, MotionResources,
 };
 use std::{
     collections::HashMap,
@@ -77,15 +78,18 @@ async fn main() {
         ..Default::default()
     };
 
-    let mut debug_layers = true;
-    let mut debug_layer_transforms = Vec::new();
+    let mut overrides = ExternalOverrides::new();
+    let mut debug_info = DebugInfo::new(true);
     let mut animation_started_at = get_time();
     let mut animation_menu = AnimationMenu::Closed;
 
+    let mut last_second = 0;
+
     loop {
         if is_key_pressed(KeyCode::Space) {
-            debug_layers = !debug_layers;
+            debug_info.debug_layers = !debug_info.debug_layers;
         }
+
         if multiple_animations && is_key_pressed(KeyCode::Enter) {
             animation_menu = match animation_menu {
                 AnimationMenu::Closed => AnimationMenu::Animations,
@@ -95,14 +99,15 @@ async fn main() {
 
         let animation = &animations[animation_index];
         let root = animation.resources.roots[root_index];
-        let frame = ((get_time() - animation_started_at) * 60.0) as u32;
-        to_anim_commands(
+        let time = get_time();
+        let frame = ((time - animation_started_at) * 60.0) as u32;
+        to_anim_commands_with_overrides(
             &mut commands,
             &animation.resources,
             root,
             frame,
-            debug_layers,
-            &mut debug_layer_transforms,
+            &overrides,
+            &mut debug_info,
         );
 
         clear_background(BLACK);
@@ -113,7 +118,8 @@ async fn main() {
             draw_command(texture, command.transform, command.opacity);
         }
         let line_height = 18.0;
-        let menu_height = (usize::max(commands.len(), debug_layer_transforms.len()) as f32 + 1.0)
+        let menu_height = (usize::max(commands.len(), debug_info.layer_transforms.len()) as f32
+            + 1.0)
             * line_height
             + 12.0;
         draw_rectangle(
@@ -138,12 +144,28 @@ async fn main() {
             text_params.clone(),
         );
 
-        if debug_layers {
-            for (index, (parent, current, transform)) in debug_layer_transforms.iter().enumerate() {
+
+        let now_second = frame / 60;
+        if now_second > last_second {
+            println!("now: {now_second}");
+            last_second = now_second;
+            let replacee_path1 = LayerPath::from_string("SD002AA/mask/bg/nanami/レイヤ1/七海体".to_string());
+            let replacement_path1 = LayerPath::from_string("SD002AB/mask/bg/nanami/レイヤ1/七海体".to_string());
+            if last_second % 2 == 0 {
+                overrides.replace_layer(replacee_path1, replacement_path1);
+            } else {
+                overrides.clear_layer_replacement(&replacee_path1);
+            }
+        }
+
+        if debug_info.debug_layers {
+            for (index, (path, kind, transform)) in debug_info.layer_transforms.iter().enumerate() {
                 let transform_info = transform.to_scale_angle_translation();
                 let translation = format!("({:.1}, {:.1})", transform_info.2.x, transform_info.2.y);
                 let text = format!(
-                    "{parent} -> {current} -- angle: {:.1}, translation: {}",
+                    "{} (kind: {:?}) ------ angle: {:.1}, translation: {}",
+                    path.as_str(),
+                    kind,
                     transform_info.1.to_degrees(),
                     translation
                 );
