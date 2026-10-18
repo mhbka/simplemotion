@@ -146,7 +146,7 @@ fn get_motion_commands(
     buffer: &mut Vec<AnimationCommand>,
     resources: &MotionResources,
     layer: &Layer<ResourceReference>,
-    parent_transform: Affine2,
+    mut parent_transform: Affine2,
     mut time: InheritedTime,
     local_time: MotionLocalTime,
     debug_layers: bool,
@@ -167,6 +167,10 @@ fn get_motion_commands(
                 .as_ref()
                 .and_then(|motion| motion.time_offset),
         );
+
+        // anchor at the motion's origin
+        parent_transform *= Affine2::from_translation(Vec2::new(-content.ox, -content.oy));
+
         get_motion_commands_inner(
             buffer,
             motion,
@@ -196,7 +200,7 @@ fn get_motion_commands_inner(
     for layer in &motion.layer {
         let local_transform =
             get_local_linear_interpolated_transform(local_time, &layer.frame_list);
-        let layer_transform = parent_transform * local_transform;
+        let mut layer_transform = parent_transform * local_transform;
 
         if debug_layers {
             let parent_layer_name = parent_layer_name.clone().unwrap_or("<nil>".to_string());
