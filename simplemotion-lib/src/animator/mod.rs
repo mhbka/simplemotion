@@ -3,7 +3,7 @@ use crate::{
     animator::time::{InheritedTime, MotionLocalTime},
     FrameType, KeyFrame, Layer, LayerType, MotionKey, MotionResources, ResourceReference,
 };
-use glam::Affine2;
+use glam::{Affine2, Vec2};
 use tracing::debug;
 
 mod time;
@@ -16,9 +16,12 @@ pub fn to_anim_commands(
     resources: &MotionResources,
     motion: MotionKey,
     time: u32,
+    debug_layers: bool,
+    debug_layer_transforms: &mut Vec<(String, String, Affine2)>
 ) {
     buffer.clear();
-    get_motion_commands_inner(buffer, motion, resources, Affine2::IDENTITY, time.into());
+    debug_layer_transforms.clear();
+    get_motion_commands_inner(buffer, motion, resources, None, Affine2::IDENTITY, time.into(), debug_layers, debug_layer_transforms);
 }
 
 /// Get the commands for a layer, then its children.
@@ -29,35 +32,47 @@ fn get_layer_commands(
     layer_transform: Affine2,
     local_time: MotionLocalTime,
     time: InheritedTime,
+    debug_layers: bool,
+    debug_layer_transforms: &mut Vec<(String, String, Affine2)>
 ) {
     match layer.layer_type {
-        LayerType::Icon => get_icon_command(buffer, layer, layer_transform, local_time),
+        LayerType::Icon => get_icon_command(resources, buffer, layer, layer_transform, local_time),
         LayerType::Layout => {
             // we already apply layer transform, so nothing needs to be done
         }
         LayerType::Motion => {
-            get_motion_commands(buffer, resources, layer, layer_transform, time, local_time)
+            get_motion_commands(buffer, resources, layer, layer_transform, time, local_time, debug_layers, debug_layer_transforms)
         }
         LayerType::Mask => debug!("SKIPPING MASK FOR NOW"),
         LayerType::Other(other) => debug!("UNKNOWN LAYER TYPE: {other}"),
     }
     for child_layer in &layer.children {
+        let child_local_transform = get_local_linear_interpolated_transform(local_time, &child_layer.frame_list);
+        let child_layer_transform = layer_transform * child_local_transform;
+
+        if debug_layers {
+            debug_layer_transforms.push((layer.label.clone(), child_layer.label.clone(), child_layer_transform));
+        }
+
         get_layer_commands(
             child_layer,
             resources,
             buffer,
-            layer_transform,
+            child_layer_transform,
             local_time,
             time,
+            debug_layers,
+            debug_layer_transforms
         );
     }
 }
 
 /// Get the animation command for an icon.
 fn get_icon_command(
+    resources: &MotionResources,
     buffer: &mut Vec<AnimationCommand>,
     layer: &Layer<ResourceReference>,
-    transform: Affine2,
+    mut transform: Affine2,
     local_time: MotionLocalTime,
 ) {
     let Some(active_keyframe_index) = active_frame_at(local_time, &layer.frame_list) else {
@@ -69,11 +84,36 @@ fn get_icon_command(
         let ResourceReference::Icon(icon) = content.src else {
             panic!("Icon layer contains frame with non-icon source: {keyframe:?}");
         };
+        let icon_info = resources.icon(icon).expect("icon should exist");
         let opacity = if let Some(opa) = content.opa {
             opa
         } else {
             1.0
         };
+
+        // origin translation (equation comes from the krkr2 docs)
+        // (or maybe just common sense)
+        let origin_transform = Affine2::from_translation(Vec2 {
+            x: -icon_info.value.origin_x - content.ox.unwrap_or(0.0),
+            y: -icon_info.value.origin_y - content.oy.unwrap_or(0.0),
+        });
+        transform *= origin_transform;
+
+        // screen translation -- basically "move" the icon to the centre of the screen
+        let screen_translation = Affine2::from_translation(
+            Vec2 { 
+                x: resources.screen_size.width / 2.0,
+                y: resources.screen_size.height / 2.0
+            }
+        );
+        transform = screen_translation * transform;
+
+        // scale from unit quad to the icon's size
+        // (we work with unit quad first, scale up, then sample for the image)
+        transform *= Affine2::from_scale(
+            Vec2::new(icon_info.value.width, icon_info.value.height)
+        );
+
         let command = AnimationCommand {
             icon,
             transform,
@@ -96,6 +136,8 @@ fn get_motion_commands(
     parent_transform: Affine2,
     mut time: InheritedTime,
     local_time: MotionLocalTime,
+    debug_layers: bool,
+    debug_layer_transforms: &mut Vec<(String, String, Affine2)>
 ) {
     let Some(active_keyframe_index) = active_frame_at(local_time, &layer.frame_list) else {
         return;
@@ -112,7 +154,16 @@ fn get_motion_commands(
                 .as_ref()
                 .and_then(|motion| motion.time_offset),
         );
-        get_motion_commands_inner(buffer, motion, resources, parent_transform, time);
+        get_motion_commands_inner(
+            buffer, 
+            motion, 
+            resources, 
+            Some(layer.label.clone()),
+            parent_transform, 
+            time, 
+            debug_layers, 
+            debug_layer_transforms
+        );
     }
 }
 
@@ -121,18 +172,35 @@ fn get_motion_commands_inner(
     buffer: &mut Vec<AnimationCommand>,
     motion: MotionKey,
     resources: &MotionResources,
+    parent_layer_name: Option<String>,
     parent_transform: Affine2,
     time: InheritedTime,
+    debug_layers: bool,
+    debug_layer_transforms: &mut Vec<(String, String, Affine2)>
 ) {
-    let motion = resources
-        .motion(motion)
-        .expect("motion should exist");
+    let motion = resources.motion(motion).expect("motion should exist");
     let local_time = MotionLocalTime::calculate(time, motion.loop_time, motion.last_time);
     for layer in &motion.layer {
         let local_transform =
             get_local_linear_interpolated_transform(local_time, &layer.frame_list);
         let layer_transform = parent_transform * local_transform;
-        get_layer_commands(layer, resources, buffer, layer_transform, local_time, time);
+
+        if debug_layers {
+            let parent_layer_name = parent_layer_name.clone().unwrap_or("<nil>".to_string());
+            let child_layer_name = format!("{} (motion frame)", layer.label);
+            debug_layer_transforms.push((parent_layer_name, child_layer_name, layer_transform));
+        }
+
+        get_layer_commands(
+            layer, 
+            resources, 
+            buffer, 
+            layer_transform, 
+            local_time, 
+            time,
+            debug_layers,
+            debug_layer_transforms
+        );
     }
 }
 
@@ -175,7 +243,7 @@ fn get_local_linear_interpolated_transform(
 ///
 /// Returns `None` if time is before the first frame,
 /// or if there are no frames.
-/// 
+///
 /// Does not consider empty final frames.
 ///
 /// Returns the last frame if `time` is beyond the last frame's time.
@@ -193,13 +261,12 @@ fn active_frame_at(
         if last_frame.kind == FrameType::Empty {
             keyframes = &keyframes[0..keyframes.len() - 1];
         }
-    } 
+    }
 
     // if `time` is past the last frame's time, just return it
     // if there are no last keyframes, return None
     match keyframes.last() {
         Some(last_frame) => {
-            
             if last_frame.time <= time.into() {
                 return Some(keyframes.len() - 1);
             }

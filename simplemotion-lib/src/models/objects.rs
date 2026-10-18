@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use crate::{animation::TransformState, numeric_type_enum};
-use glam::{Affine2, Mat2, Vec2};
+use glam::Affine2;
 use serde::{Deserialize, Deserializer};
 
 use super::utils::{
@@ -113,10 +113,46 @@ impl<S> KeyFrameContent<S> {
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Icon {
-    pub origin_x: Option<f32>,
-    pub origin_y: Option<f32>,
-    pub width: Option<f32>,
-    pub height: Option<f32>,
+    /// The normalized source rectangle to draw from the raw image.
+    #[serde(default)]
+    pub clip: IconClip,
+    /// The horizontal icon origin, defaulting to zero.
+    #[serde(default)]
+    pub origin_x: f32,
+    /// The vertical icon origin, defaulting to zero.
+    #[serde(default)]
+    pub origin_y: f32,
+    /// The clipped icon width, defaulting to zero.
+    #[serde(default)]
+    pub width: f32,
+    /// The clipped icon height, defaulting to zero.
+    #[serde(default)]
+    pub height: f32,
+}
+
+/// A normalized rectangular crop within an icon image.
+#[derive(Debug, Deserialize, PartialEq)]
+pub struct IconClip {
+    /// The left edge, normalized to the raw image width.
+    pub left: f32,
+    /// The top edge, normalized to the raw image height.
+    pub top: f32,
+    /// The right edge, normalized to the raw image width.
+    pub right: f32,
+    /// The bottom edge, normalized to the raw image height.
+    pub bottom: f32,
+}
+
+impl Default for IconClip {
+    /// Uses the whole source image when no crop is supplied.
+    fn default() -> Self {
+        Self {
+            left: 0.0,
+            top: 0.0,
+            right: 1.0,
+            bottom: 1.0,
+        }
+    }
 }
 
 /// Contains info/data of the icon's image.

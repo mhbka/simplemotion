@@ -88,6 +88,14 @@ fn parses_the_example_motion() {
         &frame.content.as_ref().unwrap().src,
         &ResourceReference::Icon(resources.icon_key("src/SD002/bg").unwrap())
     );
+    let bg = resources
+        .icon(resources.icon_key("src/SD002/bg").unwrap())
+        .unwrap();
+    let clip = &bg.value.clip;
+    assert_eq!(clip.left, 0.0008865248);
+    assert_eq!(clip.top, 0.00147492625);
+    assert_eq!(clip.right, 0.9991135);
+    assert_eq!(clip.bottom, 0.9985251);
 }
 
 /// Resolves nested motion paths to stable motion handles.
@@ -207,6 +215,17 @@ fn resolves_icon_references() {
         icon,
         &ResourceReference::Icon(resources.icon_key("src/unit/hero").unwrap())
     );
+    let hero = resources
+        .icon(resources.icon_key("src/unit/hero").unwrap())
+        .unwrap();
+    assert_eq!(hero.value.clip.left, 0.0);
+    assert_eq!(hero.value.clip.top, 0.0);
+    assert_eq!(hero.value.clip.right, 1.0);
+    assert_eq!(hero.value.clip.bottom, 1.0);
+    assert_eq!(hero.value.origin_x, 0.0);
+    assert_eq!(hero.value.origin_y, 0.0);
+    assert_eq!(hero.value.width, 0.0);
+    assert_eq!(hero.value.height, 0.0);
 }
 
 /// Preserves unknown exporter type values for callers that need to handle them.

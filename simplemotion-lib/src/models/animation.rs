@@ -28,13 +28,9 @@ impl TransformState {
         let ratio = ratio.clamp(0.0, 1.0);
         let start_coord = start.coord.map(|coord| Vec2::new(coord[0], coord[1]));
         let end_coord = end.coord.map(|coord| Vec2::new(coord[0], coord[1]));
-        let offset = Vec2::new(
-            lerp_optional(start.ox, end.ox, 0.0, ratio),
-            lerp_optional(start.oy, end.oy, 0.0, ratio),
-        );
         Self {
-            translation: lerp_optional_vec2(start_coord, end_coord, Vec2::ZERO, ratio) + offset,
-            angle: lerp_optional(start.angle, end.angle, 0.0, ratio),
+            translation: lerp_optional_vec2(start_coord, end_coord, Vec2::ZERO, ratio),
+            angle: lerp_optional(start.angle, end.angle, 0.0, ratio).to_radians(),
             scale: Vec2::new(
                 lerp_optional(start.zx, end.zx, 1.0, ratio),
                 lerp_optional(start.zy, end.zy, 1.0, ratio),

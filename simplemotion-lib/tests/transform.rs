@@ -63,3 +63,16 @@ fn composes_shear_into_transform() {
 
     assert_eq!(transform.transform_point2(Vec2::Y), Vec2::new(1.0, 1.0));
 }
+
+/// Interprets exported rotation angles as degrees.
+#[test]
+fn interprets_angles_as_degrees() {
+    let mut start = content();
+    start.angle = Some(180.0);
+
+    let transform = start.linearly_interpolate_to_affine2(&start, 0.0);
+    let point = transform.transform_point2(Vec2::X);
+
+    assert!((point.x + 1.0).abs() < 0.0001);
+    assert!(point.y.abs() < 0.0001);
+}

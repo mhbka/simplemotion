@@ -1,6 +1,5 @@
 use serde::Deserialize;
 use std::collections::BTreeMap;
-
 use crate::models::objects::{Icon, Motion, ObjectType, ScreenSize};
 
 /// The unmodified document shape read directly from Motion JSON.
@@ -10,7 +9,7 @@ pub struct RawMotionDocument {
     /// Document name.
     pub label: Option<String>,
     /// The logical canvas used for the motion.
-    pub screen_size: Option<ScreenSize>,
+    pub screen_size: ScreenSize,
     /// The motion's objects indexed by their name.
     pub object: BTreeMap<String, RawMotionObject>,
     /// Image-resource groups indexed by their exported source name.

@@ -5,6 +5,7 @@ use crate::{
     },
     IconImage,
 };
+use glam::Affine2;
 use slotmap::{new_key_type, SecondaryMap, SlotMap};
 use std::error::Error;
 use std::fmt;
@@ -72,7 +73,7 @@ pub struct MotionResources {
     /// Document name.
     pub label: Option<String>,
     /// Canvas of the animation.
-    pub screen_size: Option<ScreenSize>,
+    pub screen_size: ScreenSize,
     /// The type assigned to the top-level object (not sure what it does tbh).
     pub object_type: ObjectType,
     /// Motions that no other exported motion plays (most likely the actual animation(s)).
@@ -83,7 +84,8 @@ pub struct MotionResources {
     icons: SlotMap<IconKey, Named<Icon>>,
     /// The bytes of the icon images.
     icon_images: SecondaryMap<IconKey, IconImage>,
-    /// Map of "label" strings -> our handles.
+    
+    // labels -> slotmap keys
     motion_labels: BTreeMap<String, MotionKey>,
     motion_paths: HashMap<String, MotionKey>,
     icon_paths: HashMap<String, IconKey>,
@@ -116,7 +118,7 @@ impl MotionResources {
             icon_images: SecondaryMap::new(),
             motion_labels: BTreeMap::new(),
             motion_paths: HashMap::new(),
-            icon_paths: HashMap::new(),
+            icon_paths: HashMap::new()
         };
 
         resources.insert_icons(source);
