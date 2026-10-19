@@ -59,7 +59,7 @@ fn composes_interpolated_opacity_through_layers() {
 #[test]
 fn sd002_roots_start_with_opaque_icon_commands() {
     let resources =
-        parse_motion_resources(include_str!("../../examples/sd002/sd002.json")).unwrap();
+        parse_motion_resources(include_str!("../examples/sd002/sd002.json")).unwrap();
 
     for root in &resources.roots {
         let mut debug_info = DebugInfo::new(false);
@@ -94,7 +94,7 @@ fn collect_layers<'a>(
 /// Loads declared icon bytes from the example's animation-named image directory.
 #[test]
 fn loads_icon_images_from_an_animation_folder() {
-    let resources = parse_motion_resources_from_folder("../examples/sd002").unwrap();
+    let resources = parse_motion_resources_from_folder("examples/sd002").unwrap();
     let key = resources.icon_key("src/SD002/bg").unwrap();
     let image = resources.icon_image(key).unwrap();
 
@@ -139,7 +139,7 @@ fn reports_all_missing_icon_images() {
 #[test]
 fn parses_the_example_motion() {
     let resources =
-        parse_motion_resources(include_str!("../../examples/sd002/sd002.json")).unwrap();
+        parse_motion_resources(include_str!("../examples/sd002/sd002.json")).unwrap();
     let motion = resources
         .motion(resources.motion_key("SD002AA").unwrap())
         .unwrap();
@@ -176,7 +176,7 @@ fn parses_the_example_motion() {
 #[test]
 fn preserves_motion_priority_frames() {
     let resources =
-        parse_motion_resources(include_str!("../../examples/sd009/sd009.json")).unwrap();
+        parse_motion_resources(include_str!("../examples/sd009/sd009.json")).unwrap();
     let motion = resources
         .motion(resources.motion_key("SD009BA").unwrap())
         .unwrap();
@@ -196,7 +196,7 @@ fn preserves_motion_priority_frames() {
 #[test]
 fn resolves_nested_motion_references() {
     let resources =
-        parse_motion_resources(include_str!("../../examples/sd002/sd002.json")).unwrap();
+        parse_motion_resources(include_str!("../examples/sd002/sd002.json")).unwrap();
     let key = resources.motion_key("SD002AA").unwrap();
     let motion = resources.motion(key).unwrap();
     let mut layers = Vec::new();
@@ -253,7 +253,7 @@ fn resolves_nested_motion_references() {
 #[test]
 fn identifies_motion_graph_roots() {
     let resources =
-        parse_motion_resources(include_str!("../../examples/sd002/sd002.json")).unwrap();
+        parse_motion_resources(include_str!("../examples/sd002/sd002.json")).unwrap();
     let expected = ["SD002AA", "SD002AB", "SD002BA", "SD002BB", "swing2suma"]
         .iter()
         .map(|label| resources.motion_key(label).unwrap())
@@ -266,7 +266,7 @@ fn identifies_motion_graph_roots() {
 #[test]
 fn identifies_layer_resource_roles() {
     let resources =
-        parse_motion_resources(include_str!("../../examples/sd002/sd002.json")).unwrap();
+        parse_motion_resources(include_str!("../examples/sd002/sd002.json")).unwrap();
     let root = resources
         .motion(resources.motion_key("SD002AA").unwrap())
         .unwrap();

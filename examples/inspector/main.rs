@@ -68,7 +68,7 @@ async fn main() {
         process::exit(2);
     }
 
-    let font_data = include_bytes!("../assets/notosans-jp.ttf");
+    let font_data = include_bytes!("assets/notosans-jp.ttf");
     let font = load_ttf_font_from_bytes(font_data).unwrap();
     let text_params = TextParams {
         font: Some(&font),
@@ -155,8 +155,10 @@ async fn main() {
             let replacement_path1 =
                 LayerPath::from_string("SD002AB/mask/bg/nanami/レイヤ1/七海体".to_string());
             if last_second % 2 == 0 {
+                println!("asdasdas");
                 overrides.replace_layer(replacee_path1, replacement_path1);
             } else {
+                println!("meow");
                 overrides.clear_layer_replacement(&replacee_path1);
             }
         }
@@ -238,8 +240,8 @@ async fn main() {
 
 /// Prints the CLI usage for single-animation and browser modes.
 fn print_usage() {
-    eprintln!("Usage: simplemotion-cli <animation-folder> <root-number>");
-    eprintln!("       simplemotion-cli -m <animations-folder>");
+    eprintln!("Usage: cargo run --example inspector -- <animation-folder> <root-number>");
+    eprintln!("       cargo run --example inspector -- -m <animations-folder>");
 }
 
 /// Loads one animation folder and uploads its icon textures.

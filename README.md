@@ -1,5 +1,5 @@
-### run it
+### try
+
 ```
-cd simplemotion-cli
-cargo run --release -- -m ../examples
+cargo run --release --example inspector -- -m anim
 ```

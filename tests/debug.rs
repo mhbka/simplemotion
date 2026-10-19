@@ -3,7 +3,7 @@ use simplemotion_lib::{parse_motion_resources, to_anim_commands, DebugInfo, Exte
 #[test]
 fn records_layer_transforms_only_when_enabled() {
     let resources =
-        parse_motion_resources(include_str!("../../examples/sd002/sd002.json")).unwrap();
+        parse_motion_resources(include_str!("../examples/sd002/sd002.json")).unwrap();
     let mut debug = DebugInfo::new(false);
 
     to_anim_commands(

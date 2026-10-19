@@ -1,0 +1,1 @@
+[source](https://github.com/2468785842/krkr2/tree/main/cpp/plugins/motionplayer/docs)
