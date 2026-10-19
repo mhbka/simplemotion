@@ -35,12 +35,12 @@ pub struct Motion<S> {
 impl<S> Motion<S> {}
 
 /// Denotes how to re-order the (depth-first) layers of a motion during drawing.
-/// 
+///
 /// ### Example
 /// - By depth-first, we have the layers A, B, C, D
 /// - The active priority is [3,1,2,0] -> we evaluate in reverse
 /// - The final order to draw commands in is A, C, B, D
-/// 
+///
 /// ### Why call it a frame?
 /// Just cuz it's timed. There's no interpolation or whatever.
 #[derive(Debug, Deserialize)]

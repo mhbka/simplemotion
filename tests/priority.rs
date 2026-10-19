@@ -1,6 +1,4 @@
-use simplemotion_lib::{
-    parse_motion_resources, to_anim_commands, DebugInfo, ExternalOverrides,
-};
+use simplemotion_lib::{parse_motion_resources, to_anim_commands, DebugInfo, ExternalOverrides};
 
 /// Keeps the active priority after its terminal null marker.
 #[test]

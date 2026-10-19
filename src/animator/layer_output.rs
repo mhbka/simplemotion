@@ -1,23 +1,23 @@
+use crate::{animation::AnimationCommand, PriorityFrame};
 use tracing::debug;
-use crate::{PriorityFrame, animation::AnimationCommand};
 
 /// All the layer outputs from a motion.
-/// 
+///
 /// Should be created when evaluating a new motion.
 pub struct MotionLayerOutputs {
-    outputs: Vec<LayerOutput>
+    outputs: Vec<LayerOutput>,
 }
 
 impl MotionLayerOutputs {
     /// Create a new one b-baka!
     pub fn new() -> Self {
         Self {
-            outputs: Vec::new()
+            outputs: Vec::new(),
         }
     }
 
     /// Add a layer output.
-    /// 
+    ///
     /// Should be depth-first and child-layer ordering.
     pub fn push(&mut self, output: LayerOutput) {
         self.outputs.push(output);
@@ -32,7 +32,11 @@ impl MotionLayerOutputs {
             return self.finalize_without_reorder();
         };
         if content.len() != self.outputs.len() {
-            debug!("priority length ({}) isn't same as output length ({})", content.len(), self.outputs.len());
+            debug!(
+                "priority length ({}) isn't same as output length ({})",
+                content.len(),
+                self.outputs.len()
+            );
             return self.finalize_without_reorder();
         }
         self.reorder_and_finalize(content)
@@ -64,7 +68,7 @@ pub struct LayerOutput {
     /// If this layer is a motion layer, its commands.
     motion: Option<Vec<AnimationCommand>>,
     /// If this layer is an icon layer, the animation command.
-    own: Option<AnimationCommand>
+    own: Option<AnimationCommand>,
 }
 
 impl LayerOutput {
@@ -72,12 +76,12 @@ impl LayerOutput {
     pub fn new() -> Self {
         Self {
             motion: None,
-            own: None
+            own: None,
         }
     }
 
     /// Set the motion commands for this layer.
-    /// 
+    ///
     /// Panics if set >1 times, as each layer should have max 1 set of motion commands.
     pub fn set_motion_commands(&mut self, commands: Vec<AnimationCommand>) {
         if self.motion.is_some() {
@@ -87,7 +91,7 @@ impl LayerOutput {
     }
 
     /// Append the layer's own command.
-    /// 
+    ///
     /// Panics if set >1 times, as each layer should have max 1 set of motion commands.
     pub fn set_own_command(&mut self, command: AnimationCommand) {
         if self.own.is_some() {
@@ -106,7 +110,7 @@ impl LayerOutput {
         } else {
             match self.own {
                 Some(own) => vec![own],
-                None => vec![]
+                None => vec![],
             }
         }
     }

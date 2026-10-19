@@ -1,7 +1,7 @@
 use simplemotion_lib::{
     parse_motion_resources, parse_motion_resources_from_folder, to_anim_commands, DebugInfo,
-    FrameType, IconImageKind, ImageLoadingError, KeyFrameContent, Layer, LayerType, ObjectType,
-    ExternalOverrides, ParseMotionError, ResourceReference,
+    ExternalOverrides, FrameType, IconImageKind, ImageLoadingError, KeyFrameContent, Layer,
+    LayerType, ObjectType, ParseMotionError, ResourceReference,
 };
 
 /// Applies neutral transform defaults to omitted fields in non-empty frame content.
@@ -58,8 +58,7 @@ fn composes_interpolated_opacity_through_layers() {
 /// Emits fully opaque icon commands for every SD002 root at the initial frame.
 #[test]
 fn sd002_roots_start_with_opaque_icon_commands() {
-    let resources =
-        parse_motion_resources(include_str!("../examples/sd002/sd002.json")).unwrap();
+    let resources = parse_motion_resources(include_str!("../examples/sd002/sd002.json")).unwrap();
 
     for root in &resources.roots {
         let mut debug_info = DebugInfo::new(false);
@@ -138,8 +137,7 @@ fn reports_all_missing_icon_images() {
 /// Parses the supplied simple motion and preserves its layer tree.
 #[test]
 fn parses_the_example_motion() {
-    let resources =
-        parse_motion_resources(include_str!("../examples/sd002/sd002.json")).unwrap();
+    let resources = parse_motion_resources(include_str!("../examples/sd002/sd002.json")).unwrap();
     let motion = resources
         .motion(resources.motion_key("SD002AA").unwrap())
         .unwrap();
@@ -175,8 +173,7 @@ fn parses_the_example_motion() {
 /// Preserves SD009's flattened layer order for later render scheduling.
 #[test]
 fn preserves_motion_priority_frames() {
-    let resources =
-        parse_motion_resources(include_str!("../examples/sd009/sd009.json")).unwrap();
+    let resources = parse_motion_resources(include_str!("../examples/sd009/sd009.json")).unwrap();
     let motion = resources
         .motion(resources.motion_key("SD009BA").unwrap())
         .unwrap();
@@ -195,8 +192,7 @@ fn preserves_motion_priority_frames() {
 /// Resolves nested motion paths to stable motion handles.
 #[test]
 fn resolves_nested_motion_references() {
-    let resources =
-        parse_motion_resources(include_str!("../examples/sd002/sd002.json")).unwrap();
+    let resources = parse_motion_resources(include_str!("../examples/sd002/sd002.json")).unwrap();
     let key = resources.motion_key("SD002AA").unwrap();
     let motion = resources.motion(key).unwrap();
     let mut layers = Vec::new();
@@ -252,8 +248,7 @@ fn resolves_nested_motion_references() {
 /// Identifies motions that are not nested by another exported motion.
 #[test]
 fn identifies_motion_graph_roots() {
-    let resources =
-        parse_motion_resources(include_str!("../examples/sd002/sd002.json")).unwrap();
+    let resources = parse_motion_resources(include_str!("../examples/sd002/sd002.json")).unwrap();
     let expected = ["SD002AA", "SD002AB", "SD002BA", "SD002BB", "swing2suma"]
         .iter()
         .map(|label| resources.motion_key(label).unwrap())
@@ -265,8 +260,7 @@ fn identifies_motion_graph_roots() {
 /// Maps the sample's layer types to their observed frame-resource roles.
 #[test]
 fn identifies_layer_resource_roles() {
-    let resources =
-        parse_motion_resources(include_str!("../examples/sd002/sd002.json")).unwrap();
+    let resources = parse_motion_resources(include_str!("../examples/sd002/sd002.json")).unwrap();
     let root = resources
         .motion(resources.motion_key("SD002AA").unwrap())
         .unwrap();

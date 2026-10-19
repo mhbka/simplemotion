@@ -1,14 +1,20 @@
 use crate::{
-    FrameType, KeyFrame, Layer, LayerType, MotionKey, MotionResources, PriorityFrame, ResourceReference, animation::{AnimationCommand, InterpolatedLayerState}, animator::{layer_output::{LayerOutput, MotionLayerOutputs}, time::{InheritedTime, MotionLocalTime}},
+    animation::{AnimationCommand, InterpolatedLayerState},
+    animator::{
+        layer_output::{LayerOutput, MotionLayerOutputs},
+        time::{InheritedTime, MotionLocalTime},
+    },
+    FrameType, KeyFrame, Layer, LayerType, MotionKey, MotionResources, PriorityFrame,
+    ResourceReference,
 };
 use glam::Affine2;
 use tracing::{debug, trace, warn};
 
 mod debug;
 mod ext_override;
+mod layer_output;
 mod path;
 mod time;
-mod layer_output;
 
 pub use debug::DebugInfo;
 pub use ext_override::{ExternalOverrides, OverrideLayerState};
@@ -60,7 +66,7 @@ fn get_layer_commands(
             if let Some(command) = command {
                 output.set_own_command(command);
             }
-        },
+        }
         LayerType::Motion => {
             let motion_commands = get_motion_commands(
                 resources,
@@ -111,7 +117,6 @@ fn get_layer_commands(
             debug_info,
         );
     }
-
 }
 
 /// Get the animation command for an icon.
@@ -219,9 +224,7 @@ fn get_motion_commands_inner(
     overrides: &ExternalOverrides,
     debug_info: &mut DebugInfo,
 ) -> Vec<AnimationCommand> {
-    let motion = resources
-        .motion(motion)
-        .expect("motion should exist");
+    let motion = resources.motion(motion).expect("motion should exist");
     let mut motion_outputs = MotionLayerOutputs::new();
     let local_time = MotionLocalTime::calculate(time, motion.loop_time, motion.last_time);
     for layer in &motion.layer {
@@ -247,8 +250,7 @@ fn get_motion_commands_inner(
         );
     }
 
-    let priority = active_priority_at(local_time, &motion.priority)
-        .map(|i| &motion.priority[i]);
+    let priority = active_priority_at(local_time, &motion.priority).map(|i| &motion.priority[i]);
     let motion_commands = motion_outputs.finalize(priority);
     motion_commands
 }
@@ -379,10 +381,7 @@ fn active_frame_at(
 }
 
 /// Basically the same thing as `active_frame_at`, except for the active priority in a frame's `priority` list.
-fn active_priority_at(
-    time: MotionLocalTime,
-    mut priorities: &[PriorityFrame],
-) -> Option<usize> {
+fn active_priority_at(time: MotionLocalTime, mut priorities: &[PriorityFrame]) -> Option<usize> {
     // Ignore the trailing null entry, which marks the end of priority data.
     if priorities
         .last()
