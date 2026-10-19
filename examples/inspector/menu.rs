@@ -1,4 +1,4 @@
-use crate::animation::LoadedAnimation;
+use crate::common::animation::LoadedAnimation;
 use macroquad::prelude::*;
 
 const LIST_WIDTH: f32 = 360.0;

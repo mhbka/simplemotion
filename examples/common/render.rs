@@ -1,4 +1,4 @@
-use crate::animation::LoadedAnimation;
+use super::animation::LoadedAnimation;
 use macroquad::prelude::*;
 use simplemotion_lib::{animation::AnimationCommand, DebugInfo, MotionKey};
 
@@ -25,6 +25,14 @@ impl DisplayMode {
     /// Returns whether animation evaluation should collect layer transforms.
     pub fn collects_layer_details(self) -> bool {
         self == Self::Layers
+    }
+}
+
+/// Cycles the visible details with Space.
+pub fn toggle_display_mode(display_mode: &mut DisplayMode, debug_info: &mut DebugInfo) {
+    if is_key_pressed(KeyCode::Space) {
+        *display_mode = display_mode.next();
+        debug_info.debug_layers = display_mode.collects_layer_details();
     }
 }
 
@@ -70,7 +78,7 @@ pub fn draw_status_panel(
         .unwrap_or("<missing root>");
     draw_text(
         &format!(
-            "{} / {root_label} — frame: {frame} (Space: info)",
+            "{} / {root_label} - frame: {frame} (Space: info)",
             animation.label
         ),
         8.0,
@@ -90,7 +98,7 @@ fn draw_layer_details(debug_info: &DebugInfo, font: &Font) {
     for (index, (path, kind, transform)) in debug_info.layer_transforms.iter().enumerate() {
         let transform = transform.to_scale_angle_translation();
         let text = format!(
-            "{} ({kind:?}) — angle: {:.1}, translation: ({:.1}, {:.1})",
+            "{} ({kind:?}) - angle: {:.1}, translation: ({:.1}, {:.1})",
             path.as_str(),
             transform.1.to_degrees(),
             transform.2.x,
@@ -111,7 +119,7 @@ fn draw_command_details(animation: &LoadedAnimation, commands: &[AnimationComman
             .unwrap_or("<missing icon>");
         let transform = command.transform.to_scale_angle_translation();
         let text = format!(
-            "{label} — scale: {:.1}, angle: {:.1}, translation: ({:.1}, {:.1})",
+            "{label} - scale: {:.1}, angle: {:.1}, translation: ({:.1}, {:.1})",
             transform.0,
             transform.1.to_degrees(),
             transform.2.x,

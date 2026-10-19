@@ -66,6 +66,10 @@ impl AnimationContext {
 }
 
 /// Evaluator for a single `time`'s animation commands.
+/// 
+/// Mostly exists because borrow checker angry if I put these fns directly on the context struct :p
+/// 
+/// Also look how clean the context struct's impl block is...
 struct AnimationEvaluator<'resources, 'debug> {
     resources: &'resources MotionResources,
     overrides: &'resources ExternalOverrides,

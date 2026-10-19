@@ -8,3 +8,10 @@ it does NOT support mesh deformations, just simple affine transforms for 2D stuf
 ```
 cargo run --release --example inspector -- -m anim
 ```
+
+### pendulum demo
+```
+cargo run --release --example pendulum
+```
+
+The demo freezes SD002's swing layer, appends a simulated pendulum rotation, and gives it an impulse when you click.

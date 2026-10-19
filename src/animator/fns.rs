@@ -69,7 +69,7 @@ pub(crate) fn get_layer_times_with_override(
 ) -> (InheritedTime, MotionLocalTime) {
     if let Some(&override_time) = overrides.inherited_time_for(layer_path) {
         let override_local_time = MotionLocalTime::calculate(override_time, motion_loop_time, motion_last_time);
-        return (override_time, override_local_time);
+        return (layer_time, override_local_time);
     }
     (layer_time, layer_local_time) 
 }

@@ -1,27 +1,16 @@
-use simplemotion_lib::{parse_motion_resources, to_anim_commands, DebugInfo, ExternalOverrides};
+use simplemotion_lib::{parse_motion_resources, AnimationContext};
 
 #[test]
 fn records_layer_transforms_only_when_enabled() {
-    let resources = parse_motion_resources(include_str!("../examples/sd002/sd002.json")).unwrap();
-    let mut debug = DebugInfo::new(false);
+    let resources = parse_motion_resources(include_str!("../anim/sd002/sd002.json")).unwrap();
+    let root = resources.roots[0];
+    let mut context = AnimationContext::new(resources);
 
-    to_anim_commands(
-        &resources,
-        resources.roots[0],
-        0,
-        &ExternalOverrides::default(),
-        &mut debug,
-    );
-    assert!(debug.layer_transforms.is_empty());
+    context.to_anim_commands(root, 0);
+    assert!(context.debug_info().layer_transforms.is_empty());
 
-    debug.debug_layers = true;
-    to_anim_commands(
-        &resources,
-        resources.roots[0],
-        0,
-        &ExternalOverrides::default(),
-        &mut debug,
-    );
+    context.debug_info_mut().debug_layers = true;
+    context.to_anim_commands(root, 0);
 
-    assert!(!debug.layer_transforms.is_empty());
+    assert!(!context.debug_info().layer_transforms.is_empty());
 }

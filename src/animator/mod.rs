@@ -7,7 +7,6 @@ mod context;
 mod fns;
 
 pub use debug::DebugInfo;
-pub use ext_override::{ExternalOverrides, OverrideLayerState};
+pub use ext_override::{ExternalOverrides, LayerOverride, OverrideLayerState};
 pub use path::LayerPath;
 pub use context::AnimationContext;
-

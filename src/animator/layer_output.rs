@@ -3,7 +3,7 @@ use tracing::debug;
 
 /// All the layer outputs from a motion.
 ///
-/// Should be created when evaluating a new motion.
+/// Create a new one when you start evaluating a motion.
 pub struct MotionLayerOutputs {
     outputs: Vec<LayerOutput>,
 }

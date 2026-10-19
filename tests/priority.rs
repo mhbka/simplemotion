@@ -1,4 +1,4 @@
-use simplemotion_lib::{parse_motion_resources, to_anim_commands, DebugInfo, ExternalOverrides};
+use simplemotion_lib::{parse_motion_resources, AnimationContext};
 
 /// Keeps the active priority after its terminal null marker.
 #[test]
@@ -32,32 +32,21 @@ fn keeps_priority_after_a_terminal_null_frame() {
         "#,
     )
     .unwrap();
-    let mut debug_info = DebugInfo::new(false);
+    let root = resources.roots[0];
+    let mut context = AnimationContext::new(resources);
 
-    let commands = to_anim_commands(
-        &resources,
-        resources.roots[0],
-        0,
-        &ExternalOverrides::default(),
-        &mut debug_info,
-    );
+    let commands = context.to_anim_commands(root, 0);
     let labels: Vec<_> = commands
         .iter()
-        .map(|command| resources.icon(command.icon).unwrap().label.as_str())
+        .map(|command| context.resources().icon(command.icon).unwrap().label.clone())
         .collect();
 
     assert_eq!(labels.len(), 3);
 
-    let commands_at_end = to_anim_commands(
-        &resources,
-        resources.roots[0],
-        1,
-        &ExternalOverrides::default(),
-        &mut debug_info,
-    );
+    let commands_at_end = context.to_anim_commands(root, 1);
     let labels_at_end: Vec<_> = commands_at_end
         .iter()
-        .map(|command| resources.icon(command.icon).unwrap().label.as_str())
+        .map(|command| context.resources().icon(command.icon).unwrap().label.clone())
         .collect();
 
     assert_eq!(labels_at_end, labels);

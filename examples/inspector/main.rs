@@ -1,13 +1,14 @@
-mod animation;
+#[path = "../common/mod.rs"]
+mod common;
 mod menu;
-mod render;
 
-use animation::{load_animation, load_animation_folders, LoadedAnimation};
+use common::{
+    animation::{load_animation, LoadedAnimation},
+    render::{draw_commands, draw_status_panel, toggle_display_mode, DisplayMode},
+};
 use macroquad::prelude::*;
 use menu::{draw_animation_picker, draw_root_picker, BrowserMenu};
-use render::{draw_commands, draw_status_panel, DisplayMode};
-use simplemotion_lib::DebugInfo;
-use std::{env, path::Path, process};
+use std::{env, fs, path::{Path, PathBuf}, process};
 
 /// Opens a native window and plays an animation folder or browses many animation folders.
 #[macroquad::main("SimpleMotion")]
@@ -97,6 +98,35 @@ fn load_requested_animations(
     animations
 }
 
+/// Loads every playable immediate subfolder of a directory.
+fn load_animation_folders(folder: &Path) -> Vec<LoadedAnimation> {
+    let entries = fs::read_dir(folder).unwrap_or_else(|error| {
+        eprintln!("Could not read {}: {error}", folder.display());
+        process::exit(1);
+    });
+    let mut folders: Vec<PathBuf> = entries
+        .filter_map(Result::ok)
+        .map(|entry| entry.path())
+        .filter(|path| path.is_dir())
+        .collect();
+    folders.sort();
+
+    folders
+        .into_iter()
+        .filter_map(|folder| match load_animation(&folder) {
+            Ok(animation) if !animation.context.resources().roots.is_empty() => Some(animation),
+            Ok(_) => {
+                eprintln!("Skipping {}: it has no root motions", folder.display());
+                None
+            }
+            Err(error) => {
+                eprintln!("Skipping {}: {error}", folder.display());
+                None
+            }
+        })
+        .collect()
+}
+
 /// Gets the requested root index and ensures it exists in the first animation.
 fn requested_root_index(
     arguments: &[String],
@@ -116,14 +146,6 @@ fn requested_root_index(
         process::exit(2);
     }
     root_index
-}
-
-/// Cycles the visible details with Space.
-fn toggle_display_mode(display_mode: &mut DisplayMode, debug_info: &mut DebugInfo) {
-    if is_key_pressed(KeyCode::Space) {
-        *display_mode = display_mode.next();
-        debug_info.debug_layers = display_mode.collects_layer_details();
-    }
 }
 
 /// Opens, closes, or goes back within the browser menu.
