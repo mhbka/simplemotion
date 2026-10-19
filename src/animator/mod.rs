@@ -1,11 +1,7 @@
 use crate::{
-    animation::{AnimationCommand, InterpolatedLayerState},
-    animator::{
-        layer_output::{LayerOutput, MotionLayerOutputs},
-        time::{InheritedTime, MotionLocalTime},
+    FrameType, KeyFrame, Layer, LayerType, Motion, MotionKey, MotionResources, PriorityFrame, ResourceReference, animation::{AnimationCommand, InterpolatedLayerState}, animator::{
+        ext_override::LayerOverride, layer_output::{LayerOutput, MotionLayerOutputs}, time::{InheritedTime, MotionLocalTime},
     },
-    FrameType, KeyFrame, Layer, LayerType, MotionKey, MotionResources, PriorityFrame,
-    ResourceReference,
 };
 use glam::Affine2;
 use tracing::{debug, trace, warn};
@@ -50,14 +46,15 @@ pub fn to_anim_commands(
 /// Get the commands for a layer, then its children.
 fn get_layer_commands(
     layer: &Layer<ResourceReference>,
+    root_motion: &Motion<ResourceReference>,
     resources: &MotionResources,
     all_outputs: &mut MotionLayerOutputs,
+    overrides: &ExternalOverrides,
+    debug_info: &mut DebugInfo,
     layer_state: InterpolatedLayerState,
     layer_path: LayerPath,
     local_time: MotionLocalTime,
     time: InheritedTime,
-    overrides: &ExternalOverrides,
-    debug_info: &mut DebugInfo,
 ) {
     let mut output = LayerOutput::new();
     match layer.layer_type {
@@ -89,34 +86,19 @@ fn get_layer_commands(
 
     all_outputs.push(output);
 
-    for child_layer in &layer.children {
-        let child_layer_path = layer_path.child(&child_layer.label);
-        let (child_layer, child_local_time) = check_layer_to_evaluate(
-            resources,
-            child_layer,
-            local_time,
-            time,
-            &child_layer_path,
-            overrides,
-        );
-        let child_local_state =
-            get_local_overridden_state(child_local_time, child_layer, &child_layer_path, overrides);
-        let child_layer_state = layer_state.with_child(child_local_state);
-
-        debug_info.record_child_layer(&child_layer_path, child_layer_state.transform);
-
-        get_layer_commands(
-            child_layer,
-            resources,
-            all_outputs,
-            child_layer_state,
-            child_layer_path,
-            child_local_time,
-            time,
-            overrides,
-            debug_info,
-        );
-    }
+    evaluate_descendant_layers(
+        &layer.children, 
+        root_motion, 
+        resources, 
+        overrides, 
+        debug_info, 
+        all_outputs, 
+        layer_path, 
+        layer_state, 
+        time, 
+        local_time, 
+        false
+    );
 }
 
 /// Get the animation command for an icon.
@@ -227,36 +209,75 @@ fn get_motion_commands_inner(
     let motion = resources.motion(motion).expect("motion should exist");
     let mut motion_outputs = MotionLayerOutputs::new();
     let local_time = MotionLocalTime::calculate(time, motion.loop_time, motion.last_time);
-    for layer in &motion.layer {
-        let layer_path = parent_path.child(&layer.label);
-        let (layer, layer_local_time) =
-            check_layer_to_evaluate(resources, layer, local_time, time, &layer_path, overrides);
-        let local_state =
-            get_local_overridden_state(layer_local_time, layer, &layer_path, overrides);
-        let layer_state = parent_state.with_child(local_state);
 
-        debug_info.record_motion_layer(&layer_path, layer_state.transform);
-
-        get_layer_commands(
-            layer,
-            resources,
-            &mut motion_outputs,
-            layer_state,
-            layer_path,
-            layer_local_time,
-            time,
-            overrides,
-            debug_info,
-        );
-    }
+    evaluate_descendant_layers(
+        &motion.layer,
+        motion,
+        resources,
+        overrides,
+        debug_info,
+        &mut motion_outputs,
+        parent_path,
+        parent_state,
+        time,
+        local_time,
+        true
+    );
 
     let priority = active_priority_at(local_time, &motion.priority).map(|i| &motion.priority[i]);
     let motion_commands = motion_outputs.finalize(priority);
     motion_commands
 }
 
-/// Check if the layer to evaluate should be replaced with a different layer.
-fn check_layer_to_evaluate<'a>(
+/// Evaluate the descendant layers, 
+/// appending their `LayerOutput`s into `all_outputs`.
+fn evaluate_descendant_layers(
+    layers: &[Layer<ResourceReference>],
+    root_motion: &Motion<ResourceReference>,
+    resources: &MotionResources,
+    overrides: &ExternalOverrides,
+    debug_info: &mut DebugInfo,
+    all_outputs: &mut MotionLayerOutputs,
+    parent_path: LayerPath,
+    parent_state: InterpolatedLayerState,
+    time: InheritedTime,
+    local_time: MotionLocalTime,
+    direct_from_motion: bool
+) {
+    for layer in layers {
+        let layer_path = parent_path.child(&layer.label);
+        let (layer_time, layer_local_time) = 
+            get_layer_times_with_override(&layer_path, time, local_time, root_motion.loop_time, root_motion.last_time, overrides);
+        let (layer, layer_local_time) =
+            replace_layer_if_in_overrides(resources, layer, layer_local_time, layer_time, &layer_path, overrides);
+        let local_state =
+            get_local_state_with_override(layer_local_time, layer, &layer_path, overrides);
+        let layer_state = parent_state.with_child(local_state);
+
+        if direct_from_motion {
+            debug_info.record_motion_layer(&layer_path, layer_state.transform);
+        } else {
+            debug_info.record_child_layer(&layer_path, layer_state.transform);
+        }
+
+        get_layer_commands(
+            layer,
+            root_motion,
+            resources,
+            all_outputs,
+            overrides,
+            debug_info,
+            layer_state,
+            layer_path,
+            layer_local_time,
+            layer_time,
+        );
+    }
+}
+
+/// Check if the given layer should be replaced with a different layer
+/// if specified in `overrides`.
+fn replace_layer_if_in_overrides<'a>(
     resources: &'a MotionResources,
     layer: &'a Layer<ResourceReference>,
     local_time: MotionLocalTime,
@@ -283,8 +304,8 @@ fn check_layer_to_evaluate<'a>(
     (donor_context.layer, donor_local_time)
 }
 
-/// Gets a layer's interpolated state, applying an external replacement when present.
-fn get_local_overridden_state(
+/// Gets a layer's interpolated state, applying an external override if present.
+fn get_local_state_with_override(
     local_time: MotionLocalTime,
     layer: &Layer<ResourceReference>,
     layer_path: &LayerPath,
@@ -292,10 +313,35 @@ fn get_local_overridden_state(
 ) -> InterpolatedLayerState {
     let mut state = get_local_linear_interpolated_state(local_time, &layer.frame_list);
     if let Some(override_state) = overrides.state_for(layer_path) {
-        state.transform = override_state.transform;
-        state.opacity = override_state.opa;
+        match override_state {
+            LayerOverride::Completely(new_state) => {
+                state.transform = new_state.transform;
+                state.opacity = new_state.opa;
+            },
+            LayerOverride::Append(append_state) => {
+                state.transform *= append_state.transform;
+                state.opacity *= append_state.opa;
+            }
+        };
     }
     state
+}
+
+/// Return the layer's inherited and local times,
+/// checking `overrides` if an override is applicable.
+fn get_layer_times_with_override(
+    layer_path: &LayerPath,
+    layer_time: InheritedTime,
+    layer_local_time: MotionLocalTime,
+    motion_loop_time: i32,
+    motion_last_time: u32,
+    overrides: &ExternalOverrides
+) -> (InheritedTime, MotionLocalTime) {
+    if let Some(&override_time) = overrides.inherited_time_for(layer_path) {
+        let override_local_time = MotionLocalTime::calculate(override_time, motion_loop_time, motion_last_time);
+        return (override_time, override_local_time);
+    }
+    (layer_time, layer_local_time) 
 }
 
 /// Gets the active layer state. Interpolate only a dynamic frame toward the next frame,
