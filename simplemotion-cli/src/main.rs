@@ -102,7 +102,6 @@ async fn main() {
         let root = animation.resources.roots[root_index];
         let time = get_time();
         let frame = ((time - animation_started_at) * 60.0) as u32;
-        let mut overrides = ExternalOverrides::new();
         let commands = to_anim_commands(
             &animation.resources,
             root,
