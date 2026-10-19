@@ -1,6 +1,6 @@
 use macroquad::prelude::*;
 use simplemotion_lib::{
-    parse_motion_resources_from_folder, IconKey, MotionResources, ParseMotionError,
+    parse_motion_resources_from_folder, AnimationContext, IconKey, MotionResources, ParseMotionError,
 };
 use std::{
     collections::HashMap,
@@ -12,7 +12,7 @@ use std::{
 /// Holds one parsed animation and its uploaded icon textures.
 pub struct LoadedAnimation {
     pub label: String,
-    pub resources: MotionResources,
+    pub context: AnimationContext,
     pub textures: HashMap<IconKey, Texture2D>,
 }
 
@@ -28,7 +28,7 @@ pub fn load_animation(folder: &Path) -> Result<LoadedAnimation, ParseMotionError
     Ok(LoadedAnimation {
         label,
         textures: load_textures(&resources),
-        resources,
+        context: AnimationContext::new(resources),
     })
 }
 
@@ -48,7 +48,7 @@ pub fn load_animation_folders(folder: &Path) -> Vec<LoadedAnimation> {
     folders
         .into_iter()
         .filter_map(|folder| match load_animation(&folder) {
-            Ok(animation) if !animation.resources.roots.is_empty() => Some(animation),
+            Ok(animation) if !animation.context.resources().roots.is_empty() => Some(animation),
             Ok(_) => {
                 eprintln!("Skipping {}: it has no root motions", folder.display());
                 None

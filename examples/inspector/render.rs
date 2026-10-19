@@ -63,7 +63,8 @@ pub fn draw_status_panel(
     );
 
     let root_label = animation
-        .resources
+        .context
+        .resources()
         .motion_label(root)
         .map(String::as_str)
         .unwrap_or("<missing root>");
@@ -103,7 +104,8 @@ fn draw_layer_details(debug_info: &DebugInfo, font: &Font) {
 fn draw_command_details(animation: &LoadedAnimation, commands: &[AnimationCommand], font: &Font) {
     for (index, command) in commands.iter().enumerate() {
         let label = animation
-            .resources
+            .context
+            .resources()
             .icon(command.icon)
             .map(|icon| icon.label.as_str())
             .unwrap_or("<missing icon>");

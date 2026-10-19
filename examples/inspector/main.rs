@@ -6,7 +6,7 @@ use animation::{load_animation, load_animation_folders, LoadedAnimation};
 use macroquad::prelude::*;
 use menu::{draw_animation_picker, draw_root_picker, BrowserMenu};
 use render::{draw_commands, draw_status_panel, DisplayMode};
-use simplemotion_lib::{to_anim_commands, DebugInfo, ExternalOverrides};
+use simplemotion_lib::DebugInfo;
 use std::{env, path::Path, process};
 
 /// Opens a native window and plays an animation folder or browses many animation folders.
@@ -14,22 +14,21 @@ use std::{env, path::Path, process};
 async fn main() {
     let arguments: Vec<_> = env::args().skip(1).collect();
     let multiple_animations = arguments.first().is_some_and(|argument| argument == "-m");
-    let animations = load_requested_animations(&arguments, multiple_animations);
+    let mut animations = load_requested_animations(&arguments, multiple_animations);
     let mut root_index = requested_root_index(&arguments, multiple_animations, &animations);
 
     let font = load_ttf_font_from_bytes(include_bytes!("assets/notosans-jp.ttf"))
         .expect("inspector font should load");
     let mut animation_index = 0;
     let mut display_mode = DisplayMode::Hidden;
-    let mut debug_info = DebugInfo::new(display_mode.collects_layer_details());
-    let overrides = ExternalOverrides::new();
     let mut started_at = get_time();
     let mut menu = BrowserMenu::Closed;
     let mut animation_menu_scroll = 0.0;
     let mut root_menu_scroll = 0.0;
 
     loop {
-        toggle_display_mode(&mut display_mode, &mut debug_info);
+        let animation = &mut animations[animation_index];
+        toggle_display_mode(&mut display_mode, animation.context.debug_info_mut());
         update_browser_navigation(multiple_animations, &mut menu);
         update_keyboard_selection(
             &animations,
@@ -39,16 +38,10 @@ async fn main() {
             &mut started_at,
         );
 
-        let animation = &animations[animation_index];
-        let root = animation.resources.roots[root_index];
+        let animation = &mut animations[animation_index];
+        let root = animation.context.resources().roots[root_index];
         let frame = ((get_time() - started_at) * 60.0) as u32;
-        let commands = to_anim_commands(
-            &animation.resources,
-            root,
-            frame,
-            &overrides,
-            &mut debug_info,
-        );
+        let commands = animation.context.to_anim_commands(root, frame);
 
         clear_background(BLACK);
         draw_commands(animation, &commands);
@@ -57,7 +50,7 @@ async fn main() {
             root,
             frame,
             &commands,
-            &debug_info,
+            animation.context.debug_info(),
             display_mode,
             &font,
         );
@@ -118,7 +111,7 @@ fn requested_root_index(
             .and_then(|root| root.parse().ok())
             .unwrap_or_else(|| print_usage_and_exit())
     };
-    if root_index >= animations[0].resources.roots.len() {
+    if root_index >= animations[0].context.resources().roots.len() {
         eprintln!("Root number {root_index} does not exist for this animation.");
         process::exit(2);
     }
@@ -181,7 +174,7 @@ fn update_keyboard_selection(
             *started_at = get_time();
         }
         BrowserMenu::Roots => {
-            let roots = animations[*animation_index].resources.roots.len();
+            let roots = animations[*animation_index].context.resources().roots.len();
             *root_index = move_selection(*root_index, roots, direction);
             *started_at = get_time();
         }

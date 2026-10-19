@@ -41,13 +41,15 @@ pub fn draw_root_picker(
         animation.label
     );
     let labels = animation
-        .resources
+        .context
+        .resources()
         .roots
         .iter()
         .enumerate()
         .map(|(index, root)| {
             let label = animation
-                .resources
+                .context
+                .resources()
                 .motion_label(*root)
                 .map(String::as_str)
                 .unwrap_or("<missing root>");
