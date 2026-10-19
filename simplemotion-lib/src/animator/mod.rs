@@ -1,7 +1,5 @@
 use crate::{
-    animation::{AnimationCommand, InterpolatedLayerState},
-    animator::time::{InheritedTime, MotionLocalTime},
-    FrameType, KeyFrame, Layer, LayerType, MotionKey, MotionResources, ResourceReference,
+    FrameType, KeyFrame, Layer, LayerType, MotionKey, MotionResources, PriorityFrame, ResourceReference, animation::{AnimationCommand, InterpolatedLayerState}, animator::{layer_output::{LayerOutput, MotionLayerOutputs}, time::{InheritedTime, MotionLocalTime}},
 };
 use glam::Affine2;
 use tracing::{debug, trace, warn};
@@ -10,48 +8,29 @@ mod debug;
 mod ext_override;
 mod path;
 mod time;
+mod layer_output;
 
 pub use debug::DebugInfo;
 pub use ext_override::{ExternalOverrides, OverrideLayerState};
 pub use path::LayerPath;
 
-/// Animates `motion` at the given `time`, outputting animation commands into `buffer`.
+/// Animates `motion` at the given `time`, outputting animation commands into `buffer`,
+/// and using `overrides` for overriding layers behaviour where needed.
 ///
 /// This is the animation entrypoint, where `motion` is typically one of the root motions.
 pub fn to_anim_commands(
-    buffer: &mut Vec<AnimationCommand>,
-    resources: &MotionResources,
-    motion: MotionKey,
-    time: u32,
-    debug_info: &mut DebugInfo,
-) {
-    to_anim_commands_with_overrides(
-        buffer,
-        resources,
-        motion,
-        time,
-        &ExternalOverrides::default(),
-        debug_info,
-    );
-}
-
-/// Animates `motion` with external layer-state replacements.
-pub fn to_anim_commands_with_overrides(
-    buffer: &mut Vec<AnimationCommand>,
     resources: &MotionResources,
     motion: MotionKey,
     time: u32,
     overrides: &ExternalOverrides,
     debug_info: &mut DebugInfo,
-) {
-    buffer.clear();
+) -> Vec<AnimationCommand> {
     debug_info.clear();
     let root_label = resources
         .motion_label(motion)
         .map(String::as_str)
         .unwrap_or("<unknown>");
     get_motion_commands_inner(
-        buffer,
         motion,
         resources,
         LayerPath::root(root_label),
@@ -59,14 +38,14 @@ pub fn to_anim_commands_with_overrides(
         time.into(),
         overrides,
         debug_info,
-    );
+    )
 }
 
 /// Get the commands for a layer, then its children.
 fn get_layer_commands(
     layer: &Layer<ResourceReference>,
     resources: &MotionResources,
-    buffer: &mut Vec<AnimationCommand>,
+    all_outputs: &mut MotionLayerOutputs,
     layer_state: InterpolatedLayerState,
     layer_path: LayerPath,
     local_time: MotionLocalTime,
@@ -74,23 +53,36 @@ fn get_layer_commands(
     overrides: &ExternalOverrides,
     debug_info: &mut DebugInfo,
 ) {
+    let mut output = LayerOutput::new();
     match layer.layer_type {
-        LayerType::Icon => get_icon_command(resources, buffer, layer, layer_state, local_time),
-        LayerType::Motion => get_motion_commands(
-            buffer,
-            resources,
-            layer,
-            layer_state,
-            layer_path.clone(),
-            time,
-            local_time,
-            overrides,
-            debug_info,
-        ),
+        LayerType::Icon => {
+            let command = get_icon_command(resources, layer, layer_state, local_time);
+            if let Some(command) = command {
+                output.set_own_command(command);
+            }
+        },
+        LayerType::Motion => {
+            let motion_commands = get_motion_commands(
+                resources,
+                layer,
+                layer_state,
+                layer_path.clone(),
+                time,
+                local_time,
+                overrides,
+                debug_info,
+            );
+            if let Some(motion_commands) = motion_commands {
+                output.set_motion_commands(motion_commands);
+            }
+        }
         LayerType::Layout => {} // already applied layer transform, so nothing needs to be done
         LayerType::Mask => debug!("SKIPPING MASK FOR NOW"),
         LayerType::Other(other) => debug!("UNKNOWN LAYER TYPE: {other}"),
     }
+
+    all_outputs.push(output);
+
     for child_layer in &layer.children {
         let child_layer_path = layer_path.child(&child_layer.label);
         let (child_layer, child_local_time) = check_layer_to_evaluate(
@@ -110,7 +102,7 @@ fn get_layer_commands(
         get_layer_commands(
             child_layer,
             resources,
-            buffer,
+            all_outputs,
             child_layer_state,
             child_layer_path,
             child_local_time,
@@ -119,62 +111,64 @@ fn get_layer_commands(
             debug_info,
         );
     }
+
 }
 
 /// Get the animation command for an icon.
 fn get_icon_command(
     resources: &MotionResources,
-    buffer: &mut Vec<AnimationCommand>,
     layer: &Layer<ResourceReference>,
     layer_state: InterpolatedLayerState,
     local_time: MotionLocalTime,
-) {
+) -> Option<AnimationCommand> {
     let Some(active_keyframe_index) = active_frame_at(local_time, &layer.frame_list) else {
-        return;
+        return None;
     };
     let active_keyframe = &layer.frame_list[active_keyframe_index];
-    if let Some(content) = &active_keyframe.content {
-        let ResourceReference::Icon(icon) = content.src else {
-            panic!(
-                "Icon layer contains frame with non-icon source: {:?}",
-                active_keyframe
+    match &active_keyframe.content {
+        None => return None,
+        Some(content) => {
+            let ResourceReference::Icon(icon) = content.src else {
+                panic!(
+                    "Icon layer contains frame with non-icon source: {:?}",
+                    active_keyframe
+                );
+            };
+            let icon_info = resources.icon(icon).expect("icon should exist");
+            // origin translation (equation comes from the krkr2 docs)
+            // (or maybe just common sense)
+            let origin_offset = glam::Vec2::new(
+                -icon_info.value.origin_x - layer_state.anchor_offset.x,
+                -icon_info.value.origin_y - layer_state.anchor_offset.y,
             );
-        };
-        let icon_info = resources.icon(icon).expect("icon should exist");
-        // origin translation (equation comes from the krkr2 docs)
-        // (or maybe just common sense)
-        let origin_offset = glam::Vec2::new(
-            -icon_info.value.origin_x - layer_state.anchor_offset.x,
-            -icon_info.value.origin_y - layer_state.anchor_offset.y,
-        );
-        let mut transform = layer_state.transform * Affine2::from_translation(origin_offset);
+            let mut transform = layer_state.transform * Affine2::from_translation(origin_offset);
 
-        // screen translation -- basically "move" the icon to the centre of the screen
-        let screen_translation = Affine2::from_translation(glam::Vec2 {
-            x: resources.screen_size.width / 2.0,
-            y: resources.screen_size.height / 2.0,
-        });
-        transform = screen_translation * transform;
+            // screen translation -- basically "move" the icon to the centre of the screen
+            let screen_translation = Affine2::from_translation(glam::Vec2 {
+                x: resources.screen_size.width / 2.0,
+                y: resources.screen_size.height / 2.0,
+            });
+            transform = screen_translation * transform;
 
-        // scale from unit quad to the icon's size
-        // (we work with unit quad first, scale up, then sample for the image)
-        transform *= Affine2::from_scale(glam::Vec2::new(
-            icon_info.value.width,
-            icon_info.value.height,
-        ));
+            // scale from unit quad to the icon's size
+            // (we work with unit quad first, scale up, then sample for the image)
+            transform *= Affine2::from_scale(glam::Vec2::new(
+                icon_info.value.width,
+                icon_info.value.height,
+            ));
 
-        let command = AnimationCommand {
-            icon,
-            transform,
-            opacity: layer_state.opacity,
-        };
-        buffer.push(command);
+            let command = AnimationCommand {
+                icon,
+                transform,
+                opacity: layer_state.opacity,
+            };
+            return Some(command);
+        }
     }
 }
 
 /// Get the animation commands for a motion.
 fn get_motion_commands(
-    buffer: &mut Vec<AnimationCommand>,
     resources: &MotionResources,
     layer: &Layer<ResourceReference>,
     layer_state: InterpolatedLayerState,
@@ -183,15 +177,15 @@ fn get_motion_commands(
     local_time: MotionLocalTime,
     overrides: &ExternalOverrides,
     debug_info: &mut DebugInfo,
-) {
+) -> Option<Vec<AnimationCommand>> {
     let Some(active_keyframe_index) = active_frame_at(local_time, &layer.frame_list) else {
-        return;
+        return None;
     };
     let active_keyframe = &layer.frame_list[active_keyframe_index];
     if let Some(content) = &active_keyframe.content {
         let ResourceReference::Motion(motion) = content.src else {
             debug!("Motion layer has non-motion keyframe, not animating: {active_keyframe:?}");
-            return;
+            return None;
         };
         time = time.inherit(
             active_keyframe.time,
@@ -200,8 +194,7 @@ fn get_motion_commands(
                 .as_ref()
                 .and_then(|motion| motion.time_offset),
         );
-        get_motion_commands_inner(
-            buffer,
+        let commands = get_motion_commands_inner(
             motion,
             resources,
             layer_path,
@@ -210,12 +203,14 @@ fn get_motion_commands(
             overrides,
             debug_info,
         );
+        return Some(commands);
+    } else {
+        return None;
     }
 }
 
 /// Gets the animation commands for a motion.
 fn get_motion_commands_inner(
-    buffer: &mut Vec<AnimationCommand>,
     motion: MotionKey,
     resources: &MotionResources,
     parent_path: LayerPath,
@@ -223,8 +218,11 @@ fn get_motion_commands_inner(
     time: InheritedTime,
     overrides: &ExternalOverrides,
     debug_info: &mut DebugInfo,
-) {
-    let motion = resources.motion(motion).expect("motion should exist");
+) -> Vec<AnimationCommand> {
+    let motion = resources
+        .motion(motion)
+        .expect("motion should exist");
+    let mut motion_outputs = MotionLayerOutputs::new();
     let local_time = MotionLocalTime::calculate(time, motion.loop_time, motion.last_time);
     for layer in &motion.layer {
         let layer_path = parent_path.child(&layer.label);
@@ -239,7 +237,7 @@ fn get_motion_commands_inner(
         get_layer_commands(
             layer,
             resources,
-            buffer,
+            &mut motion_outputs,
             layer_state,
             layer_path,
             layer_local_time,
@@ -248,6 +246,11 @@ fn get_motion_commands_inner(
             debug_info,
         );
     }
+
+    let priority = active_priority_at(local_time, &motion.priority)
+        .map(|i| &motion.priority[i]);
+    let motion_commands = motion_outputs.finalize(priority);
+    motion_commands
 }
 
 /// Check if the layer to evaluate should be replaced with a different layer.
@@ -364,6 +367,41 @@ fn active_frame_at(
     }
     // search
     for (i, frame) in keyframes.iter().enumerate() {
+        if frame.time > time.into() {
+            if i == 0 {
+                return None;
+            } else {
+                return Some(i - 1);
+            }
+        }
+    }
+    return None;
+}
+
+/// Basically the same thing as `active_frame_at`, except for the active priority in a frame's `priority` list.
+fn active_priority_at(
+    time: MotionLocalTime,
+    mut priorities: &[PriorityFrame],
+) -> Option<usize> {
+    // Ignore the trailing null entry, which marks the end of priority data.
+    if priorities
+        .last()
+        .is_some_and(|priority| priority.content.is_none())
+    {
+        priorities = &priorities[..priorities.len() - 1];
+    }
+
+    // if past the last time, use the last frame
+    match priorities.last() {
+        Some(last_frame) => {
+            if last_frame.time <= time.into() {
+                return Some(priorities.len() - 1);
+            }
+        }
+        None => return None,
+    }
+    // else search
+    for (i, frame) in priorities.iter().enumerate() {
         if frame.time > time.into() {
             if i == 0 {
                 return None;

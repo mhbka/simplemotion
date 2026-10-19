@@ -27,9 +27,34 @@ pub struct Motion<S> {
     pub loop_time: i32,
     /// Root nodes in the layer tree.
     pub layer: Vec<Layer<S>>,
+    /// Timed front-to-back ordering of the flattened layer nodes.
+    #[serde(default)]
+    pub priority: Vec<PriorityFrame>,
 }
 
 impl<S> Motion<S> {}
+
+/// Denotes how to re-order the (depth-first) layers of a motion during drawing.
+/// 
+/// ### Example
+/// - By depth-first, we have the layers A, B, C, D
+/// - The active priority is [3,1,2,0] -> we evaluate in reverse
+/// - The final order to draw commands in is A, C, B, D
+/// 
+/// ### Why call it a frame?
+/// Just cuz it's timed. There's no interpolation or whatever.
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct PriorityFrame {
+    /// The time on the motion timeline.
+    #[serde(deserialize_with = "deserialize_timeline_frame")]
+    pub time: u32,
+    /// The exporter-defined frame type.
+    #[serde(rename = "type")]
+    pub kind: u8,
+    /// Flattened layer-node indices, ordered from front to back.
+    pub content: Option<Vec<usize>>,
+}
 
 /// A layer node and its child layers.
 #[derive(Debug, Deserialize)]

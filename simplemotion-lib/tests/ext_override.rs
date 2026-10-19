@@ -1,7 +1,7 @@
 use glam::{Affine2, Vec2};
 use simplemotion_lib::{
-    parse_motion_resources, to_anim_commands_with_overrides, DebugInfo, ExternalOverrides,
-    LayerPath, OverrideLayerState,
+    parse_motion_resources, to_anim_commands, DebugInfo, ExternalOverrides, LayerPath,
+    OverrideLayerState,
 };
 
 #[test]
@@ -31,11 +31,9 @@ fn replaces_a_matching_layers_local_transform_and_opacity() {
             opa: 0.5,
         },
     );
-    let mut commands = Vec::new();
     let mut debug_info = DebugInfo::new(false);
 
-    to_anim_commands_with_overrides(
-        &mut commands,
+    let commands = to_anim_commands(
         &resources,
         resources.roots[0],
         0,
@@ -80,11 +78,9 @@ fn replaces_a_root_layer_with_a_donor_layer() {
         LayerPath::root("idle").child("target"),
         LayerPath::root("donor").child("replacement"),
     );
-    let mut commands = Vec::new();
     let mut debug_info = DebugInfo::new(false);
 
-    to_anim_commands_with_overrides(
-        &mut commands,
+    let commands = to_anim_commands(
         &resources,
         resources.motion_key("idle").unwrap(),
         0,
@@ -131,11 +127,9 @@ fn uses_the_nested_donor_motions_clock() {
         LayerPath::root("idle").child("target"),
         LayerPath::root("wrapper").child("nested").child("donor"),
     );
-    let mut commands = Vec::new();
     let mut debug_info = DebugInfo::new(false);
 
-    to_anim_commands_with_overrides(
-        &mut commands,
+    let commands = to_anim_commands(
         &resources,
         resources.motion_key("idle").unwrap(),
         5,

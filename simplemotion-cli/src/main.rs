@@ -1,6 +1,6 @@
 use macroquad::prelude::*;
 use simplemotion_lib::{
-    parse_motion_resources_from_folder, to_anim_commands, to_anim_commands_with_overrides,
+    parse_motion_resources_from_folder, to_anim_commands,
     DebugInfo, ExternalOverrides, IconKey, LayerPath, MotionResources,
 };
 use std::{
@@ -67,7 +67,6 @@ async fn main() {
         eprintln!("Root number {root_index} does not exist for this animation.");
         process::exit(2);
     }
-    let mut commands = Vec::new();
 
     let font_data = include_bytes!("../assets/notosans-jp.ttf");
     let font = load_ttf_font_from_bytes(font_data).unwrap();
@@ -103,8 +102,8 @@ async fn main() {
         let root = animation.resources.roots[root_index];
         let time = get_time();
         let frame = ((time - animation_started_at) * 60.0) as u32;
-        to_anim_commands_with_overrides(
-            &mut commands,
+        let mut overrides = ExternalOverrides::new();
+        let commands = to_anim_commands(
             &animation.resources,
             root,
             frame,

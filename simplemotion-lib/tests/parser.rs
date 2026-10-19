@@ -1,7 +1,7 @@
 use simplemotion_lib::{
     parse_motion_resources, parse_motion_resources_from_folder, to_anim_commands, DebugInfo,
     FrameType, IconImageKind, ImageLoadingError, KeyFrameContent, Layer, LayerType, ObjectType,
-    ParseMotionError, ResourceReference,
+    ExternalOverrides, ParseMotionError, ResourceReference,
 };
 
 /// Applies neutral transform defaults to omitted fields in non-empty frame content.
@@ -41,14 +41,13 @@ fn composes_interpolated_opacity_through_layers() {
         }"#,
     )
     .unwrap();
-    let mut commands = Vec::new();
     let mut debug_info = DebugInfo::new(false);
 
-    to_anim_commands(
-        &mut commands,
+    let commands = to_anim_commands(
         &resources,
         resources.roots[0],
         5,
+        &ExternalOverrides::default(),
         &mut debug_info,
     );
 
@@ -63,9 +62,14 @@ fn sd002_roots_start_with_opaque_icon_commands() {
         parse_motion_resources(include_str!("../../examples/sd002/sd002.json")).unwrap();
 
     for root in &resources.roots {
-        let mut commands = Vec::new();
         let mut debug_info = DebugInfo::new(false);
-        to_anim_commands(&mut commands, &resources, *root, 0, &mut debug_info);
+        let commands = to_anim_commands(
+            &resources,
+            *root,
+            0,
+            &ExternalOverrides::default(),
+            &mut debug_info,
+        );
 
         assert!(!commands.is_empty());
         assert!(commands.iter().all(|command| command.opacity > 0.0));
@@ -112,6 +116,7 @@ fn reports_all_missing_icon_images() {
     fs::write(
         directory.join(format!("{animation_name}.json")),
         r#"{
+          "screenSize": { "width": 1, "height": 1, "originX": 0, "originY": 0 },
           "object": { "unit": { "type": 0, "motion": {} } },
           "source": { "unit": { "icon": { "first": {}, "second": {} } } }
         }"#,
@@ -165,6 +170,26 @@ fn parses_the_example_motion() {
     assert_eq!(clip.top, 0.00147492625);
     assert_eq!(clip.right, 0.9991135);
     assert_eq!(clip.bottom, 0.9985251);
+}
+
+/// Preserves SD009's flattened layer order for later render scheduling.
+#[test]
+fn preserves_motion_priority_frames() {
+    let resources =
+        parse_motion_resources(include_str!("../../examples/sd009/sd009.json")).unwrap();
+    let motion = resources
+        .motion(resources.motion_key("SD009BA").unwrap())
+        .unwrap();
+
+    assert_eq!(motion.priority.len(), 2);
+    assert_eq!(motion.priority[0].time, 0);
+    assert_eq!(motion.priority[0].kind, 1);
+    assert_eq!(
+        motion.priority[0].content.as_deref(),
+        Some(&[3, 2, 5, 4, 1, 0][..])
+    );
+    assert_eq!(motion.priority[1].time, 10);
+    assert_eq!(motion.priority[1].content, None);
 }
 
 /// Resolves nested motion paths to stable motion handles.
@@ -264,6 +289,7 @@ fn identifies_layer_resource_roles() {
 fn resolves_icon_references() {
     let json = r#"
         {
+          "screenSize": { "width": 1, "height": 1, "originX": 0, "originY": 0 },
           "object": { "unit": { "type": 0, "motion": {
             "idle": { "type": 0, "lastTime": 1, "loopTime": -1, "layer": [
               { "type": 0, "label": "sprite", "frameList": [
@@ -358,7 +384,10 @@ fn rejects_missing_loop_time() {
 /// Rejects documents that cannot be flattened into one resource graph.
 #[test]
 fn rejects_multiple_objects() {
-    let json = r#"{ "object": { "first": { "type": 0, "motion": {} }, "second": { "type": 0, "motion": {} } } }"#;
+    let json = r#"{
+      "screenSize": { "width": 1, "height": 1, "originX": 0, "originY": 0 },
+      "object": { "first": { "type": 0, "motion": {} }, "second": { "type": 0, "motion": {} } }
+    }"#;
 
     assert!(matches!(
         parse_motion_resources(json),

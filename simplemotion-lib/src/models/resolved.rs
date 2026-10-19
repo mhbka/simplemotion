@@ -359,6 +359,7 @@ impl MotionResources {
             motion_type: raw.motion_type,
             last_time: raw.last_time,
             loop_time: raw.loop_time,
+            priority: raw.priority,
             layer: raw
                 .layer
                 .into_iter()
