@@ -382,14 +382,12 @@ fn active_frame_at(
 
 /// Basically the same thing as `active_frame_at`, except for the active priority in a frame's `priority` list.
 fn active_priority_at(time: MotionLocalTime, mut priorities: &[PriorityFrame]) -> Option<usize> {
-    // Ignore the trailing null entry, which marks the end of priority data.
-    if priorities
-        .last()
-        .is_some_and(|priority| priority.content.is_none())
-    {
-        priorities = &priorities[..priorities.len() - 1];
+    // again, if the last frame is empty, filter it out
+    if let Some(priority) = priorities.last() {
+        if priority.content.is_none() {
+            priorities = &priorities[0..priorities.len() - 1];
+        }
     }
-
     // if past the last time, use the last frame
     match priorities.last() {
         Some(last_frame) => {
