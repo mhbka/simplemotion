@@ -14,7 +14,8 @@ const ROOT_MOTION: &str = "SD002BA";
 const RESTING_ROOT_MOTION: &str = "SD002BB";
 const PENDULUM_LAYER: &[&str] = &["mask", "bg", "nanami", "レイヤ1"];
 const IMPULSE: f32 = 1.8;
-const MAX_ANGLE: f32 = 40.0_f32.to_radians();
+const EXTRA_DECELERATION_ANGLE: f32 = 30.0_f32.to_radians();
+const EXTRA_RETURN_ACCELERATION: f32 = 35.0;
 const RESTING_ANGLE: f32 = 5.0_f32.to_radians();
 const RESTING_DURATION: f32 = 1.0;
 const RESTORING_ACCELERATION: f32 = 12.0;
@@ -40,37 +41,37 @@ impl Pendulum {
         }
     }
 
-    /// Advances the pendulum and applies a click impulse.
-    fn update(&mut self) {
+    /// Advances the pendulum and preserves energy while it is resting.
+    fn update(&mut self, preserves_energy: bool) {
         let delta = get_frame_time().min(0.05);
         if is_mouse_button_pressed(MouseButton::Left) {
             self.apply_impulse();
         }
 
         self.angular_velocity -= self.angle * RESTORING_ACCELERATION * delta;
-        self.angular_velocity *= 1.0 - DAMPING * delta;
+        self.apply_extra_return_force(delta);
+        if !preserves_energy {
+            self.angular_velocity *= 1.0 - DAMPING * delta;
+        }
         self.angle += self.angular_velocity * delta;
-        self.clamp_angle();
         self.update_resting_duration(delta);
     }
 
-    /// Adds an outward impulse that tapers off near the angle limit.
+    /// Adds an outward impulse on the pendulum's current side.
     fn apply_impulse(&mut self) {
         let direction = if self.angle < 0.0 { -1.0 } else { 1.0 };
-        let remaining_range = 1.0 - (self.angle.abs() / MAX_ANGLE);
-        self.angular_velocity += direction * IMPULSE * remaining_range.max(0.0);
+        self.angular_velocity += direction * IMPULSE;
     }
 
-    /// Prevents a large impulse from carrying the pendulum beyond its angle limit.
-    fn clamp_angle(&mut self) {
-        if self.angle > MAX_ANGLE {
-            self.angle = MAX_ANGLE;
-            self.angular_velocity = self.angular_velocity.min(0.0);
+    /// Increases gravity toward the center beyond thirty degrees.
+    fn apply_extra_return_force(&mut self, delta: f32) {
+        let excess_angle = (self.angle.abs() - EXTRA_DECELERATION_ANGLE).max(0.0);
+        if excess_angle == 0.0 {
+            return;
         }
-        if self.angle < -MAX_ANGLE {
-            self.angle = -MAX_ANGLE;
-            self.angular_velocity = self.angular_velocity.max(0.0);
-        }
+
+        let acceleration = excess_angle * EXTRA_RETURN_ACCELERATION;
+        self.angular_velocity -= self.angle.signum() * acceleration * delta;
     }
 
     /// Tracks how long the pendulum has remained near its resting angle.
@@ -119,7 +120,7 @@ async fn main() {
     animation.context.debug_info_mut().debug_layers = true;
 
     loop {
-        pendulum.update();
+        pendulum.update(body_is_replaced);
         update_body_replacement(
             &mut animation,
             &pendulum,
