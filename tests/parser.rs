@@ -64,6 +64,36 @@ fn sd002_roots_start_with_opaque_icon_commands() {
         assert!(commands.iter().all(|command| command.opacity > 0.0));
     }
 }
+
+/// Evaluates nested motions safely when a caller supplies a large frame number.
+#[test]
+fn evaluates_nested_motions_at_large_frame_numbers() {
+    let resources = parse_motion_resources(
+        r#"{
+          "screenSize": { "width": 1, "height": 1, "originX": 0, "originY": 0 },
+          "object": { "unit": { "type": 0, "motion": {
+            "idle": { "type": 0, "lastTime": 1, "loopTime": 0, "layer": [{
+              "type": 3, "label": "nested", "frameList": [{
+                "time": 0, "type": 2, "content": { "src": "motion/unit/child", "motion": { "timeOffset": 0 } }
+              }]
+            }] },
+            "child": { "type": 0, "lastTime": 1, "loopTime": 0, "layer": [{
+              "type": 0, "label": "sprite", "frameList": [{
+                "time": 0, "type": 2, "content": { "src": "src/unit/hero" }
+              }]
+            }] }
+          } } },
+          "source": { "unit": { "icon": { "hero": { "width": 1, "height": 1 } } } }
+        }"#,
+    )
+    .unwrap();
+    let root = resources.motion_key("idle").unwrap();
+    let mut context = AnimationContext::new(resources);
+
+    let commands = context.to_anim_commands(root, u32::MAX);
+
+    assert_eq!(commands.len(), 1);
+}
 use std::{
     fs,
     time::{SystemTime, UNIX_EPOCH},

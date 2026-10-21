@@ -1,6 +1,7 @@
 use glam::{Affine2, Vec2};
 use simplemotion_lib::{
-    parse_motion_resources, AnimationContext, LayerOverride, LayerPath, OverrideLayerState,
+    parse_motion_resources, AnimationContext, LayerOverride, LayerOverrideScope, LayerPath,
+    OverrideLayerState,
 };
 
 #[test]
@@ -30,6 +31,7 @@ fn replaces_a_matching_layers_local_transform_and_opacity() {
             transform: Affine2::from_translation(Vec2::new(3.0, 4.0)),
             opa: 0.5,
         }),
+        LayerOverrideScope::Inherit,
     );
 
     let commands = context.to_anim_commands(root, 0);
@@ -124,6 +126,49 @@ fn uses_the_nested_donor_motions_clock() {
         commands[0].transform.transform_point2(Vec2::ZERO),
         Vec2::new(5.5, 0.5),
     );
+}
+
+/// Applies a direct-icon override without changing the opacity inherited by children.
+#[test]
+fn applies_a_direct_icon_override_without_affecting_children() {
+    let resources = parse_motion_resources(
+        r#"{
+          "screenSize": { "width": 1, "height": 1, "originX": 0, "originY": 0 },
+          "object": { "unit": { "type": 0, "motion": {
+            "idle": { "type": 0, "lastTime": 1, "loopTime": -1, "layer": [{
+              "type": 0, "label": "parent", "frameList": [{
+                "time": 0, "type": 2, "content": { "src": "src/unit/parent" }
+              }],
+              "children": [{
+                "type": 0, "label": "child", "frameList": [{
+                  "time": 0, "type": 2, "content": { "src": "src/unit/child" }
+                }]
+              }]
+            }] }
+          } } },
+          "source": { "unit": { "icon": {
+            "parent": { "width": 1, "height": 1 },
+            "child": { "width": 1, "height": 1 }
+          } } }
+        }"#,
+    )
+    .unwrap();
+    let root = resources.roots[0];
+    let mut context = AnimationContext::new(resources);
+    context.overrides_mut().override_layer(
+        LayerPath::root("idle").child("parent"),
+        LayerOverride::Append(OverrideLayerState {
+            transform: Affine2::IDENTITY,
+            opa: 0.0,
+        }),
+        LayerOverrideScope::DirectIconOnly,
+    );
+
+    let commands = context.to_anim_commands(root, 0);
+
+    assert_eq!(commands.len(), 2);
+    assert_eq!(commands[0].opacity, 0.0);
+    assert_eq!(commands[1].opacity, 1.0);
 }
 
 #[test]

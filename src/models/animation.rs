@@ -20,9 +20,33 @@ pub(super) struct TransformState {
     opacity: f32,
 }
 
+#[derive(Clone, Copy, Debug)]
+pub(crate) struct ResolvedLayerStates {
+    /// The state that the layer should pass down to its children or nested motion, for them to inherit.
+    pub inherited: LayerState,
+    /// The state the layer should use if it's evaluating an icon's transform.
+    /// 
+    /// We separate these 2 so that a layer override can choose to affect
+    /// just the icon at that layer, while keeping its children/nested motion
+    /// unchanged.
+    pub icon: LayerState
+}
+
+impl ResolvedLayerStates {
+    /// Transform the layer's states by inheriting from the given parent state.
+    /// 
+    /// The parent state should be the inherited one, not the icon one.
+    pub fn as_child(self, parent_state: LayerState) -> Self {
+        Self {
+            inherited: parent_state.with_child(self.inherited),
+            icon: parent_state.with_child(self.icon)
+        }
+    }
+}
+
 /// The transform state carried while traversing a layer tree.
 #[derive(Clone, Copy, Debug)]
-pub(crate) struct InterpolatedLayerState {
+pub(crate) struct LayerState {
     /// The inherited, interpolated transform. This is (usually) then inherited by children.
     pub transform: Affine2,
     /// The offset of a layer. This is to bring the layer to the correct origin.
@@ -34,7 +58,7 @@ pub(crate) struct InterpolatedLayerState {
     pub opacity: f32,
 }
 
-impl InterpolatedLayerState {
+impl LayerState {
     /// Returns the neutral state used before entering a root motion.
     pub(crate) fn identity() -> Self {
         Self {
@@ -84,14 +108,14 @@ impl TransformState {
     }
 
     /// Turns it into the render properties used by the animator.
-    pub fn to_interpolated_layer_state(self) -> InterpolatedLayerState {
+    pub fn to_interpolated_layer_state(self) -> LayerState {
         let scale = Mat2::from_diagonal(self.scale);
         let shear = Mat2::from_cols(Vec2::new(1.0, self.shear.y), Vec2::new(self.shear.x, 1.0));
         let matrix = Mat2::from_angle(self.angle) * shear * scale;
 
         let node_transform = Affine2::from_mat2_translation(matrix, self.translation);
 
-        InterpolatedLayerState {
+        LayerState {
             transform: node_transform,
             anchor_offset: self.anchor_offset,
             opacity: self.opacity,

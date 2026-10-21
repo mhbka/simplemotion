@@ -24,22 +24,16 @@ pub struct InheritedTime(u32);
 impl InheritedTime {
     /// Calculate the next inherited time from the current one `self`.
     pub fn inherit(self, frame_time: u32, time_offset: Option<u32>) -> Self {
-        let offset = if let Some(offset) = time_offset {
-            offset
-        } else {
-            0
-        };
-        // in case our offset pushes us under 0
-        let inherited_time = self.0 as i32 - frame_time as i32 + offset as i32;
-        if inherited_time < 0 {
+        let offset = time_offset.unwrap_or(0);
+        let Some(relative_time) = self.0.checked_sub(frame_time) else {
             panic!(
                 "got an inherited time less than 0! (parent time: {}, frame time: {}, offset: {:?})",
                 self.0,
                 frame_time,
                 time_offset
             );
-        }
-        Self(inherited_time as u32)
+        };
+        Self(relative_time.saturating_add(offset))
     }
 }
 

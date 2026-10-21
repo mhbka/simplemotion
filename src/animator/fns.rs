@@ -1,92 +1,21 @@
 use crate::{
-    ExternalOverrides, FrameType, KeyFrame, Layer, LayerPath, MotionResources, PriorityFrame, ResourceReference, animation::InterpolatedLayerState, animator::{
-        ext_override::LayerOverride, time::{InheritedTime, MotionLocalTime},
-    },
+    FrameType, KeyFrame, PriorityFrame, ResourceReference, animation::LayerState,
+    animator::time::MotionLocalTime,
 };
-use tracing::{debug, trace};
-
-/// Check if the given layer should be replaced with a different layer
-/// if specified in `overrides`.
-pub(crate) fn replace_layer_if_in_overrides<'a>(
-    resources: &'a MotionResources,
-    layer: &'a Layer<ResourceReference>,
-    local_time: MotionLocalTime,
-    time: InheritedTime,
-    layer_path: &LayerPath,
-    overrides: &ExternalOverrides,
-) -> (&'a Layer<ResourceReference>, MotionLocalTime) {
-    let Some(donor_path) = overrides.replacement_for(layer_path) else {
-        trace!("no replement for layer: {layer_path:?}");
-        return (layer, local_time);
-    };
-    let Some(donor_context) = resources.layer_context_at(donor_path) else {
-        debug!("no layer for donor path: {donor_path:?}");
-        return (layer, local_time);
-    };
-    let Some(donor_motion) = resources.motion(donor_context.motion) else {
-        debug!("no motion found for donor path: {donor_path:?}");
-        return (layer, local_time);
-    };
-    let donor_local_time =
-        MotionLocalTime::calculate(time, donor_motion.loop_time, donor_motion.last_time);
-    trace!("donor layer obtained for donor path: {donor_path:?}");
-
-    (donor_context.layer, donor_local_time)
-}
-
-/// Gets a layer's interpolated state, applying an external override if present.
-pub(crate) fn get_local_state_with_override(
-    local_time: MotionLocalTime,
-    layer: &Layer<ResourceReference>,
-    layer_path: &LayerPath,
-    overrides: &ExternalOverrides,
-) -> InterpolatedLayerState {
-    let mut state = get_local_linear_interpolated_state(local_time, &layer.frame_list);
-    if let Some(override_state) = overrides.state_for(layer_path) {
-        match override_state {
-            LayerOverride::Completely(new_state) => {
-                state.transform = new_state.transform;
-                state.opacity = new_state.opa;
-            },
-            LayerOverride::Append(append_state) => {
-                state.transform *= append_state.transform;
-                state.opacity *= append_state.opa;
-            }
-        };
-    }
-    state
-}
-
-/// Return the layer's inherited and local times,
-/// checking `overrides` if an override is applicable.
-pub(crate) fn get_layer_times_with_override(
-    layer_path: &LayerPath,
-    layer_time: InheritedTime,
-    layer_local_time: MotionLocalTime,
-    motion_loop_time: i32,
-    motion_last_time: u32,
-    overrides: &ExternalOverrides
-) -> (InheritedTime, MotionLocalTime) {
-    if let Some(&override_time) = overrides.inherited_time_for(layer_path) {
-        let override_local_time = MotionLocalTime::calculate(override_time, motion_loop_time, motion_last_time);
-        return (layer_time, override_local_time);
-    }
-    (layer_time, layer_local_time) 
-}
 
 /// Gets the active layer state. Interpolate only a dynamic frame toward the next frame,
 /// otherwise just use the active frame.
 pub(crate) fn get_local_linear_interpolated_state(
     local_time: MotionLocalTime,
     keyframes: &[KeyFrame<ResourceReference>],
-) -> InterpolatedLayerState {
+) -> LayerState {
     // get current frame's content
     let Some(current_index) = active_frame_at(local_time, keyframes) else {
-        return InterpolatedLayerState::identity();
+        return LayerState::identity();
     };
     let current = &keyframes[current_index];
     let Some(content) = current.content.as_ref() else {
-        return InterpolatedLayerState::identity();
+        return LayerState::identity();
     };
 
     // try get the next frame

@@ -7,7 +7,7 @@ use common::{
 };
 use glam::Affine2;
 use macroquad::prelude::*;
-use simplemotion_lib::{LayerOverride, LayerPath, OverrideLayerState};
+use simplemotion_lib::{LayerOverride, LayerOverrideScope, LayerPath, OverrideLayerState};
 use std::path::Path;
 
 const ROOT_MOTION: &str = "SD002BA";
@@ -134,6 +134,7 @@ async fn main() {
                 transform: sway_transform(pendulum.angle),
                 opa: 1.0,
             }),
+            LayerOverrideScope::Inherit,
         );
         toggle_display_mode(&mut display_mode, animation.context.debug_info_mut());
 

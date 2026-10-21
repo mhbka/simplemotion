@@ -51,3 +51,38 @@ fn keeps_priority_after_a_terminal_null_frame() {
 
     assert_eq!(labels_at_end, labels);
 }
+
+/// Falls back to depth-first order when a priority frame has invalid layer indices.
+#[test]
+fn ignores_an_invalid_priority_order() {
+    let resources = parse_motion_resources(
+        r#"
+        {
+          "screenSize": { "width": 1, "height": 1, "originX": 0, "originY": 0 },
+          "object": { "unit": { "type": 0, "motion": {
+            "idle": {
+              "type": 0,
+              "lastTime": 1,
+              "loopTime": -1,
+              "priority": [{ "time": 0, "type": 0, "content": [0, 2] }],
+              "layer": [
+                { "type": 0, "label": "first", "frameList": [{ "time": 0, "type": 2, "content": { "src": "src/unit/first" } }] },
+                { "type": 0, "label": "second", "frameList": [{ "time": 0, "type": 2, "content": { "src": "src/unit/second" } }] }
+              ]
+            }
+          } } },
+          "source": { "unit": { "icon": {
+            "first": { "width": 1, "height": 1 },
+            "second": { "width": 1, "height": 1 }
+          } } }
+        }
+        "#,
+    )
+    .unwrap();
+    let root = resources.roots[0];
+    let mut context = AnimationContext::new(resources);
+
+    let commands = context.to_anim_commands(root, 0);
+
+    assert_eq!(commands.len(), 2);
+}

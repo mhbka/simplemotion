@@ -39,6 +39,10 @@ impl MotionLayerOutputs {
             );
             return self.finalize_without_reorder();
         }
+        if !is_valid_layer_order(content, self.outputs.len()) {
+            debug!("priority contains an invalid layer index");
+            return self.finalize_without_reorder();
+        }
         self.reorder_and_finalize(content)
     }
 
@@ -61,6 +65,21 @@ impl MotionLayerOutputs {
             .flatten()
             .collect()
     }
+}
+
+/// Returns whether a priority list contains every layer index exactly once.
+fn is_valid_layer_order(order: &[usize], layer_count: usize) -> bool {
+    let mut seen = vec![false; layer_count];
+    for &index in order {
+        let Some(slot) = seen.get_mut(index) else {
+            return false;
+        };
+        if *slot {
+            return false;
+        }
+        *slot = true;
+    }
+    true
 }
 
 /// The output commands for a layer.

@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use crate::{
-    animation::{InterpolatedLayerState, TransformState},
+    animation::{LayerState, TransformState},
     numeric_type_enum,
 };
 use glam::Affine2;
@@ -156,7 +156,7 @@ impl<S> KeyFrameContent<S> {
     }
 
     /// Linearly interpolates every render property used by the simplified animator.
-    pub(crate) fn linearly_interpolate(&self, other: &Self, ratio: f32) -> InterpolatedLayerState {
+    pub(crate) fn linearly_interpolate(&self, other: &Self, ratio: f32) -> LayerState {
         TransformState::interpolate(self, other, ratio).to_interpolated_layer_state()
     }
 }

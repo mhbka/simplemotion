@@ -1,6 +1,6 @@
 use crate::{
-    DebugInfo, ExternalOverrides, Layer, LayerPath, LayerType, Motion, MotionKey, MotionResources, ResourceReference, animation::{AnimationCommand, InterpolatedLayerState}, animator::{
-        fns::{active_frame_at, active_priority_at, get_layer_times_with_override, get_local_state_with_override, replace_layer_if_in_overrides}, layer_output::{LayerOutput, MotionLayerOutputs}, time::{InheritedTime, MotionLocalTime},
+    DebugInfo, ExternalOverrides, Layer, LayerPath, LayerType, Motion, MotionKey, MotionResources, ResourceReference, animation::{AnimationCommand, LayerState, ResolvedLayerStates}, animator::{
+        fns::{active_frame_at, active_priority_at}, layer_output::{LayerOutput, MotionLayerOutputs}, time::{InheritedTime, MotionLocalTime},
     },
 };
 use glam::Affine2;
@@ -91,7 +91,7 @@ impl AnimationEvaluator<'_, '_> {
         self.get_motion_commands_inner(
             motion,
             LayerPath::root(root_label),
-            InterpolatedLayerState::identity(),
+            LayerState::identity(),
             time.into(),
         )
     }
@@ -102,15 +102,17 @@ impl AnimationEvaluator<'_, '_> {
         layer: &Layer<ResourceReference>,
         layer_root_motion: &Motion<ResourceReference>,
         outputs: &mut MotionLayerOutputs,
-        layer_state: InterpolatedLayerState,
+        layer_states: ResolvedLayerStates,
         layer_path: LayerPath,
         local_time: MotionLocalTime,
         time: InheritedTime,
     ) {
         let mut output = LayerOutput::new();
+        let inherited_state = layer_states.inherited;
+        let icon_state = layer_states.icon;
         match layer.layer_type {
             LayerType::Icon => {
-                let command = self.get_icon_command(layer, layer_state, local_time);
+                let command = self.get_icon_command(layer, icon_state, local_time);
                 if let Some(command) = command {
                     output.set_own_command(command);
                 }
@@ -118,7 +120,7 @@ impl AnimationEvaluator<'_, '_> {
             LayerType::Motion => {
                 let motion_commands = self.get_motion_commands(
                     layer,
-                    layer_state,
+                    inherited_state,
                     layer_path.clone(),
                     time,
                     local_time,
@@ -139,7 +141,7 @@ impl AnimationEvaluator<'_, '_> {
             layer_root_motion, 
             outputs, 
             layer_path, 
-            layer_state, 
+            inherited_state, 
             time, 
             local_time, 
             false
@@ -150,7 +152,7 @@ impl AnimationEvaluator<'_, '_> {
     fn get_icon_command(
         &self,
         layer: &Layer<ResourceReference>,
-        layer_state: InterpolatedLayerState,
+        layer_state: LayerState,
         local_time: MotionLocalTime,
     ) -> Option<AnimationCommand> {
         let Some(active_keyframe_index) = active_frame_at(local_time, &layer.frame_list) else {
@@ -203,7 +205,7 @@ impl AnimationEvaluator<'_, '_> {
     fn get_motion_commands(
         &mut self,
         layer: &Layer<ResourceReference>,
-        layer_state: InterpolatedLayerState,
+        layer_state: LayerState,
         layer_path: LayerPath,
         mut time: InheritedTime,
         local_time: MotionLocalTime,
@@ -241,7 +243,7 @@ impl AnimationEvaluator<'_, '_> {
         &mut self,
         motion: MotionKey,
         parent_path: LayerPath,
-        parent_state: InterpolatedLayerState,
+        parent_state: LayerState,
         time: InheritedTime,
     ) -> Vec<AnimationCommand> {
         let resources = self.resources;
@@ -273,7 +275,7 @@ impl AnimationEvaluator<'_, '_> {
         layer_root_motion: &Motion<ResourceReference>,
         outputs: &mut MotionLayerOutputs,
         parent_path: LayerPath,
-        parent_state: InterpolatedLayerState,
+        parent_state: LayerState,
         time: InheritedTime,
         local_time: MotionLocalTime,
         direct_from_motion: bool
@@ -283,24 +285,24 @@ impl AnimationEvaluator<'_, '_> {
             let overrides = self.overrides;
             let layer_path = parent_path.child(&layer.label);
             let (layer_time, layer_local_time) = 
-                get_layer_times_with_override(&layer_path, time, local_time, layer_root_motion.loop_time, layer_root_motion.last_time, overrides);
+                overrides.get_layer_times_with_override(&layer_path, time, local_time, layer_root_motion.loop_time, layer_root_motion.last_time);
             let (layer, layer_local_time) =
-                replace_layer_if_in_overrides(resources, layer, layer_local_time, layer_time, &layer_path, overrides);
-            let local_state =
-                get_local_state_with_override(layer_local_time, layer, &layer_path, overrides);
-            let layer_state = parent_state.with_child(local_state);
+                overrides.replace_layer_if_in_overrides(resources, layer, layer_local_time, layer_time, &layer_path);
+            let resolved_local_layer_states =
+                overrides.resolve_states_with_override(layer_local_time, layer, &layer_path);
+            let local_layer_states = resolved_local_layer_states.as_child(parent_state);
 
             if direct_from_motion {
-                self.debug_info.record_motion_layer(&layer_path, layer_state.transform);
+                self.debug_info.record_motion_layer(&layer_path, local_layer_states.inherited.transform);
             } else {
-                self.debug_info.record_child_layer(&layer_path, layer_state.transform);
+                self.debug_info.record_child_layer(&layer_path, local_layer_states.inherited.transform);
             }
 
             self.get_layer_commands(
                 layer,
                 layer_root_motion,
                 outputs,
-                layer_state,
+                local_layer_states,
                 layer_path,
                 layer_local_time,
                 layer_time,
