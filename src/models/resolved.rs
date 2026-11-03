@@ -51,8 +51,8 @@ pub struct Named<T> {
 pub enum ResolutionError {
     /// The document contains no object definition.
     MissingObject,
-    /// The document contains more than one object definition.
-    MultipleObjects,
+    /// Two objects define a motion with the same label.
+    DuplicateMotionLabel(String),
 }
 
 impl fmt::Display for ResolutionError {
@@ -60,7 +60,9 @@ impl fmt::Display for ResolutionError {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::MissingObject => write!(formatter, "motion document contains no object"),
-            Self::MultipleObjects => write!(formatter, "motion document contains multiple objects"),
+            Self::DuplicateMotionLabel(label) => {
+                write!(formatter, "motion label `{label}` is defined by more than one object")
+            }
         }
     }
 }
@@ -114,8 +116,13 @@ impl MotionResources {
             object,
             source,
         } = raw;
-        let (object_label, object) = Self::take_object(object)?;
-        let object_type = object.object_type;
+        let mut objects = object.into_iter();
+        let (first_label, first_object) = objects.next().ok_or(ResolutionError::MissingObject)?;
+        let crate::models::raw::RawMotionObject {
+            object_type,
+            motion: first_motion,
+            ..
+        } = first_object;
         let mut resources = Self {
             label,
             screen_size,
@@ -130,7 +137,10 @@ impl MotionResources {
         };
 
         resources.insert_icons(source);
-        let raw_motions = resources.reserve_motions(&object_label, object.motion);
+        let mut raw_motions = resources.reserve_motions(&first_label, first_motion)?;
+        for (object_label, object) in objects {
+            raw_motions.extend(resources.reserve_motions(&object_label, object.motion)?);
+        }
         resources.resolve_motions(raw_motions);
         resources.find_graph_roots();
         Ok(resources)
@@ -248,17 +258,6 @@ impl MotionResources {
             .map(|(label, key)| (label.as_str(), *key))
     }
 
-    /// Extracts the sole object required by the Motion document format.
-    fn take_object(
-        mut objects: BTreeMap<String, crate::models::raw::RawMotionObject>,
-    ) -> Result<(String, crate::models::raw::RawMotionObject), ResolutionError> {
-        match objects.len() {
-            0 => Err(ResolutionError::MissingObject),
-            1 => Ok(objects.pop_first().expect("one object is present")),
-            _ => Err(ResolutionError::MultipleObjects),
-        }
-    }
-
     /// Registers every icon by its exported `src/group/name` path.
     fn insert_icons(&mut self, raw_sources: BTreeMap<String, RawSource>) {
         for (group_label, raw_source) in raw_sources {
@@ -279,10 +278,13 @@ impl MotionResources {
         &mut self,
         object_label: &str,
         raw_motions: BTreeMap<String, RawMotion>,
-    ) -> Vec<(MotionKey, RawMotion)> {
+    ) -> Result<Vec<(MotionKey, RawMotion)>, ResolutionError> {
         let mut unprocessed = Vec::new();
 
         for (motion_label, motion) in raw_motions {
+            if self.motion_labels.contains_key(&motion_label) {
+                return Err(ResolutionError::DuplicateMotionLabel(motion_label));
+            }
             let key = self.motions.insert(MotionEntry { motion: None });
             let path = format!("motion/{object_label}/{motion_label}");
 
@@ -291,7 +293,7 @@ impl MotionResources {
             unprocessed.push((key, motion));
         }
 
-        unprocessed
+        Ok(unprocessed)
     }
 
     /// Replaces each raw frame source with its resolved resource reference.

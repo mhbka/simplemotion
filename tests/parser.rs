@@ -395,18 +395,52 @@ fn rejects_missing_loop_time() {
     assert!(parse_motion_resources(json).is_err());
 }
 
-/// Rejects documents that cannot be flattened into one resource graph.
+/// Resolves motion references that point into another object of the same document.
 #[test]
-fn rejects_multiple_objects() {
-    let json = r#"{
+fn resolves_references_across_objects() {
+    let resources = parse_motion_resources(
+        r#"{
       "screenSize": { "width": 1, "height": 1, "originX": 0, "originY": 0 },
-      "object": { "first": { "type": 0, "motion": {} }, "second": { "type": 0, "motion": {} } }
-    }"#;
+      "object": {
+        "main": { "type": 0, "motion": {
+          "idle": { "type": 0, "lastTime": 1, "loopTime": -1, "layer": [{
+            "type": 0, "label": "l", "frameList": [
+              { "time": 0, "type": 3, "content": { "src": "motion/helper/fx" } }
+            ] }] }
+        } },
+        "helper": { "type": 0, "motion": {
+          "fx": { "type": 0, "lastTime": 1, "loopTime": -1, "layer": [] }
+        } }
+      }
+    }"#,
+    )
+    .unwrap();
+    let fx = resources.motion_key("fx").unwrap();
+    let idle = resources.motion(resources.motion_key("idle").unwrap()).unwrap();
+
+    assert_eq!(
+        idle.layer[0].frame_list[0].content.as_ref().unwrap().src,
+        ResourceReference::Motion(fx)
+    );
+    assert_eq!(resources.roots, vec![resources.motion_key("idle").unwrap()]);
+}
+
+/// Rejects objects that define the same motion label.
+#[test]
+fn rejects_duplicate_motion_labels_across_objects() {
+    let motion = r#""m": { "type": 0, "lastTime": 1, "loopTime": -1, "layer": [] }"#;
+    let json = format!(
+        r#"{{
+      "screenSize": {{ "width": 1, "height": 1, "originX": 0, "originY": 0 }},
+      "object": {{ "first": {{ "type": 0, "motion": {{ {motion} }} }},
+                   "second": {{ "type": 0, "motion": {{ {motion} }} }} }}
+    }}"#
+    );
 
     assert!(matches!(
-        parse_motion_resources(json),
+        parse_motion_resources(&json),
         Err(ParseMotionError::Resolution(
-            simplemotion_lib::ResolutionError::MultipleObjects
+            simplemotion_lib::ResolutionError::DuplicateMotionLabel(_)
         ))
     ));
 }
